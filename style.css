@@ -1,11 +1,9 @@
-/* ===== Reset de base ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* ===== Fond général avec dégradé animé ===== */
 body {
   background: linear-gradient(-45deg, #0a0a0a, #1a0a2e, #0a0a0a, #2e1a0a);
   background-size: 400% 400%;
@@ -22,17 +20,14 @@ body {
   0% {
     background-position: 0% 50%;
   }
-
   50% {
     background-position: 100% 50%;
   }
-
   100% {
     background-position: 0% 50%;
   }
 }
 
-/* ===== Grille en fond ===== */
 body::after {
   content: "";
   position: fixed;
@@ -48,7 +43,24 @@ body::after {
   z-index: -1;
 }
 
-/* ===== Header ===== */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
 header {
   background-color: rgba(17, 17, 17, 0.7);
   backdrop-filter: blur(6px);
@@ -70,7 +82,6 @@ header h1 {
   filter: drop-shadow(0 0 8px rgba(255, 230, 0, 0.4));
 }
 
-/* ===== Navigation ===== */
 nav {
   margin-top: 1rem;
   display: flex;
@@ -97,7 +108,26 @@ nav a:hover {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
 }
 
-/* ===== Contenu principal ===== */
+#btn-musique {
+  background: linear-gradient(90deg, #ffe600, #a855f7);
+  border: none;
+  color: #0a0a0a;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+#btn-musique:hover {
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+  transform: scale(1.05);
+}
+
 main {
   max-width: 900px;
   margin: 3rem auto;
@@ -127,26 +157,12 @@ main p {
   font-size: 1rem;
 }
 
-/* ===== Scanlines rétro ===== */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  pointer-events: none;
-  z-index: 999;
+.intro {
+  color: #cfcfcf;
+  max-width: 600px;
+  margin: 0 auto 1rem auto;
 }
 
-/* ===== Bouton Documents ===== */
 .document-link {
   display: inline-block;
   margin-top: 1.5rem;
@@ -164,4 +180,40 @@ body::before {
 .document-link:hover {
   box-shadow: 0 0 25px rgba(168, 85, 247, 0.8);
   transform: scale(1.05);
+}
+
+.grille-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.carte {
+  background-color: rgba(10, 10, 10, 0.5);
+  border: 1px solid #333;
+  border-top: 3px solid #ffe600;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.carte:hover {
+  border-top-color: #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+  transform: translateY(-4px);
+}
+
+.carte h3 {
+  color: #ffe600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.05rem;
+  margin-bottom: 0.6rem;
+}
+
+.carte p {
+  color: #b8b8b8;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
 }

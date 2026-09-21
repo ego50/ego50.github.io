@@ -4,32 +4,38 @@
   <link rel="stylesheet" href="style.css">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Documents - Mon classeur numérique</title>
+  <title>Mon classeur numérique</title>
 </head>
-
 <body>
   <header>
     <h1>Mon classeur numérique</h1>
-
     <nav>
       <a href="index.html">Accueil</a>
       <a href="cours.html">Cours</a>
       <a href="tp.html">Mes TP</a>
       <a href="projets.html">Projets</a>
-      <a href="documents.html">Documents</a>
     </nav>
+    <audio id="musique" src="musique.mp3" loop></audio>
+    <button id="btn-musique" onclick="toggleMusique()">🔊 Musique</button>
   </header>
 
   <main>
-    <h2>Documents</h2>
-
-    <p>Les documents seront ajoutés prochainement.</p>
-
-    <p>
-      <a href="https://lexcrackito.alwaysdata.net">
-        Ouvrir mon document de cours
-      </a>
-    </p>
+    <h2>Bienvenue</h2>
+    <p>Ce site me permettra d'organiser mes ressources de SIN.</p>
   </main>
+
+  <script>
+    function toggleMusique() {
+      const musique = document.getElementById('musique');
+      const bouton = document.getElementById('btn-musique');
+      if (musique.paused) {
+        musique.play();
+        bouton.textContent = '🔇 Couper';
+      } else {
+        musique.pause();
+        bouton.textContent = '🔊 Musique';
+      }
+    }
+  </script>
 </body>
 </html>

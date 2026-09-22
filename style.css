@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Serif+JP:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #0a0908;
+  background-image: radial-gradient(ellipse at 50% 0%, #2a0a0a 0%, #0a0908 60%);
+  color: #ede6d6;
+  font-family: 'Noto Serif JP', serif;
+  line-height: 1.7;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Torii (portail japonais) en filigrane, fixe, discret */
+body::before {
+  content: "";
+  position: fixed;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 500px;
+  max-width: 90vw;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: -2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 700 500'%3E%3Cg fill='none' stroke='%23d4af37' stroke-width='10'%3E%3Cline x1='150' y1='120' x2='150' y2='460'/%3E%3Cline x1='550' y1='120' x2='550' y2='460'/%3E%3Crect x='100' y='60' width='500' height='30'/%3E%3Cline x1='70' y1='150' x2='630' y2='150' stroke-width='16'/%3E%3Cline x1='180' y1='210' x2='520' y2='210' stroke-width='8'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Pétales de cerisier qui tombent doucement */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -10% 0 0 0;
+  height: 120%;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    radial-gradient(circle, rgba(212,175,55,0.5) 40%, transparent 41%),
+    radial-gradient(circle, rgba(237,230,214,0.35) 40%, transparent 41%),
+    radial-gradient(circle, rgba(139,0,0,0.35) 40%, transparent 41%);
+  background-size: 5px 5px, 4px 4px, 6px 6px;
+  background-repeat: repeat;
+  background-position: 10% 0%, 60% 20%, 85% 45%;
+  animation: chutePetales 22s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes chutePetales {
+  0%   { background-position: 10% 0%, 60% 0%, 85% 0%; }
+  100% { background-position: 30% 100%, 40% 100%, 65% 100%; }
+}
+
+/* ---------- HEADER ---------- */
+header {
+  background-color: rgba(10, 9, 8, 0.9);
+  border-top: 4px solid #8b0000;
+  border-bottom: 4px solid #8b0000;
+  padding: 1.8rem 2rem;
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+header h1 {
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 800;
+  color: #d4af37;
+  font-size: 2.1rem;
+  letter-spacing: 5px;
+  text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+}
+
+header h1::before,
+header h1::after {
+  content: "⚔";
+  color: #8b0000;
+  margin: 0 1rem;
+  font-size: 1.3rem;
+  vertical-align: middle;
+}
+
+nav {
+  margin-top: 1.2rem;
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+nav a {
+  color: #ede6d6;
+  text-decoration: none;
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  color: #0a0908;
+  background-color: #d4af37;
+  border-color: #8b0000;
+}
+
+/* ---------- CONTENU ---------- */
+main {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  background-color: rgba(15, 12, 10, 0.85);
+  border: 1px solid #3a2a1c;
+  border-left: 5px solid #8b0000;
+  border-right: 5px solid #d4af37;
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+main h2 {
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 700;
+  color: #d4af37;
+  letter-spacing: 3px;
+  margin-bottom: 1.2rem;
+  font-size: 1.7rem;
+}
+
+main p {
+  color: #cfc6b3;
+  font-size: 1rem;
+}
+
+.intro {
+  color: #cfc6b3;
+  max-width: 600px;
+  margin: 0 auto 1rem auto;
+}
+
+.document-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.4rem;
+  color: #ede6d6;
+  background: linear-gradient(90deg, #8b0000, #5c0000);
+  text-decoration: none;
+  font-family: 'Shippori Mincho', serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  border: 1px solid #d4af37;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.document-link:hover {
+  background: linear-gradient(90deg, #a80000, #6e0000);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
+  transform: scale(1.03);
+}
+
+/* ---------- FORMULAIRES (création dossier / upload) ---------- */
+.formulaire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1.2rem;
+  background-color: rgba(10, 9, 8, 0.6);
+  border: 1px dashed #3a2a1c;
+}
+
+.formulaire input[type="text"],
+.formulaire input[type="file"],
+.formulaire select {
+  background-color: rgba(20, 16, 13, 0.9);
+  border: 1px solid #3a2a1c;
+  color: #ede6d6;
+  padding: 0.5rem 0.8rem;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.9rem;
+}
+
+.formulaire input[type="text"]:focus,
+.formulaire select:focus {
+  outline: none;
+  border-color: #d4af37;
+}
+
+.formulaire button {
+  margin-top: 0;
+}
+
+/* ---------- MESSAGES ---------- */
+.msg-succes {
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  padding: 0.6rem 1rem;
+  margin: 1rem 0;
+  background-color: rgba(212, 175, 55, 0.06);
+}
+
+.msg-erreur {
+  color: #ff6b6b;
+  border: 1px solid #8b0000;
+  padding: 0.6rem 1rem;
+  margin: 1rem 0;
+  background-color: rgba(139, 0, 0, 0.1);
+}
+
+/* ---------- GRILLE DE CARTES / DOSSIERS ---------- */
+.grille-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.carte {
+  background-color: rgba(15, 12, 10, 0.7);
+  border: 1px solid #3a2a1c;
+  border-top: 3px solid #d4af37;
+  padding: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+.carte:hover {
+  border-top-color: #8b0000;
+  box-shadow: 0 0 16px rgba(139, 0, 0, 0.3);
+  transform: translateY(-4px);
+}
+
+.carte h3 {
+  font-family: 'Shippori Mincho', serif;
+  color: #d4af37;
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.carte p {
+  color: #cfc6b3;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.liste-fichiers {
+  list-style: none;
+}
+
+.liste-fichiers li {
+  margin-bottom: 0.4rem;
+}
+
+.liste-fichiers a {
+  color: #cfc6b3;
+  text-decoration: none;
+  font-size: 0.85rem;
+  border-bottom: 1px dotted #3a2a1c;
+  transition: all 0.2s ease;
+}
+
+.liste-fichiers a:hover {
+  color: #d4af37;
+  border-bottom-color: #d4af37;
+}
+
+.sous-titre {
+  font-family: 'Shippori Mincho', serif;
+  color: #8b0000;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+  margin: 1.8rem 0 0.6rem 0;
+  text-align: left;
+}
+
+.etiquette {
+  display: inline-block;
+  background: linear-gradient(90deg, #8b0000, #d4af37);
+  color: #0a0908;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 0.1rem 0.5rem;
+  text-transform: uppercase;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}

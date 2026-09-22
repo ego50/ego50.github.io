@@ -1,7 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Courier+Prime&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 body {
@@ -9,7 +17,7 @@ body {
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
   color: #e8e8e8;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Noto Serif JP', 'Courier New', Courier, monospace;
   line-height: 1.6;
   min-height: 100vh;
   position: relative;
@@ -17,17 +25,12 @@ body {
 }
 
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
+/* Trame façon papier de riz / grille */
 body::after {
   content: "";
   position: fixed;
@@ -43,6 +46,7 @@ body::after {
   z-index: -1;
 }
 
+/* Lignes de scan (esthétique néon) */
 body::before {
   content: "";
   position: fixed;
@@ -59,6 +63,32 @@ body::before {
   );
   pointer-events: none;
   z-index: 999;
+}
+
+/* Dragon chinois animé en fond */
+html::before {
+  content: "";
+  position: fixed;
+  top: 15%;
+  left: -40%;
+  width: 900px;
+  height: 450px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 450'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffe600'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M20,220 C100,120 160,320 240,220 C320,120 380,320 460,220 C540,120 600,320 680,220 C740,150 780,190 820,150' stroke='url(%23g)' stroke-width='10' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='820' cy='150' r='26' fill='url(%23g)'/%3E%3Cpath d='M846,140 L875,120 M846,150 L880,150 M846,160 L875,175' stroke='url(%23g)' stroke-width='5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M60,200 Q40,170 60,150 M140,290 Q120,320 100,300 M300,180 Q290,150 310,140 M380,290 Q370,320 350,300 M540,180 Q530,150 550,140 M620,290 Q610,320 590,300' stroke='url(%23g)' stroke-width='4' fill='none' stroke-linecap='round' opacity='0.7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.35;
+  filter: drop-shadow(0 0 15px rgba(168, 85, 247, 0.5));
+  pointer-events: none;
+  z-index: -2;
+  animation: dragonFly 28s linear infinite;
+}
+
+@keyframes dragonFly {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  25%  { transform: translate(60vw, -4vh) rotate(2deg); }
+  50%  { transform: translate(120vw, 3vh) rotate(-2deg); }
+  75%  { transform: translate(180vw, -3vh) rotate(1deg); }
+  100% { transform: translate(240vw, 0) rotate(0deg); }
 }
 
 header {
@@ -106,26 +136,6 @@ nav a:hover {
   background: linear-gradient(90deg, #ffe600, #a855f7);
   border-color: #ffe600;
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
-}
-
-#btn-musique {
-  background: linear-gradient(90deg, #ffe600, #a855f7);
-  border: none;
-  color: #0a0a0a;
-  padding: 0.5rem 1rem;
-  margin-top: 1rem;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-#btn-musique:hover {
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
-  transform: scale(1.05);
 }
 
 main {

@@ -14,9 +14,8 @@
       <a href="cours.html">Cours</a>
       <a href="tp.html">Mes TP</a>
       <a href="projets.html">Projets</a>
+      <a href="documents.html">Documents</a>
     </nav>
-    <audio id="musique" src="musique.mp3" loop></audio>
-    <button id="btn-musique" onclick="toggleMusique()">🔊 Musique</button>
   </header>
 
   <main>
@@ -24,18 +23,5 @@
     <p>Ce site me permettra d'organiser mes ressources de SIN.</p>
   </main>
 
-  <script>
-    function toggleMusique() {
-      const musique = document.getElementById('musique');
-      const bouton = document.getElementById('btn-musique');
-      if (musique.paused) {
-        musique.play();
-        bouton.textContent = '🔇 Couper';
-      } else {
-        musique.pause();
-        bouton.textContent = '🔊 Musique';
-      }
-    }
-  </script>
 </body>
 </html>

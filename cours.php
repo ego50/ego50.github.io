@@ -1,5 +1,6 @@
 <?php
 require 'gestion.php';
+$erreurConnexion = traiterConnexion();
 list($message, $erreur) = traiterFormulaires('cours');
 $dossiers = listerDossiers('cours');
 ?>
@@ -42,6 +43,8 @@ $dossiers = listerDossiers('cours');
   <main>
     <h2>Cours</h2>
     <p class="intro">Range ici tes fichiers de cours, organisés par dossier.</p>
+
+    <?php afficherBarreConnexion($erreurConnexion); ?>
 
     <?php if ($message): ?><p class="msg-succes"><?= htmlspecialchars($message) ?></p><?php endif; ?>
     <?php if ($erreur): ?><p class="msg-erreur"><?= htmlspecialchars($erreur) ?></p><?php endif; ?>

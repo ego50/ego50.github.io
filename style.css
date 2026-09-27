@@ -120,55 +120,7 @@ body::after {
 
 
 /* =====================================================
-   2. ÉCLAIR PLEIN ÉCRAN (TOUTES LES 5 SECONDES)
-   ===================================================== */
-
-.sakura-container::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99;
-  background: radial-gradient(
-    circle at 50% 50%,
-    #ffffff 0%,
-    rgba(0, 240, 255, 0.95) 25%,
-    rgba(255, 0, 119, 0.8) 60%,
-    rgba(13, 5, 20, 0.95) 100%
-  );
-  clip-path: circle(0% at 50% 50%);
-  opacity: 0;
-  animation: flash-center-fullscreen 5s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
-}
-
-@keyframes flash-center-fullscreen {
-  0%, 80% {
-    clip-path: circle(0% at 50% 50%);
-    opacity: 0;
-  }
-  82% {
-    clip-path: circle(10% at 50% 50%);
-    opacity: 1;
-    filter: drop-shadow(0 0 40px #ffffff);
-  }
-  88% {
-    clip-path: circle(140% at 50% 50%);
-    opacity: 0.95;
-    filter: drop-shadow(0 0 80px var(--neon-cyan));
-  }
-  93% {
-    clip-path: circle(150% at 50% 50%);
-    opacity: 0;
-  }
-  100% {
-    clip-path: circle(0% at 50% 50%);
-    opacity: 0;
-  }
-}
-
-
-/* =====================================================
-   3. PÉTALES EN CHUTE 3D CONTINUÉE
+   2. PÉTALES EN CHUTE 3D CONTINUÉE
    ===================================================== */
 
 .sakura-container {
@@ -236,7 +188,7 @@ body::after {
 
 
 /* =====================================================
-   4. MASQUE DE ONI EN ROTATION / ORBITE
+   3. MASQUE DE ONI EN ROTATION / ORBITE
    ===================================================== */
 
 .oni-zone,

@@ -12,8 +12,8 @@ session_start();
 // - Mot de passe MODÉRATEUR (le prof) : peut seulement ajouter des fichiers
 //   dans des dossiers que tu as déjà créés. Il ne peut ni créer de dossier,
 //   ni supprimer quoi que ce soit.
-define('MOT_DE_PASSE_ADMIN', 'lex4');
-define('MOT_DE_PASSE_MODERATEUR', 'Profsin2026');
+define('MOT_DE_PASSE_ADMIN', 'change-moi');
+define('MOT_DE_PASSE_MODERATEUR', 'change-moi-aussi');
 
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];

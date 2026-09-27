@@ -1,1 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sanctuaire des Kami - Le Jeu</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0c0818;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
 
+    .btn-retour {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      color: #ffd700;
+      text-decoration: none;
+      background: rgba(12, 8, 24, 0.8);
+      border: 1px solid #ffd700;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .btn-retour:hover {
+      background: #ffd700;
+      color: #0c0818;
+      box-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
+    }
+
+    .game-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    h1 {
+      color: #ffd700;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
+      margin-bottom: 5px;
+      font-size: 1.8rem;
+    }
+
+    p.sub {
+      color: #d1b3ff;
+      margin-top: 0;
+      font-size: 0.95rem;
+    }
+
+    #game-canvas {
+      background: rgba(20, 14, 40, 0.85);
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);
+      cursor: none;
+      touch-action: none;
+    }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      max-width: 600px;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ffd700;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(12, 8, 24, 0.95);
+      border: 2px solid #ffd700;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 80%;
+      max-width: 350px;
+    }
+
+    .btn-play {
+      background: #ffd700;
+      color: #0c0818;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-play:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px #ffd700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Bouton de retour -->
+  <a href="index.html" class="btn-retour">← Accueil</a>
+
+  <!-- Animations de sakura en arrière-plan -->
+  <div class="sakura-container" aria-hidden="true"></div>
+
+  <div class="game-container">
+    <h1>⛩️ Sanctuaire des Kami</h1>
+    <p class="sub">Rattrape les orbes sacrées et évite les esprits maudits !</p>
+
+    <div class="hud">
+      <span>Score : <span id="score">0</span></span>
+      <span>Vies : <span id="lives">❤️❤️❤️</span></span>
+    </div>
+
+    <canvas id="game-canvas" width="600" height="400"></canvas>
+
+    <div id="game-overlay" class="overlay">
+      <h2 id="overlay-title" style="color:#ffd700; margin:0;">L'Attrape-Esprits</h2>
+      <p id="overlay-msg" style="margin:0; font-size:0.95rem;">Déplace ton réceptacle avec la souris ou le doigt.</p>
+      <button id="start-btn" class="btn-play">Jouer</button>
+    </div>
+  </div>
+
+  <script>
+    // Pluie de sakura en fond
+    const sakuraContainer = document.querySelector(".sakura-container");
+    const PETAL_COUNT = 25;
+    for (let i = 0; i < PETAL_COUNT; i++) {
+      const petal = document.createElement("span");
+      petal.className = "sakura-petal";
+      const size = Math.random() * 7 + 7;
+      petal.style.left = `${Math.random() * 100}%`;
+      petal.style.width = `${size}px`;
+      petal.style.height = `${size * 0.65}px`;
+      petal.style.opacity = Math.random() * 0.45 + 0.35;
+      petal.style.animationDuration = `${Math.random() * 12 + 10}s, ${Math.random() * 3 + 2}s`;
+      petal.style.animationDelay = `${Math.random() * -20}s, ${Math.random() * -5}s`;
+      sakuraContainer.appendChild(petal);
+    }
+
+    // Moteur du Jeu
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const overlay = document.getElementById('game-overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlayMsg = document.getElementById('overlay-msg');
+    const startBtn = document.getElementById('start-btn');
+
+    let score = 0;
+    let lives = 3;
+    let isGaming = false;
+    let items = [];
+    let spawnTimer = 0;
+
+    const player = {
+      x: canvas.width / 2 - 40,
+      y: canvas.height - 25,
+      width: 80,
+      height: 12,
+      speed: 0
+    };
+
+    // Suivi de la souris / tactile
+    function movePlayer(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      player.x = clientX - rect.left - player.width / 2;
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+    }
+
+    canvas.addEventListener('mousemove', movePlayer);
+    canvas.addEventListener('touchmove', movePlayer);
+
+    function spawnItem() {
+      const isBad = Math.random() < 0.25; // 25% de chance d'être un esprit maudit
+      items.push({
+        x: Math.random() * (canvas.width - 20) + 10,
+        y: -20,
+        radius: 10,
+        speed: Math.random() * 2 + 2 + (score * 0.05),
+        type: isBad ? 'oni' : 'kami'
+      });
+    }
+
+    function update() {
+      if (!isGaming) return;
+
+      spawnTimer++;
+      if (spawnTimer > Math.max(15, 45 - Math.floor(score / 5))) {
+        spawnItem();
+        spawnTimer = 0;
+      }
+
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        item.y += item.speed;
+
+        // Collision avec le réceptacle
+        if (
+          item.y + item.radius >= player.y &&
+          item.y - item.radius <= player.y + player.height &&
+          item.x >= player.x &&
+          item.x <= player.x + player.width
+        ) {
+          if (item.type === 'kami') {
+            score += 10;
+            scoreEl.textContent = score;
+          } else {
+            lives--;
+            updateLivesUI();
+            if (lives <= 0) endGame();
+          }
+          items.splice(i, 1);
+          continue;
+        }
+
+        // Sortie de l'écran
+        if (item.y > canvas.height + 20) {
+          if (item.type === 'kami') {
+            lives--;
+            updateLivesUI();
+            if (lives <= 0) endGame();
+          }
+          items.splice(i, 1);
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Dessiner le joueur (réceptacle sacré)
+      ctx.fillStyle = '#ffd700';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = '#ffd700';
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+
+      // Dessiner les objets
+      items.forEach(item => {
+        ctx.beginPath();
+        ctx.arc(item.x, item.y, item.radius, 0, Math.PI * 2);
+        if (item.type === 'kami') {
+          ctx.fillStyle = '#ffb7c5';
+          ctx.shadowColor = '#ffb7c5';
+        } else {
+          ctx.fillStyle = '#ff4d4d';
+          ctx.shadowColor = '#ff4d4d';
+        }
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.closePath();
+      });
+
+      ctx.shadowBlur = 0;
+    }
+
+    function updateLivesUI() {
+      livesEl.textContent = '❤️'.repeat(Math.max(0, lives));
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      if (isGaming) requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+      score = 0;
+      lives = 3;
+      items = [];
+      scoreEl.textContent = score;
+      updateLivesUI();
+      isGaming = true;
+      overlay.style.display = 'none';
+      requestAnimationFrame(gameLoop);
+    }
+
+    function endGame() {
+      isGaming = false;
+      overlayTitle.textContent = "Partie terminée !";
+      overlayMsg.textContent = `Ton score final : ${score} points.`;
+      startBtn.textContent = "Rejouer";
+      overlay.style.display = 'flex';
+    }
+
+    startBtn.addEventListener('click', startGame);
+  </script>
+</body>
+</html>

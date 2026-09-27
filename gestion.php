@@ -4,6 +4,11 @@
 // Utilisé par cours.php, tp.php, projets.php et documents.php
 // ==========================================================
 
+session_start();
+
+// ⚠️ CHANGE CE MOT DE PASSE avant de mettre le site en ligne !
+define('MOT_DE_PASSE_ADMIN', 'change-moi');
+
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];
 
@@ -19,6 +24,64 @@ function nettoyerNom($nom) {
     $nom = preg_replace('/[^A-Za-z0-9_\- ]/', '', $nom);
     return $nom;
 }
+
+// ----------------------------------------------------------
+// Authentification
+// ----------------------------------------------------------
+
+// Renvoie true si l'utilisateur est actuellement connecté
+function estConnecte() {
+    return !empty($_SESSION['connecte']);
+}
+
+// Traite le formulaire de connexion / déconnexion (à appeler en tout début de page).
+// Retourne un message d'erreur éventuel (ex: mauvais mot de passe), sinon une chaîne vide.
+function traiterConnexion() {
+    $erreur = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'connexion') {
+        $motDePasseSaisi = $_POST['mot_de_passe'] ?? '';
+        if (hash_equals(MOT_DE_PASSE_ADMIN, $motDePasseSaisi)) {
+            $_SESSION['connecte'] = true;
+        } else {
+            $erreur = "Mot de passe incorrect.";
+        }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'deconnexion') {
+        unset($_SESSION['connecte']);
+    }
+
+    return $erreur;
+}
+
+// Affiche la petite barre de connexion / déconnexion
+function afficherBarreConnexion($erreurConnexion = '') {
+    $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
+
+    echo '<div class="barre-connexion">';
+    if (estConnecte()) {
+        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
+        echo '<input type="hidden" name="action" value="deconnexion">';
+        echo '<span class="msg-succes">🔓 Connecté</span> ';
+        echo '<button type="submit" class="document-link">Se déconnecter</button>';
+        echo '</form>';
+    } else {
+        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
+        echo '<input type="hidden" name="action" value="connexion">';
+        echo '<input type="password" name="mot_de_passe" placeholder="Code d\'accès" required>';
+        echo '<button type="submit" class="document-link">Se connecter</button>';
+        echo '</form>';
+        if ($erreurConnexion) {
+            echo '<p class="msg-erreur">' . htmlspecialchars($erreurConnexion) . '</p>';
+        }
+    }
+    echo '</div>';
+}
+
+// ----------------------------------------------------------
+// Gestion des dossiers / fichiers
+// ----------------------------------------------------------
 
 // Traite les formulaires POST (création de dossier + upload) pour UNE catégorie donnée.
 // Retourne [message_succes, message_erreur]
@@ -38,6 +101,12 @@ function traiterFormulaires($categorie) {
     $erreur = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['categorie'] ?? '') === $categorie) {
+
+        // 🔒 Sécurité : on bloque toute création/upload si pas connecté,
+        // même si quelqu'un envoie directement une requête POST sans passer par le formulaire.
+        if (!estConnecte()) {
+            return ['', "Tu dois être connecté pour faire ça."];
+        }
 
         // Création d'un dossier
         if (($_POST['action'] ?? '') === 'creer_dossier') {
@@ -102,7 +171,13 @@ function listerDossiers($categorie) {
 }
 
 // Affiche les 2 formulaires (créer dossier / uploader fichier) pour une catégorie
+// Ces formulaires ne sont visibles et actifs que si l'utilisateur est connecté.
 function afficherFormulaires($categorie, $dossiers) {
+    if (!estConnecte()) {
+        echo '<p class="intro">🔒 Connecte-toi (ci-dessus) pour pouvoir ajouter des dossiers ou des fichiers.</p>';
+        return;
+    }
+
     $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
 ?>
     <form class="formulaire" method="post" action="<?= $cible ?>">

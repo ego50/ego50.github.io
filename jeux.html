@@ -1,1816 +1,901 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-[#0a0e0a] text-[#39ff6a]">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CYBER_HUB // Arcade Retro Hacker</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cyber: {
-                            green: '#39ff6a',
-                            dark: '#0a0e0a',
-                            panel: '#111813',
-                            border: '#1b3821',
-                            cyan: '#00f3ff',
-                            pink: '#ff0055',
-                            yellow: '#ffcc00'
-                        }
-                    },
-                    fontFamily: {
-                        mono: ['Courier New', 'Consolas', 'Monaco', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sanctuaire Divin — Archives & Salles de Jeu</title>
+  <style>
+    /* ===================================================
+       1. VARIABLES GLOBALES & THÈME JAPONAIS DIVIN
+       =================================================== */
+    :root {
+      --bg-ink: #0a0a12;
+      --bg-card: rgba(20, 18, 30, 0.85);
+      --red-torii: #d62828;
+      --red-bright: #ff3b38;
+      --gold-divine: #ffb703;
+      --gold-light: #ffe599;
+      --sakura-pink: #ffb7c5;
+      --white-sacred: #f8f9fa;
+      --border-gold: 1px solid rgba(255, 183, 3, 0.3);
+      --glow-gold: 0 0 15px rgba(255, 183, 3, 0.4);
+      --glow-red: 0 0 15px rgba(214, 40, 40, 0.5);
+    }
 
-    <style>
-        /* Custom CRT & Glow Effects */
-        body {
-            font-family: 'Courier New', Consolas, Monaco, monospace;
-            user-select: none;
-            -webkit-user-select: none;
-            overflow-x: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        .crt-overlay {
-            background: linear-gradient(
-                rgba(18, 16, 16, 0) 50%, 
-                rgba(0, 0, 0, 0.25) 50%
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-        }
+    body {
+      background-color: var(--bg-ink);
+      color: var(--white-sacred);
+      font-family: 'Segoe UI', 'Cinzel', -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        .neon-glow {
-            text-shadow: 0 0 8px rgba(57, 255, 106, 0.6), 0 0 20px rgba(57, 255, 106, 0.3);
-        }
+    /* Canvas d'arrière-plan : Pétales de Cerisier (Sakura) */
+    #sakura-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        .neon-border {
-            box-shadow: 0 0 10px rgba(57, 255, 106, 0.3), inset 0 0 10px rgba(57, 255, 106, 0.2);
-        }
+    /* Container Principal */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1000px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .neon-btn {
-            transition: all 0.2s ease;
-        }
-        .neon-btn:hover {
-            box-shadow: 0 0 15px rgba(57, 255, 106, 0.7);
-            transform: translateY(-2px);
-        }
-        .neon-btn:active {
-            transform: translateY(1px);
-        }
+    /* ===================================================
+       2. EN-TÊTE DIVIN & TORII
+       =================================================== */
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0e0a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1b3821;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #39ff6a;
-        }
+    .torii-icon {
+      width: 70px;
+      height: 60px;
+      margin: 0 auto 10px auto;
+      fill: var(--red-torii);
+      filter: drop-shadow(0 0 8px var(--red-bright));
+    }
 
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
-        }
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 4px;
+      color: var(--gold-divine);
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+      margin-bottom: 5px;
+    }
 
-        .glitch-anim {
-            animation: glitch 0.3s ease infinite alternate;
-        }
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--sakura-pink);
+      letter-spacing: 2px;
+      opacity: 0.9;
+    }
 
-        canvas {
-            image-rendering: pixelated;
-        }
-    </style>
+    /* ===================================================
+       3. NAVIGATION PAR ONGLET (6 EMPLACEMENTS)
+       =================================================== */
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 25px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      background: rgba(15, 13, 25, 0.9);
+      border: 1px solid rgba(255, 183, 3, 0.3);
+      color: var(--white-sacred);
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--gold-divine);
+      box-shadow: var(--glow-gold);
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--red-torii), #800f2f);
+      border-color: var(--gold-light);
+      color: #fff;
+      box-shadow: var(--glow-red);
+      font-weight: bold;
+    }
+
+    /* ===================================================
+       4. CONTENEUR DES JEUX ET PAGES
+       =================================================== */
+    main {
+      width: 100%;
+      background: var(--bg-card);
+      border: var(--border-gold);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), var(--glow-gold);
+      padding: 25px;
+      backdrop-filter: blur(8px);
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .section-content {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .section-content.active {
+      display: flex;
+    }
+
+    .game-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 183, 3, 0.2);
+    }
+
+    .game-title {
+      font-size: 1.4rem;
+      color: var(--gold-divine);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-board {
+      font-size: 1rem;
+      color: var(--sakura-pink);
+      background: rgba(0,0,0,0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 183, 3, 0.2);
+    }
+
+    canvas.game-canvas {
+      background: #050508;
+      border: 2px solid var(--gold-divine);
+      border-radius: 8px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), var(--glow-gold);
+      max-width: 100%;
+    }
+
+    .controls-hint {
+      margin-top: 15px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+    }
+
+    .btn-action {
+      margin-top: 15px;
+      background: linear-gradient(135deg, var(--gold-divine), #b58200);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      transform: scale(1.05);
+      box-shadow: var(--glow-gold);
+    }
+
+    /* ===================================================
+       5. STYLE DU 6ᵉ EMPLACEMENT (RELIQUE SACRÉE)
+       =================================================== */
+    .relic-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .relic-frame {
+      position: relative;
+      padding: 12px;
+      background: linear-gradient(135deg, rgba(214,40,40,0.2), rgba(255,183,3,0.2));
+      border: 2px solid var(--gold-divine);
+      border-radius: 12px;
+      box-shadow: var(--glow-gold), 0 0 30px rgba(214, 40, 40, 0.3);
+      margin-top: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .relic-frame:hover {
+      transform: scale(1.02);
+    }
+
+    .relic-img {
+      max-width: 100%;
+      max-height: 350px;
+      border-radius: 6px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .relic-description {
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: var(--sakura-pink);
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    /* ===================================================
+       6. TERMINAL DIVIN (SALLE 5)
+       =================================================== */
+    .terminal-box {
+      width: 100%;
+      height: 320px;
+      background: #040406;
+      border: 1px solid var(--gold-divine);
+      border-radius: 8px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      color: var(--gold-light);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terminal-output {
+      flex: 1;
+      white-space: pre-wrap;
+      line-height: 1.4;
+      font-size: 0.9rem;
+    }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .terminal-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
-<body class="h-full flex flex-col justify-between select-none bg-[#0a0e0a] text-[#39ff6a] relative overflow-x-hidden">
+<body>
 
-    <!-- Scanlines overlay -->
-    <div id="crtOverlay" class="crt-overlay fixed inset-0 z-50 pointer-events-none opacity-40"></div>
+  <!-- Canevas dynamique d'arrière-plan pour les pétales de Cerisier -->
+  <canvas id="sakura-canvas"></canvas>
 
-    <!-- Header Navigation -->
-    <header class="bg-[#111813] border-b border-[#1b3821] p-3 flex justify-between items-center z-40 sticky top-0">
-        <div class="flex items-center gap-3">
-            <span class="inline-block w-3 h-3 rounded-full bg-[#39ff6a] animate-pulse"></span>
-            <h1 class="text-lg md:text-xl font-bold tracking-widest neon-glow flex items-center gap-2">
-                <i class="fa-solid fa-[#]"></i> CYBER_HUB <span class="text-xs text-[#00f3ff] hidden sm:inline">v2.6.4</span>
-            </h1>
-        </div>
-        
-        <div class="flex items-center gap-2 md:gap-4">
-            <!-- Global Sound Toggle -->
-            <button id="soundToggleBtn" onclick="toggleSound()" class="px-3 py-1 text-xs border border-[#1b3821] rounded hover:border-[#39ff6a] transition flex items-center gap-1">
-                <i id="soundIcon" class="fa-solid fa-volume-high text-[#39ff6a]"></i>
-                <span id="soundText" class="hidden md:inline">AUDIO ON</span>
-            </button>
-            <!-- CRT Toggle -->
-            <button onclick="toggleCRT()" class="px-3 py-1 text-xs border border-[#1b3821] rounded hover:border-[#39ff6a] transition flex items-center gap-1">
-                <i class="fa-solid fa-desktop"></i>
-                <span class="hidden md:inline">CRT</span>
-            </button>
-            <!-- Back to Menu Button -->
-            <button id="mainMenuNavBtn" onclick="showScreen('menuScreen')" class="hidden px-3 py-1 text-xs bg-[#39ff6a] text-black font-bold rounded hover:bg-[#00f3ff] transition flex items-center gap-1">
-                <i class="fa-solid fa-house"></i>
-                <span>MENU</span>
-            </button>
-        </div>
+  <div class="app-container">
+    
+    <!-- En-tête du Sanctuaire -->
+    <header>
+      <svg class="torii-icon" viewBox="0 0 100 80">
+        <path d="M 5 15 Q 50 5 95 15 L 90 25 Q 50 18 10 25 Z"/>
+        <path d="M 15 30 L 85 30 L 85 36 L 15 36 Z"/>
+        <rect x="25" y="25" width="10" height="50"/>
+        <rect x="65" y="25" width="10" height="50"/>
+        <rect x="45" y="15" width="10" height="15"/>
+      </svg>
+      <h1>Sanctuaire Divin</h1>
+      <p class="subtitle">ARCHIVES ÉTHÉRÉES & ÉPREUVES SACRÉES</p>
     </header>
 
-    <!-- MAIN CONTAINER -->
-    <main class="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 relative z-10">
+    <!-- Navigation à 6 emplacements -->
+    <nav>
+      <button class="tab-btn active" onclick="switchTab(0)">🐍 Serpent Céleste</button>
+      <button class="tab-btn" onclick="switchTab(1)">👾 Défense des Esprits</button>
+      <button class="tab-btn" onclick="switchTab(2)">🏓 Duel des Ombrages</button>
+      <button class="tab-btn" onclick="switchTab(3)">🏃 Course des Nuages</button>
+      <button class="tab-btn" onclick="switchTab(4)">📜 Oracles du Torii</button>
+      <button class="tab-btn" onclick="switchTab(5)">⛩️ Relique Sacrée</button>
+    </nav>
 
-        <!-- 0. LOGIN SCREEN -->
-        <section id="loginScreen" class="w-full max-w-md bg-[#111813] border-2 border-[#39ff6a] rounded-lg p-6 neon-border relative my-auto">
-            <div class="text-center mb-6">
-                <div class="text-4xl text-[#39ff6a] mb-2"><i class="fa-solid fa-terminal"></i></div>
-                <h2 class="text-2xl font-bold tracking-wider neon-glow">AUTHENTIFICATION</h2>
-                <p class="text-xs text-gray-400 mt-1">SYSTÈME RESTREINT // ACCÈS SÉCURISÉ</p>
-            </div>
+    <!-- Zone de contenu principal -->
+    <main>
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs mb-1 text-[#39ff6a]">MOT DE PASSE (Pass: Fabricio)</label>
-                    <div class="relative">
-                        <input type="password" id="passInput" placeholder="Entrez le mot de passe..." 
-                            class="w-full bg-[#0a0e0a] border border-[#1b3821] rounded px-4 py-3 text-[#39ff6a] focus:outline-none focus:border-[#39ff6a] font-mono tracking-widest text-center"
-                            onkeydown="if(event.key === 'Enter') checkPassword()">
-                        <button onclick="togglePassVisibility()" class="absolute right-3 top-3 text-gray-500 hover:text-[#39ff6a]">
-                            <i id="eyeIcon" class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
+      <!-- 1. JEU : SERPENT CÉLESTE (SNAKE) -->
+      <section id="sec-0" class="section-content active">
+        <div class="game-header">
+          <div class="game-title">🐍 Serpent Céleste</div>
+          <div class="score-board">Score: <span id="snake-score">0</span></div>
+        </div>
+        <canvas id="snake-canvas" class="game-canvas" width="400" height="400"></canvas>
+        <p class="controls-hint">Contrôles : Touches Fléchées / ZQSD pour guider le serpent divin</p>
+        <button class="btn-action" onclick="initSnake()">Recommencer la Quête</button>
+      </section>
 
-                <div id="loginError" class="hidden text-red-500 text-xs text-center font-bold animate-bounce">
-                    <i class="fa-solid fa-circle-exclamation"></i> ACCÈS REFUSÉ - MOT DE PASSE INCORRECT
-                </div>
+      <!-- 2. JEU : DÉFENSE DES ESPRITS (SPACE INVADERS) -->
+      <section id="sec-1" class="section-content">
+        <div class="game-header">
+          <div class="game-title">👾 Défense des Esprits</div>
+          <div class="score-board">Score: <span id="invaders-score">0</span></div>
+        </div>
+        <canvas id="invaders-canvas" class="game-canvas" width="480" height="360"></canvas>
+        <p class="controls-hint">Contrôles : Flèches Gauche/Droite pour bouger | Espace pour tirer</p>
+        <button class="btn-action" onclick="initInvaders()">Purifier les Ombres</button>
+      </section>
 
-                <button onclick="checkPassword()" class="w-full bg-[#39ff6a] text-black font-bold py-3 rounded uppercase tracking-widest hover:bg-[#00f3ff] transition neon-btn flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-lock-open"></i> Déverrouiller le Hub
-                </button>
-            </div>
+      <!-- 3. JEU : DUEL DES OMBRAGES (PONG) -->
+      <section id="sec-2" class="section-content">
+        <div class="game-header">
+          <div class="game-title">🏓 Duel des Ombrages</div>
+          <div class="score-board">Joueur: <span id="pong-p1">0</span> | Kami: <span id="pong-p2">0</span></div>
+        </div>
+        <canvas id="pong-canvas" class="game-canvas" width="480" height="320"></canvas>
+        <p class="controls-hint">Contrôles : Flèches Haut/Bas pour déplacer votre raquette</p>
+        <button class="btn-action" onclick="initPong()">Lancer le Duel</button>
+      </section>
 
-            <div class="mt-6 pt-4 border-t border-[#1b3821] text-center text-xs text-gray-500">
-                PROTÉGÉ PAR PARE-FEU HACKER v4.0.9
-            </div>
-        </section>
+      <!-- 4. JEU : COURSE DES NUAGES (RUNNER) -->
+      <section id="sec-3" class="section-content">
+        <div class="game-header">
+          <div class="game-title">🏃 Course des Nuages</div>
+          <div class="score-board">Distance: <span id="runner-score">0</span>m</div>
+        </div>
+        <canvas id="runner-canvas" class="game-canvas" width="480" height="280"></canvas>
+        <p class="controls-hint">Contrôles : Appuyez sur Espace ou Flèche Haut pour sauter les obstacles</p>
+        <button class="btn-action" onclick="initRunner()">Prendre l'Envol</button>
+      </section>
 
-        <!-- 1. MAIN MENU SCREEN -->
-        <section id="menuScreen" class="hidden w-full max-w-5xl space-y-6 my-auto">
-            <!-- Terminal Header Banner -->
-            <div class="bg-[#111813] border border-[#1b3821] rounded-lg p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded bg-[#0a0e0a] border border-[#39ff6a] flex items-center justify-center text-2xl text-[#39ff6a]">
-                        <i class="fa-solid fa-user-ninja"></i>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-400">UTILISATEUR CONNECTÉ</div>
-                        <div class="text-lg font-bold text-[#39ff6a] tracking-wider">HACKER_FABRICIO</div>
-                    </div>
-                </div>
-                <!-- High scores Summary -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs w-full md:w-auto">
-                    <div class="bg-[#0a0e0a] p-2 rounded border border-[#1b3821]">
-                        <div class="text-gray-500">SNAKE</div>
-                        <div id="statSnake" class="font-bold text-[#39ff6a]">0</div>
-                    </div>
-                    <div class="bg-[#0a0e0a] p-2 rounded border border-[#1b3821]">
-                        <div class="text-gray-500">GEOMETRY</div>
-                        <div id="statGeo" class="font-bold text-[#00f3ff]">NIV. 1</div>
-                    </div>
-                    <div class="bg-[#0a0e0a] p-2 rounded border border-[#1b3821]">
-                        <div class="text-gray-500">MARIO</div>
-                        <div id="statMario" class="font-bold text-[#ff0055]">0 PTS</div>
-                    </div>
-                    <div class="bg-[#0a0e0a] p-2 rounded border border-[#1b3821]">
-                        <div class="text-gray-500">SUBWAY</div>
-                        <div id="statSubway" class="font-bold text-[#ffcc00]">0 m</div>
-                    </div>
-                </div>
-            </div>
+      <!-- 5. TERMINAL : ORACLES DU TORII -->
+      <section id="sec-4" class="section-content">
+        <div class="game-header">
+          <div class="game-title">📜 Oracles du Torii</div>
+          <div class="score-board">Statut: Connecté au Sanctuaire</div>
+        </div>
+        <div class="terminal-box">
+          <div id="term-output" class="terminal-output">Bienvenue dans les archives ancestrales du Sanctuaire.\nTapez 'help' ou 'oracle' pour consulter les esprits.</div>
+          <div class="terminal-input-row">
+            <span style="color:var(--gold-divine)">&gt;</span>
+            <input type="text" id="term-input" class="terminal-input" placeholder="Entrez une commande..." onkeydown="handleTerminal(event)">
+          </div>
+        </div>
+      </section>
 
-            <!-- Games Grid Selection -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Game 1: Snake -->
-                <div onclick="launchGame('snake')" class="bg-[#111813] border border-[#1b3821] hover:border-[#39ff6a] rounded-lg p-5 cursor-pointer hover:scale-[1.02] transition neon-btn flex flex-col justify-between group">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-3xl text-[#39ff6a] group-hover:scale-110 transition"><i class="fa-solid fa-staff-snake"></i></span>
-                            <span class="text-xs bg-[#1b3821] text-[#39ff6a] px-2 py-1 rounded">RETRO CLASSIQUE</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-[#39ff6a]">1. SNAKE CYBER</h3>
-                        <p class="text-xs text-gray-400 mb-4">Mangez les pommes fluo, accélérez et évitez les murs et votre propre queue.</p>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-[#1b3821] text-xs">
-                        <span class="text-gray-500">Record: <span id="cardSnakeRecord" class="text-[#39ff6a]">0</span></span>
-                        <span class="text-[#39ff6a] font-bold group-hover:translate-x-1 transition">JOUER <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
+      <!-- 6. 6ᵉ EMPLACEMENT : RELIQUE SACRÉE (IMAGE DEMANDÉE) -->
+      <section id="sec-5" class="section-content">
+        <div class="game-header">
+          <div class="game-title">⛩️ Relique Sacrée</div>
+          <div class="score-board">Espace V</div>
+        </div>
+        <div class="relic-container">
+          <h2 style="color: var(--gold-divine); margin-bottom: 10px;">L'Emblème Céleste</h2>
+          <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Image sacrée conservée au cœur du sixième sanctuaire.</p>
+          
+          <div class="relic-frame">
+            <img class="relic-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcS0HeGwAqWR0vDBAzjflymZVYp2B0VB_1d1kzD5FFnw&s=10" alt="Relique Sacrée">
+          </div>
 
-                <!-- Game 2: Geometry Dash -->
-                <div onclick="launchGame('geometry')" class="bg-[#111813] border border-[#1b3821] hover:border-[#00f3ff] rounded-lg p-5 cursor-pointer hover:scale-[1.02] transition neon-btn flex flex-col justify-between group">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-3xl text-[#00f3ff] group-hover:scale-110 transition"><i class="fa-solid fa-cube"></i></span>
-                            <span class="text-xs bg-[#1b3821] text-[#00f3ff] px-2 py-1 rounded">10 NIVEAUX</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-[#00f3ff]">2. GEOMETRY DASH</h3>
-                        <p class="text-xs text-gray-400 mb-4">Sautez en mode Cube, volez en mode Vaisseau et traversez les 10 niveaux mortels.</p>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-[#1b3821] text-xs">
-                        <span class="text-gray-500">Meilleur Niv: <span id="cardGeoRecord" class="text-[#00f3ff]">1</span></span>
-                        <span class="text-[#00f3ff] font-bold group-hover:translate-x-1 transition">JOUER <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- Game 3: Mario Platformer -->
-                <div onclick="launchGame('mario')" class="bg-[#111813] border border-[#1b3821] hover:border-[#ff0055] rounded-lg p-5 cursor-pointer hover:scale-[1.02] transition neon-btn flex flex-col justify-between group">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-3xl text-[#ff0055] group-hover:scale-110 transition"><i class="fa-solid fa-gamepad"></i></span>
-                            <span class="text-xs bg-[#1b3821] text-[#ff0055] px-2 py-1 rounded">5 NIVEAUX</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-[#ff0055]">3. PLATEFORME MARIO</h3>
-                        <p class="text-xs text-gray-400 mb-4">Explorez 5 mondes néon, ramassez des pièces et éliminez les ennemis patrouilleurs.</p>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-[#1b3821] text-xs">
-                        <span class="text-gray-500">High Score: <span id="cardMarioRecord" class="text-[#ff0055]">0</span></span>
-                        <span class="text-[#ff0055] font-bold group-hover:translate-x-1 transition">JOUER <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- Game 4: Subway Runner -->
-                <div onclick="launchGame('subway')" class="bg-[#111813] border border-[#1b3821] hover:border-[#ffcc00] rounded-lg p-5 cursor-pointer hover:scale-[1.02] transition neon-btn flex flex-col justify-between group">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-3xl text-[#ffcc00] group-hover:scale-110 transition"><i class="fa-solid fa-train"></i></span>
-                            <span class="text-xs bg-[#1b3821] text-[#ffcc00] px-2 py-1 rounded">3 VOIES</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-[#ffcc00]">4. SUBWAY RUNNER</h3>
-                        <p class="text-xs text-gray-400 mb-4">Esquivez les trains, sautez par-dessus les barrières et glissez sous les obstacles.</p>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-[#1b3821] text-xs">
-                        <span class="text-gray-500">Distance max: <span id="cardSubwayRecord" class="text-[#ffcc00]">0m</span></span>
-                        <span class="text-[#ffcc00] font-bold group-hover:translate-x-1 transition">JOUER <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-
-                <!-- Game 5: Riddles / Énigmes -->
-                <div onclick="launchGame('puzzles')" class="bg-[#111813] border border-[#1b3821] hover:border-[#39ff6a] rounded-lg p-5 cursor-pointer hover:scale-[1.02] transition neon-btn flex flex-col justify-between group md:col-span-2 lg:col-span-1">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-3xl text-[#39ff6a] group-hover:scale-110 transition"><i class="fa-solid fa-brain"></i></span>
-                            <span class="text-xs bg-[#1b3821] text-[#39ff6a] px-2 py-1 rounded">8 ÉNIGMES</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-1 text-white group-hover:text-[#39ff6a]">5. ÉNIGMES HACKER</h3>
-                        <p class="text-xs text-gray-400 mb-4">Résolvez 8 casse-têtes informatiques et devinettes logiques avec système d'indices.</p>
-                    </div>
-                    <div class="flex justify-between items-center pt-3 border-t border-[#1b3821] text-xs">
-                        <span class="text-gray-500">Progression: <span id="cardPuzzleRecord" class="text-[#39ff6a]">0/8</span></span>
-                        <span class="text-[#39ff6a] font-bold group-hover:translate-x-1 transition">JOUER <i class="fa-solid fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. SNAKE GAME SCREEN -->
-        <section id="snakeScreen" class="hidden w-full max-w-2xl flex flex-col items-center gap-3">
-            <div class="w-full flex justify-between items-center bg-[#111813] p-3 border border-[#1b3821] rounded">
-                <div class="text-lg font-bold"><i class="fa-solid fa-staff-snake text-[#39ff6a]"></i> SNAKE CYBER</div>
-                <div class="flex gap-4 text-sm">
-                    <div>SCORE: <span id="snakeScore" class="text-white font-bold">0</span></div>
-                    <div>RECORD: <span id="snakeBest" class="text-[#39ff6a] font-bold">0</span></div>
-                </div>
-            </div>
-
-            <!-- Snake Canvas -->
-            <div class="relative w-full aspect-square max-w-[500px] bg-black border-2 border-[#39ff6a] rounded-lg overflow-hidden flex items-center justify-center">
-                <canvas id="snakeCanvas" width="400" height="400" class="w-full h-full object-contain"></canvas>
-                
-                <!-- Start / Game Over Overlay -->
-                <div id="snakeOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-4 text-center z-20">
-                    <h3 id="snakeOverlayTitle" class="text-2xl font-bold mb-2 text-[#39ff6a] neon-glow">PRET A JOUER ?</h3>
-                    <p id="snakeOverlayText" class="text-xs text-gray-300 mb-4">Utilisez les Flèches du clavier ou le Pad Tactile.</p>
-                    <button onclick="startSnake()" class="bg-[#39ff6a] text-black font-bold px-6 py-2 rounded hover:bg-[#00f3ff] transition neon-btn">
-                        COMMENCER
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Controls -->
-            <div class="grid grid-cols-3 gap-2 w-48 mt-2 md:hidden">
-                <div></div>
-                <button onclick="setSnakeDir('UP')" class="bg-[#111813] border border-[#39ff6a] p-3 rounded text-center text-xl"><i class="fa-solid fa-arrow-up"></i></button>
-                <div></div>
-                <button onclick="setSnakeDir('LEFT')" class="bg-[#111813] border border-[#39ff6a] p-3 rounded text-center text-xl"><i class="fa-solid fa-arrow-left"></i></button>
-                <button onclick="setSnakeDir('DOWN')" class="bg-[#111813] border border-[#39ff6a] p-3 rounded text-center text-xl"><i class="fa-solid fa-arrow-down"></i></button>
-                <button onclick="setSnakeDir('RIGHT')" class="bg-[#111813] border border-[#39ff6a] p-3 rounded text-center text-xl"><i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-        </section>
-
-        <!-- 3. GEOMETRY DASH SCREEN -->
-        <section id="geometryScreen" class="hidden w-full max-w-3xl flex flex-col items-center gap-3">
-            <div class="w-full flex justify-between items-center bg-[#111813] p-3 border border-[#1b3821] rounded">
-                <div class="text-lg font-bold"><i class="fa-solid fa-cube text-[#00f3ff]"></i> GEOMETRY DASH</div>
-                <div class="flex gap-4 text-sm">
-                    <div>NIVEAU: <span id="geoLevelDisplay" class="text-[#00f3ff] font-bold">1/10</span></div>
-                    <div>ESSAIS: <span id="geoAttempts" class="text-white font-bold">1</span></div>
-                    <div>MODE: <span id="geoModeDisplay" class="text-yellow-400 font-bold">CUBE</span></div>
-                </div>
-            </div>
-
-            <!-- Canvas Container -->
-            <div class="relative w-full aspect-[16/9] bg-black border-2 border-[#00f3ff] rounded-lg overflow-hidden">
-                <canvas id="geoCanvas" width="800" height="450" class="w-full h-full"></canvas>
-
-                <!-- Overlay -->
-                <div id="geoOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-4 text-center z-20">
-                    <h3 id="geoOverlayTitle" class="text-2xl font-bold mb-2 text-[#00f3ff] neon-glow">NIVEAU 1</h3>
-                    <p id="geoOverlayText" class="text-xs text-gray-300 mb-4">Cliquez, Touchez l'écran ou Appuyez sur Espace pour Sauter/Voler.</p>
-                    <button onclick="startGeoLevel()" class="bg-[#00f3ff] text-black font-bold px-6 py-2 rounded hover:bg-[#39ff6a] transition neon-btn">
-                        LANCER LE NIVEAU
-                    </button>
-                </div>
-            </div>
-
-            <!-- Level Selector -->
-            <div id="geoLevelGrid" class="flex flex-wrap justify-center gap-2 w-full mt-2">
-                <!-- Javascript will inject 10 level buttons -->
-            </div>
-        </section>
-
-        <!-- 4. MARIO PLATFORMER SCREEN -->
-        <section id="marioScreen" class="hidden w-full max-w-4xl flex flex-col items-center gap-3">
-            <div class="w-full flex justify-between items-center bg-[#111813] p-3 border border-[#1b3821] rounded">
-                <div class="text-lg font-bold"><i class="fa-solid fa-gamepad text-[#ff0055]"></i> PLATEFORME CYBER</div>
-                <div class="flex gap-4 text-sm">
-                    <div>NIV: <span id="marioLevel" class="text-[#ff0055] font-bold">1/5</span></div>
-                    <div>SCORE: <span id="marioScore" class="text-white font-bold">0</span></div>
-                    <div>PIÈCES: <span id="marioCoins" class="text-yellow-400 font-bold">0</span></div>
-                </div>
-            </div>
-
-            <div class="relative w-full aspect-[16/9] bg-black border-2 border-[#ff0055] rounded-lg overflow-hidden">
-                <canvas id="marioCanvas" width="800" height="450" class="w-full h-full"></canvas>
-
-                <div id="marioOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-4 text-center z-20">
-                    <h3 id="marioOverlayTitle" class="text-2xl font-bold mb-2 text-[#ff0055] neon-glow">PRÊT POUR L'AVENTURE ?</h3>
-                    <p id="marioOverlayText" class="text-xs text-gray-300 mb-4">Flèches Droite/Gauche pour bouger, Haut/Espace pour sauter.</p>
-                    <button onclick="startMarioGame()" class="bg-[#ff0055] text-white font-bold px-6 py-2 rounded hover:bg-[#39ff6a] hover:text-black transition neon-btn">
-                        DÉMARRER
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Controls -->
-            <div class="flex justify-between w-full max-w-md px-4 mt-2 sm:hidden">
-                <div class="flex gap-2">
-                    <button id="btnMarioLeft" class="bg-[#111813] border border-[#ff0055] w-14 h-14 rounded-full text-xl flex items-center justify-center active:bg-[#ff0055]"><i class="fa-solid fa-arrow-left"></i></button>
-                    <button id="btnMarioRight" class="bg-[#111813] border border-[#ff0055] w-14 h-14 rounded-full text-xl flex items-center justify-center active:bg-[#ff0055]"><i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-                <button id="btnMarioJump" class="bg-[#111813] border border-[#ff0055] w-16 h-14 rounded-full text-xl flex items-center justify-center active:bg-[#ff0055]"><i class="fa-solid fa-arrow-up"></i></button>
-            </div>
-        </section>
-
-        <!-- 5. SUBWAY RUNNER SCREEN -->
-        <section id="subwayScreen" class="hidden w-full max-w-3xl flex flex-col items-center gap-3">
-            <div class="w-full flex justify-between items-center bg-[#111813] p-3 border border-[#1b3821] rounded">
-                <div class="text-lg font-bold"><i class="fa-solid fa-train text-[#ffcc00]"></i> SUBWAY RUNNER</div>
-                <div class="flex gap-4 text-sm">
-                    <div>DISTANCE: <span id="subwayDist" class="text-[#ffcc00] font-bold">0m</span></div>
-                    <div>PIÈCES: <span id="subwayCoins" class="text-white font-bold">0</span></div>
-                    <div>RECORD: <span id="subwayBest" class="text-[#39ff6a] font-bold">0m</span></div>
-                </div>
-            </div>
-
-            <div class="relative w-full aspect-[4/3] max-w-[500px] bg-black border-2 border-[#ffcc00] rounded-lg overflow-hidden">
-                <canvas id="subwayCanvas" width="400" height="500" class="w-full h-full"></canvas>
-
-                <div id="subwayOverlay" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-4 text-center z-20">
-                    <h3 id="subwayOverlayTitle" class="text-2xl font-bold mb-2 text-[#ffcc00] neon-glow">COURSE EN VILLE</h3>
-                    <p id="subwayOverlayText" class="text-xs text-gray-300 mb-4">Changer de voie (Gauche/Droite), Sauter (Haut), Se baisser (Bas) / Swipe tactile.</p>
-                    <button onclick="startSubwayGame()" class="bg-[#ffcc00] text-black font-bold px-6 py-2 rounded hover:bg-[#39ff6a] transition neon-btn">
-                        S'ÉLANCER
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Touch Controls overlay helper -->
-            <div class="grid grid-cols-3 gap-2 w-60 mt-2 sm:hidden text-xs">
-                <div></div>
-                <button onclick="subwayInput('UP')" class="bg-[#111813] border border-[#ffcc00] py-3 rounded text-center"><i class="fa-solid fa-arrow-up"></i> SAUTER</button>
-                <div></div>
-                <button onclick="subwayInput('LEFT')" class="bg-[#111813] border border-[#ffcc00] py-3 rounded text-center"><i class="fa-solid fa-arrow-left"></i> GAUCHE</button>
-                <button onclick="subwayInput('DOWN')" class="bg-[#111813] border border-[#ffcc00] py-3 rounded text-center"><i class="fa-solid fa-arrow-down"></i> BAS</button>
-                <button onclick="subwayInput('RIGHT')" class="bg-[#111813] border border-[#ffcc00] py-3 rounded text-center"><i class="fa-solid fa-arrow-right"></i> DROITE</button>
-            </div>
-        </section>
-
-        <!-- 6. PUZZLES / ÉNIGMES SCREEN -->
-        <section id="puzzlesScreen" class="hidden w-full max-w-2xl bg-[#111813] border-2 border-[#39ff6a] rounded-lg p-6 neon-border">
-            <div class="flex justify-between items-center mb-6 pb-3 border-b border-[#1b3821]">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-brain text-[#39ff6a]"></i> ÉNIGMES CYBER</h3>
-                <span class="text-xs bg-[#1b3821] px-3 py-1 rounded text-[#39ff6a]" id="puzzleProgressTag">ÉNIGME 1 / 8</span>
-            </div>
-
-            <!-- Active Puzzle View -->
-            <div id="puzzleActiveArea" class="space-y-4">
-                <div class="bg-[#0a0e0a] border border-[#1b3821] p-4 rounded-lg min-h-[100px] flex items-center">
-                    <p id="puzzleQuestionText" class="text-sm md:text-base text-gray-200 font-mono leading-relaxed">
-                        Chargement de la question...
-                    </p>
-                </div>
-
-                <!-- Hint Box -->
-                <div id="puzzleHintBox" class="hidden bg-[#1b3821]/50 border border-yellow-500/50 p-3 rounded text-xs text-yellow-300">
-                    <i class="fa-solid fa-lightbulb"></i> <span id="puzzleHintText">Indice...</span>
-                </div>
-
-                <!-- Input area -->
-                <div class="space-y-3">
-                    <div class="flex gap-2">
-                        <input type="text" id="puzzleInput" placeholder="Saisissez votre réponse..." 
-                            class="flex-grow bg-[#0a0e0a] border border-[#1b3821] rounded px-4 py-2 text-[#39ff6a] focus:outline-none focus:border-[#39ff6a] font-mono text-sm"
-                            onkeydown="if(event.key==='Enter') submitPuzzleAnswer()">
-                        <button onclick="submitPuzzleAnswer()" class="bg-[#39ff6a] text-black font-bold px-5 py-2 rounded hover:bg-[#00f3ff] transition neon-btn">
-                            VALIDER
-                        </button>
-                    </div>
-
-                    <div class="flex justify-between items-center pt-2">
-                        <button onclick="showPuzzleHint()" class="text-xs text-yellow-400 hover:underline flex items-center gap-1">
-                            <i class="fa-solid fa-key"></i> Demander un indice
-                        </button>
-                        <span id="puzzleFeedback" class="text-xs font-bold"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Puzzle Completed Screen -->
-            <div id="puzzleCompleteArea" class="hidden text-center py-8 space-y-4">
-                <div class="text-5xl text-[#39ff6a] animate-bounce"><i class="fa-solid fa-trophy"></i></div>
-                <h3 class="text-2xl font-bold text-[#39ff6a] neon-glow">Toutes les Énigmes Résolues !</h3>
-                <p class="text-xs text-gray-300 max-w-md mx-auto">
-                    Félicitations Agent Fabricio ! Vos capacités de déduction et votre maîtrise du système hacker sont totales.
-                </p>
-                <div class="pt-4">
-                    <button onclick="resetPuzzles()" class="bg-[#1b3821] text-[#39ff6a] border border-[#39ff6a] font-bold px-6 py-2 rounded hover:bg-[#39ff6a] hover:text-black transition">
-                        Recommencer la série
-                    </button>
-                </div>
-            </div>
-        </section>
+          <p class="relic-description">
+            Cet espace réservé accueille le lien visuel précieux transmis par l'oracle.
+          </p>
+        </div>
+      </section>
 
     </main>
+  </div>
 
-    <!-- Footer -->
-    <footer class="bg-[#111813] border-t border-[#1b3821] p-3 text-center text-xs text-gray-500 z-40">
-        RETRO ARCADE HACKER HUB // RÉALISÉ EN JAVASCRIPT / CANVAS // 2026
-    </footer>
+  <script>
+    /* ===================================================
+       1. SYSTÈME SONORE DIVIN (WEB AUDIO API)
+       =================================================== */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type = 'sine', duration = 0.15) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
 
-    <script>
-        /* ==========================================================================
-           1. AUDIO SYNTHESIZER (Web Audio API - No External Files)
-           ========================================================================== */
-        let audioCtx = null;
-        let soundEnabled = true;
+    /* ===================================================
+       2. GESTION DES ONGLETS / SECTIONS
+       =================================================== */
+    let activeTabIndex = 0;
+    function switchTab(index) {
+      activeTabIndex = index;
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+      document.querySelectorAll('.section-content').forEach((sec, i) => {
+        sec.classList.toggle('active', i === index);
+      });
+      
+      playTone(523.25, 'sine', 0.1); // Son doux lors du changement d'onglet
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+      // Réinitialiser le jeu correspondant lors de l'ouverture
+      if (index === 0) initSnake();
+      if (index === 1) initInvaders();
+      if (index === 2) initPong();
+      if (index === 3) initRunner();
+    }
+
+    /* ===================================================
+       3. ANIMATION DU FOND : PÉTALES DE SAKURA
+       =================================================== */
+    const sakuraCanvas = document.getElementById('sakura-canvas');
+    const sCtx = sakuraCanvas.getContext('2d');
+    let petals = [];
+
+    function resizeSakura() {
+      sakuraCanvas.width = window.innerWidth;
+      sakuraCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeSakura);
+    resizeSakura();
+
+    for (let i = 0; i < 35; i++) {
+      petals.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 5 + 4,
+        speedY: Math.random() * 0.8 + 0.4,
+        speedX: Math.random() * 0.5 - 0.25,
+        angle: Math.random() * Math.PI * 2
+      });
+    }
+
+    function renderSakura() {
+      sCtx.clearRect(0, 0, sakuraCanvas.width, sakuraCanvas.height);
+      sCtx.fillStyle = '#ffb7c5';
+      
+      petals.forEach(p => {
+        p.y += p.speedY;
+        p.x += Math.sin(p.angle) * 0.5 + p.speedX;
+        p.angle += 0.01;
+
+        if (p.y > sakuraCanvas.height) {
+          p.y = -10;
+          p.x = Math.random() * sakuraCanvas.width;
         }
 
-        function playSFX(type) {
-            if (!soundEnabled) return;
-            initAudio();
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+        sCtx.beginPath();
+        sCtx.ellipse(p.x, p.y, p.size, p.size / 2, p.angle, 0, Math.PI * 2);
+        sCtx.fill();
+      });
+      requestAnimationFrame(renderSakura);
+    }
+    renderSakura();
 
-            const now = audioCtx.currentTime;
+    /* ===================================================
+       4. JEU 1 : SERPENT CÉLESTE (VITESSE MODÉRÉE & FLUIDE)
+       =================================================== */
+    const snakeCanvas = document.getElementById('snake-canvas');
+    const snakeCtx = snakeCanvas.getContext('2d');
+    let snake, snakeDir, snakeFood, snakeScore, snakeTimer;
 
-            if (type === 'click') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.05);
-            } 
-            else if (type === 'jump') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.15);
-            } 
-            else if (type === 'coin') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(987.77, now); // B5
-                osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.25);
-            } 
-            else if (type === 'hit' || type === 'explode') {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(120, now);
-                osc.frequency.exponentialRampToValueAtTime(30, now + 0.25);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now);
-                osc.stop(now + 0.25);
-            } 
-            else if (type === 'win') {
-                const notes = [523.25, 659.25, 783.99, 1046.50];
-                notes.forEach((freq, idx) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-                    gain.gain.setValueAtTime(0.1, now + idx * 0.08);
-                    gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now + idx * 0.08);
-                    osc.stop(now + idx * 0.08 + 0.2);
-                });
-            }
+    function initSnake() {
+      clearInterval(snakeTimer);
+      snake = [{x: 10, y: 10}, {x: 9, y: 10}];
+      snakeDir = {x: 1, y: 0};
+      snakeScore = 0;
+      document.getElementById('snake-score').innerText = snakeScore;
+      spawnSnakeFood();
+      // Vitesse tempérée : 130ms par pas
+      snakeTimer = setInterval(updateSnake, 130);
+    }
+
+    function spawnSnakeFood() {
+      snakeFood = {
+        x: Math.floor(Math.random() * 20),
+        y: Math.floor(Math.random() * 20)
+      };
+    }
+
+    function updateSnake() {
+      if (activeTabIndex !== 0) return;
+      
+      const head = {x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y};
+
+      // Collision murs ou corps
+      if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) {
+        playTone(150, 'sawtooth', 0.3);
+        initSnake();
+        return;
+      }
+
+      snake.unshift(head);
+      if (head.x === snakeFood.x && head.y === snakeFood.y) {
+        snakeScore += 10;
+        document.getElementById('snake-score').innerText = snakeScore;
+        playTone(659.25, 'sine', 0.1);
+        spawnSnakeFood();
+      } else {
+        snake.pop();
+      }
+
+      // Rendu du Serpent
+      snakeCtx.fillStyle = '#050508';
+      snakeCtx.fillRect(0, 0, 400, 400);
+
+      // Nourriture (Orbe Dorée)
+      snakeCtx.fillStyle = '#ffb703';
+      snakeCtx.beginPath();
+      snakeCtx.arc(snakeFood.x * 20 + 10, snakeFood.y * 20 + 10, 8, 0, Math.PI * 2);
+      snakeCtx.fill();
+
+      // Corps du Serpent
+      snake.forEach((seg, i) => {
+        snakeCtx.fillStyle = i === 0 ? '#d62828' : '#ffb7c5';
+        snakeCtx.fillRect(seg.x * 20 + 1, seg.y * 20 + 1, 18, 18);
+      });
+    }
+
+    /* ===================================================
+       5. JEU 2 : DÉFENSE DES ESPRITS (SPACE INVADERS)
+       =================================================== */
+    const invCanvas = document.getElementById('invaders-canvas');
+    const invCtx = invCanvas.getContext('2d');
+    let invPlayer, invBullets, invEnemies, invScore, invLoopId;
+
+    function initInvaders() {
+      cancelAnimationFrame(invLoopId);
+      invPlayer = { x: 220, y: 320, w: 40, h: 15, speed: 5 };
+      invBullets = [];
+      invEnemies = [];
+      invScore = 0;
+      document.getElementById('invaders-score').innerText = invScore;
+
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 7; c++) {
+          invEnemies.push({ x: 40 + c * 55, y: 30 + r * 35, w: 30, h: 20, alive: true });
         }
+      }
+      invLastTime = performance.now();
+      requestAnimationFrame(updateInvaders);
+    }
 
-        function toggleSound() {
-            soundEnabled = !soundEnabled;
-            const icon = document.getElementById('soundIcon');
-            const text = document.getElementById('soundText');
-            if (soundEnabled) {
-                icon.className = 'fa-solid fa-volume-high text-[#39ff6a]';
-                text.innerText = 'AUDIO ON';
-                playSFX('click');
-            } else {
-                icon.className = 'fa-solid fa-volume-xmark text-gray-500';
-                text.innerText = 'AUDIO OFF';
-            }
-        }
+    let invLastTime = 0;
+    let invEnemySpeed = 0.5;
 
-        function toggleCRT() {
-            const crt = document.getElementById('crtOverlay');
-            crt.classList.toggle('hidden');
-        }
+    function updateInvaders(now) {
+      if (activeTabIndex !== 1) return;
 
-        /* ==========================================================================
-           2. NAVIGATION & LOGIN ENGINE
-           ========================================================================== */
-        let activeScreen = 'loginScreen';
-        let activeGameLoop = null;
+      invCtx.fillStyle = '#050508';
+      invCtx.fillRect(0, 0, 480, 360);
 
-        function checkPassword() {
-            const input = document.getElementById('passInput').value;
-            const err = document.getElementById('loginError');
-            
-            // Accepted password: Fabricio (case insensitive)
-            if (input.trim().toLowerCase() === 'fabricio') {
-                playSFX('win');
-                err.classList.add('hidden');
-                showScreen('menuScreen');
-                updateRecordsDisplay();
-            } else {
-                playSFX('hit');
-                err.classList.remove('hidden');
-                document.getElementById('passInput').value = '';
-            }
-        }
+      // Déplacement joueur
+      if (keys['ArrowLeft'] || keys['q'] || keys['Q']) invPlayer.x = Math.max(0, invPlayer.x - invPlayer.speed);
+      if (keys['ArrowRight'] || keys['d'] || keys['D']) invPlayer.x = Math.min(480 - invPlayer.w, invPlayer.x + invPlayer.speed);
 
-        function togglePassVisibility() {
-            const input = document.getElementById('passInput');
-            const icon = document.getElementById('eyeIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-solid fa-eye';
-            }
-        }
+      // Dessin Joueur
+      invCtx.fillStyle = '#ffb703';
+      invCtx.fillRect(invPlayer.x, invPlayer.y, invPlayer.w, invPlayer.h);
 
-        function showScreen(screenId) {
-            playSFX('click');
-            stopAllGameLoops();
+      // Mettre à jour balles
+      invBullets.forEach((b, bi) => {
+        b.y -= 6;
+        invCtx.fillStyle = '#ff3b38';
+        invCtx.fillRect(b.x, b.y, 4, 10);
 
-            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-            activeScreen = screenId;
-
-            const navBtn = document.getElementById('mainMenuNavBtn');
-            if (screenId === 'loginScreen' || screenId === 'menuScreen') {
-                navBtn.classList.add('hidden');
-            } else {
-                navBtn.classList.remove('hidden');
-            }
-
-            if (screenId === 'menuScreen') {
-                updateRecordsDisplay();
-            }
-        }
-
-        function stopAllGameLoops() {
-            if (activeGameLoop) {
-                cancelAnimationFrame(activeGameLoop);
-                clearInterval(activeGameLoop);
-                activeGameLoop = null;
-            }
-        }
-
-        function updateRecordsDisplay() {
-            const snakeRec = localStorage.getItem('snake-record') || '0';
-            const geoRec = localStorage.getItem('geometry-record') || '1';
-            const marioRec = localStorage.getItem('mario-record') || '0';
-            const subwayRec = localStorage.getItem('subway-record') || '0';
-            const puzzleRec = localStorage.getItem('puzzles-record') || '0';
-
-            document.getElementById('statSnake').innerText = snakeRec;
-            document.getElementById('statGeo').innerText = 'NIV. ' + geoRec;
-            document.getElementById('statMario').innerText = marioRec + ' PTS';
-            document.getElementById('statSubway').innerText = subwayRec + ' m';
-
-            document.getElementById('cardSnakeRecord').innerText = snakeRec;
-            document.getElementById('cardGeoRecord').innerText = 'Niv. ' + geoRec;
-            document.getElementById('cardMarioRecord').innerText = marioRec + ' pts';
-            document.getElementById('cardSubwayRecord').innerText = subwayRec + ' m';
-            document.getElementById('cardPuzzleRecord').innerText = puzzleRec + '/8';
-        }
-
-        function launchGame(gameKey) {
-            if (gameKey === 'snake') {
-                showScreen('snakeScreen');
-                initSnake();
-            } else if (gameKey === 'geometry') {
-                showScreen('geometryScreen');
-                initGeometry();
-            } else if (gameKey === 'mario') {
-                showScreen('marioScreen');
-                initMario();
-            } else if (gameKey === 'subway') {
-                showScreen('subwayScreen');
-                initSubway();
-            } else if (gameKey === 'puzzles') {
-                showScreen('puzzlesScreen');
-                initPuzzles();
-            }
-        }
-
-        /* ==========================================================================
-           STREAMING_CHUNK:Implementing Game 1 - Snake...
-           3. GAME 1: SNAKE ENGINE
-           ========================================================================== */
-        let snakeCanvas, snakeCtx;
-        let snake, snakeDir, snakeNextDir, snakeFood, snakeScore, snakeSpeed, snakeInterval;
-        const snakeGridSize = 20;
-
-        function initSnake() {
-            snakeCanvas = document.getElementById('snakeCanvas');
-            snakeCtx = snakeCanvas.getContext('2d');
-            document.getElementById('snakeOverlay').classList.remove('hidden');
-            document.getElementById('snakeOverlayTitle').innerText = "SNAKE CYBER";
-            document.getElementById('snakeOverlayText').innerText = "Utilisez les Flèches ou le pavé tactile.";
-            document.getElementById('snakeBest').innerText = localStorage.getItem('snake-record') || '0';
-            
-            // Draw empty grid preview
-            snakeCtx.fillStyle = '#0a0e0a';
-            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-        }
-
-        function startSnake() {
-            playSFX('click');
-            document.getElementById('snakeOverlay').classList.add('hidden');
-            snake = [
-                {x: 10, y: 10},
-                {x: 9, y: 10},
-                {x: 8, y: 10}
-            ];
-            snakeDir = 'RIGHT';
-            snakeNextDir = 'RIGHT';
-            snakeScore = 0;
-            snakeSpeed = 120;
-            document.getElementById('snakeScore').innerText = '0';
-            spawnSnakeFood();
-
-            stopAllGameLoops();
-            runSnakeLoop();
-        }
-
-        function spawnSnakeFood() {
-            snakeFood = {
-                x: Math.floor(Math.random() * (snakeCanvas.width / snakeGridSize)),
-                y: Math.floor(Math.random() * (snakeCanvas.height / snakeGridSize))
-            };
-        }
-
-        function setSnakeDir(dir) {
-            if (dir === 'UP' && snakeDir !== 'DOWN') snakeNextDir = 'UP';
-            if (dir === 'DOWN' && snakeDir !== 'UP') snakeNextDir = 'DOWN';
-            if (dir === 'LEFT' && snakeDir !== 'RIGHT') snakeNextDir = 'LEFT';
-            if (dir === 'RIGHT' && snakeDir !== 'LEFT') snakeNextDir = 'RIGHT';
-        }
-
-        function runSnakeLoop() {
-            snakeInterval = setTimeout(() => {
-                updateSnake();
-                drawSnake();
-                if (activeScreen === 'snakeScreen' && snakeInterval) {
-                    runSnakeLoop();
-                }
-            }, snakeSpeed);
-        }
-
-        function updateSnake() {
-            snakeDir = snakeNextDir;
-            const head = {...snake[0]};
-
-            if (snakeDir === 'UP') head.y--;
-            if (snakeDir === 'DOWN') head.y++;
-            if (snakeDir === 'LEFT') head.x--;
-            if (snakeDir === 'RIGHT') head.x++;
-
-            // Wall Collision
-            const maxCols = snakeCanvas.width / snakeGridSize;
-            const maxRows = snakeCanvas.height / snakeGridSize;
-            if (head.x < 0 || head.x >= maxCols || head.y < 0 || head.y >= maxRows) {
-                return gameOverSnake();
-            }
-
-            // Self Collision
-            for (let segment of snake) {
-                if (head.x === segment.x && head.y === segment.y) {
-                    return gameOverSnake();
-                }
-            }
-
-            snake.unshift(head);
-
-            // Food Check
-            if (head.x === snakeFood.x && head.y === snakeFood.y) {
-                playSFX('coin');
-                snakeScore += 10;
-                document.getElementById('snakeScore').innerText = snakeScore;
-                if (snakeSpeed > 50) snakeSpeed -= 2;
-                spawnSnakeFood();
-            } else {
-                snake.pop();
-            }
-        }
-
-        function drawSnake() {
-            snakeCtx.fillStyle = '#0a0e0a';
-            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
-
-            // Grid lines background
-            snakeCtx.strokeStyle = '#111813';
-            for (let i = 0; i < snakeCanvas.width; i += snakeGridSize) {
-                snakeCtx.beginPath();
-                snakeCtx.moveTo(i, 0);
-                snakeCtx.lineTo(i, snakeCanvas.height);
-                snakeCtx.stroke();
-                snakeCtx.beginPath();
-                snakeCtx.moveTo(0, i);
-                snakeCtx.lineTo(snakeCanvas.width, i);
-                snakeCtx.stroke();
-            }
-
-            // Draw Food
-            snakeCtx.fillStyle = '#ff0055';
-            snakeCtx.shadowColor = '#ff0055';
-            snakeCtx.shadowBlur = 10;
-            snakeCtx.fillRect(
-                snakeFood.x * snakeGridSize + 2, 
-                snakeFood.y * snakeGridSize + 2, 
-                snakeGridSize - 4, 
-                snakeGridSize - 4
-            );
-
-            // Draw Snake
-            snake.forEach((part, index) => {
-                if (index === 0) {
-                    snakeCtx.fillStyle = '#39ff6a';
-                    snakeCtx.shadowColor = '#39ff6a';
-                    snakeCtx.shadowBlur = 12;
-                } else {
-                    snakeCtx.fillStyle = '#1b3821';
-                    snakeCtx.shadowBlur = 0;
-                }
-                snakeCtx.fillRect(
-                    part.x * snakeGridSize + 1, 
-                    part.y * snakeGridSize + 1, 
-                    snakeGridSize - 2, 
-                    snakeGridSize - 2
-                );
-            });
-
-            snakeCtx.shadowBlur = 0; // reset
-        }
-
-        function gameOverSnake() {
-            playSFX('hit');
-            clearTimeout(snakeInterval);
-            snakeInterval = null;
-
-            const currentRecord = parseInt(localStorage.getItem('snake-record') || '0');
-            if (snakeScore > currentRecord) {
-                localStorage.setItem('snake-record', snakeScore);
-                document.getElementById('snakeBest').innerText = snakeScore;
-            }
-
-            document.getElementById('snakeOverlayTitle').innerText = "GAME OVER";
-            document.getElementById('snakeOverlayText').innerText = "Score final : " + snakeScore;
-            document.getElementById('snakeOverlay').classList.remove('hidden');
-        }
-
-        // Snake Keyboard Listener
-        window.addEventListener('keydown', e => {
-            if (activeScreen !== 'snakeScreen') return;
-            if (['ArrowUp', 'KeyW'].includes(e.code)) setSnakeDir('UP');
-            if (['ArrowDown', 'KeyS'].includes(e.code)) setSnakeDir('DOWN');
-            if (['ArrowLeft', 'KeyA'].includes(e.code)) setSnakeDir('LEFT');
-            if (['ArrowRight', 'KeyD'].includes(e.code)) setSnakeDir('RIGHT');
+        // Test collision ennemis
+        invEnemies.forEach(e => {
+          if (e.alive && b.x > e.x && b.x < e.x + e.w && b.y > e.y && b.y < e.y + e.h) {
+            e.alive = false;
+            invBullets.splice(bi, 1);
+            invScore += 20;
+            document.getElementById('invaders-score').innerText = invScore;
+            playTone(440, 'triangle', 0.08);
+          }
         });
+      });
 
-        /* ==========================================================================
-           STREAMING_CHUNK:Implementing Game 2 - Geometry Dash Engine...
-           4. GAME 2: GEOMETRY DASH ENGINE
-           ========================================================================== */
-        let geoCanvas, geoCtx;
-        let geoLevel = 1, geoAttempts = 1, geoScore = 0;
-        let geoPlayer, geoObstacles, geoParticles, geoRunning = false;
-        let geoHolding = false;
+      // Mettre à jour ennemis
+      let moveDown = false;
+      invEnemies.forEach(e => {
+        if (!e.alive) return;
+        e.x += invEnemySpeed;
+        if (e.x > 450 || e.x < 10) moveDown = true;
 
-        const GEO_LEVELS = [
-            { id: 1, mode: 'cube', speed: 4, name: "1. DEBUT NEON", obstacles: [200, 400, 600, 750, 900, 1100, 1300, 1500] },
-            { id: 2, mode: 'cube', speed: 4.5, name: "2. PICS EN SERIE", obstacles: [200, 350, 500, 650, 800, 950, 1100, 1250, 1400, 1550] },
-            { id: 3, mode: 'ship', speed: 5, name: "3. VOL SPATIAL", obstacles: [200, 450, 700, 950, 1200, 1450, 1700] },
-            { id: 4, mode: 'ship', speed: 5.5, name: "4. TUNNEL ETROIT", obstacles: [200, 400, 600, 800, 1000, 1200, 1400, 1600] },
-            { id: 5, mode: 'cube', speed: 6, name: "5. VITESSE CYBER", obstacles: [200, 350, 500, 680, 850, 1000, 1200, 1400, 1600, 1800] },
-            { id: 6, mode: 'ship', speed: 6, name: "6. ZIG-ZAG VOLANT", obstacles: [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800] },
-            { id: 7, mode: 'cube', speed: 6.5, name: "7. OBSTACLES DOUBLES", obstacles: [200, 380, 560, 740, 920, 1100, 1300, 1500, 1700, 1900] },
-            { id: 8, mode: 'ship', speed: 6.5, name: "8. ANTI-GRAVITE", obstacles: [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000] },
-            { id: 9, mode: 'cube', speed: 7, name: "9. ENFER FLUO", obstacles: [200, 350, 500, 650, 800, 950, 1100, 1250, 1400, 1600, 1800, 2000] },
-            { id: 10, mode: 'ship', speed: 7.5, name: "10. ULTIME MATRIX", obstacles: [200, 380, 560, 740, 920, 1100, 1280, 1460, 1640, 1820, 2000] }
-        ];
+        invCtx.fillStyle = '#d62828';
+        invCtx.fillRect(e.x, e.y, e.w, e.h);
+      });
 
-        function initGeometry() {
-            geoCanvas = document.getElementById('geoCanvas');
-            geoCtx = geoCanvas.getContext('2d');
-            
-            const savedLevel = parseInt(localStorage.getItem('geometry-record') || '1');
-            geoLevel = Math.min(savedLevel, 10);
-            
-            renderGeoLevelButtons();
-            setupGeoLevelUI();
+      if (moveDown) {
+        invEnemySpeed = -invEnemySpeed;
+        invEnemies.forEach(e => e.y += 10);
+      }
+
+      invLoopId = requestAnimationFrame(updateInvaders);
+    }
+
+    /* ===================================================
+       6. JEU 3 : DUEL DES OMBRAGES (PONG ÉQUILIBRÉ)
+       =================================================== */
+    const pongCanvas = document.getElementById('pong-canvas');
+    const pongCtx = pongCanvas.getContext('2d');
+    let p1Y, p2Y, ballX, ballY, ballVX, ballVY, p1Score, p2Score, pongLoopId;
+
+    function initPong() {
+      cancelAnimationFrame(pongLoopId);
+      p1Y = 120;
+      p2Y = 120;
+      ballX = 240;
+      ballY = 160;
+      ballVX = 3.5;
+      ballVY = 2.5;
+      p1Score = 0;
+      p2Score = 0;
+      document.getElementById('pong-p1').innerText = p1Score;
+      document.getElementById('pong-p2').innerText = p2Score;
+      requestAnimationFrame(updatePong);
+    }
+
+    function updatePong() {
+      if (activeTabIndex !== 2) return;
+
+      // Joueur
+      if (keys['ArrowUp']) p1Y = Math.max(0, p1Y - 4);
+      if (keys['ArrowDown']) p1Y = Math.min(260, p1Y + 4);
+
+      // IA Kami (vitesse modérée)
+      if (ballY > p2Y + 30) p2Y = Math.min(260, p2Y + 2.8);
+      else if (ballY < p2Y + 30) p2Y = Math.max(0, p2Y - 2.8);
+
+      // Balle
+      ballX += ballVX;
+      ballY += ballVY;
+
+      if (ballY <= 0 || ballY >= 310) ballVY = -ballVY;
+
+      // Collisions raquettes
+      if (ballX <= 25 && ballY >= p1Y && ballY <= p1Y + 60) {
+        ballVX = Math.abs(ballVX);
+        playTone(523, 'sine', 0.05);
+      }
+      if (ballX >= 455 && ballY >= p2Y && ballY <= p2Y + 60) {
+        ballVX = -Math.abs(ballVX);
+        playTone(440, 'sine', 0.05);
+      }
+
+      // Point marqué
+      if (ballX < 0) {
+        p2Score++;
+        document.getElementById('pong-p2').innerText = p2Score;
+        resetPongBall();
+      } else if (ballX > 480) {
+        p1Score++;
+        document.getElementById('pong-p1').innerText = p1Score;
+        resetPongBall();
+      }
+
+      // Rendu
+      pongCtx.fillStyle = '#050508';
+      pongCtx.fillRect(0, 0, 480, 320);
+
+      // Ligne centrale
+      pongCtx.strokeStyle = 'rgba(255, 183, 3, 0.2)';
+      pongCtx.beginPath();
+      pongCtx.setLineDash([5, 5]);
+      pongCtx.moveTo(240, 0);
+      pongCtx.lineTo(240, 320);
+      pongCtx.stroke();
+      pongCtx.setLineDash([]);
+
+      // Raquettes
+      pongCtx.fillStyle = '#d62828';
+      pongCtx.fillRect(15, p1Y, 10, 60);
+      pongCtx.fillStyle = '#ffb703';
+      pongCtx.fillRect(455, p2Y, 10, 60);
+
+      // Balle
+      pongCtx.fillStyle = '#ffb7c5';
+      pongCtx.beginPath();
+      pongCtx.arc(ballX, ballY, 6, 0, Math.PI * 2);
+      pongCtx.fill();
+
+      pongLoopId = requestAnimationFrame(updatePong);
+    }
+
+    function resetPongBall() {
+      ballX = 240;
+      ballY = 160;
+      ballVX = -ballVX;
+    }
+
+    /* ===================================================
+       7. JEU 4 : COURSE DES NUAGES (RUNNER MODÉRÉ)
+       =================================================== */
+    const runCanvas = document.getElementById('runner-canvas');
+    const runCtx = runCanvas.getContext('2d');
+    let runnerY, runnerVY, isJumping, obstacles, runScore, runLoopId;
+
+    function initRunner() {
+      cancelAnimationFrame(runLoopId);
+      runnerY = 200;
+      runnerVY = 0;
+      isJumping = false;
+      obstacles = [];
+      runScore = 0;
+      document.getElementById('runner-score').innerText = runScore;
+      requestAnimationFrame(updateRunner);
+    }
+
+    function updateRunner() {
+      if (activeTabIndex !== 3) return;
+
+      // Physique du saut
+      if (isJumping) {
+        runnerVY += 0.6; // Gravité douce
+        runnerY += runnerVY;
+        if (runnerY >= 200) {
+          runnerY = 200;
+          isJumping = false;
+        }
+      }
+
+      // Génération obstacles
+      if (Math.random() < 0.015 && (obstacles.length === 0 || obstacles[obstacles.length - 1].x < 320)) {
+        obstacles.push({ x: 480, w: 18, h: 30 });
+      }
+
+      // Rendu
+      runCtx.fillStyle = '#050508';
+      runCtx.fillRect(0, 0, 480, 280);
+
+      // Sol divin
+      runCtx.strokeStyle = '#ffb703';
+      runCtx.lineWidth = 2;
+      runCtx.beginPath();
+      runCtx.moveTo(0, 230);
+      runCtx.lineTo(480, 230);
+      runCtx.stroke();
+
+      // Joueur
+      runCtx.fillStyle = '#d62828';
+      runCtx.fillRect(50, runnerY, 20, 30);
+
+      // Obstacles
+      obstacles.forEach((ob, i) => {
+        ob.x -= 3.8; // Vitesse contrôlée
+        runCtx.fillStyle = '#ffb703';
+        runCtx.fillRect(ob.x, 230 - ob.h, ob.w, ob.h);
+
+        // Collision
+        if (ob.x < 70 && ob.x + ob.w > 50 && runnerY + 30 > 230 - ob.h) {
+          playTone(180, 'sawtooth', 0.2);
+          initRunner();
+          return;
+        }
+      });
+
+      // Nettoyage obstacles
+      if (obstacles.length > 0 && obstacles[0].x < -20) {
+        obstacles.shift();
+        runScore += 10;
+        document.getElementById('runner-score').innerText = runScore;
+      }
+
+      runLoopId = requestAnimationFrame(updateRunner);
+    }
+
+    /* ===================================================
+       8. GESTION DES CLAVIERS ET COMMANDES TERMINAL
+       =================================================== */
+    const keys = {};
+    window.addEventListener('keydown', e => {
+      keys[e.key] = true;
+
+      // Saut Runner
+      if ((e.key === ' ' || e.key === 'ArrowUp') && activeTabIndex === 3 && !isJumping) {
+        isJumping = true;
+        runnerVY = -11;
+        playTone(350, 'sine', 0.1);
+      }
+
+      // Tir Space Invaders
+      if (e.key === ' ' && activeTabIndex === 1) {
+        invBullets.push({ x: invPlayer.x + invPlayer.w / 2 - 2, y: invPlayer.y });
+        playTone(800, 'square', 0.05);
+      }
+
+      // Empêcher le défilement de la page avec la barre d'espace/flèches
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+        if (document.activeElement.id !== 'term-input') e.preventDefault();
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      keys[e.key] = false;
+    });
+
+    // Terminal
+    function handleTerminal(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('term-input');
+        const output = document.getElementById('term-output');
+        const cmd = input.value.trim().toLowerCase();
+        
+        output.innerText += `\n> ${input.value}`;
+
+        if (cmd === 'help') {
+          output.innerText += `\nCommandes disponibles :
+- oracle : Recevoir une prédiction des Kami.
+- kami   : Invoquer la bénédiction divine.
+- clear  : Effacer l'écran.
+- relic  : Obtenir des détails sur le 6e emplacement.`;
+        } else if (cmd === 'oracle') {
+          const quotes = [
+            "L'eau qui coule ne s'agite jamais sans raison.",
+            "La patience ouvre les portes du sanctuaire le plus élevé.",
+            "Un esprit apaisé triomphe de toutes les ombres."
+          ];
+          output.innerText += `\n[Oracle] : "${quotes[Math.floor(Math.random() * quotes.length)]}"`;
+        } else if (cmd === 'kami') {
+          output.innerText += `\n✨ Les Kami accordent leur harmonie à votre quête.`;
+        } else if (cmd === 'clear') {
+          output.innerText = "Bienvenue dans les archives ancestrales du Sanctuaire.";
+        } else if (cmd === 'relic') {
+          output.innerText += `\n⛩️ Rendez-vous dans le 6e onglet pour contempler la Relique Sacrée.`;
+        } else if (cmd !== '') {
+          output.innerText += `\nCommande non reconnue. Tapez 'help' pour la liste des oracles.`;
         }
 
-        function renderGeoLevelButtons() {
-            const grid = document.getElementById('geoLevelGrid');
-            grid.innerHTML = '';
-            const maxUnlocked = parseInt(localStorage.getItem('geometry-record') || '1');
-
-            GEO_LEVELS.forEach(lvl => {
-                const btn = document.createElement('button');
-                const isUnlocked = lvl.id <= maxUnlocked;
-                btn.className = `px-3 py-1 rounded text-xs font-bold transition border ${
-                    isUnlocked 
-                        ? (lvl.id === geoLevel ? 'bg-[#00f3ff] text-black border-[#00f3ff]' : 'bg-[#111813] text-[#00f3ff] border-[#1b3821] hover:border-[#00f3ff]')
-                        : 'bg-[#0a0e0a] text-gray-600 border-[#1b3821] cursor-not-allowed'
-                }`;
-                btn.innerText = `NIV ${lvl.id}`;
-                if (isUnlocked) {
-                    btn.onclick = () => {
-                        geoLevel = lvl.id;
-                        setupGeoLevelUI();
-                        renderGeoLevelButtons();
-                    };
-                }
-                grid.appendChild(btn);
-            });
-        }
-
-        function setupGeoLevelUI() {
-            const currentConfig = GEO_LEVELS[geoLevel - 1];
-            document.getElementById('geoLevelDisplay').innerText = `${geoLevel}/10`;
-            document.getElementById('geoModeDisplay').innerText = currentConfig.mode.toUpperCase();
-            document.getElementById('geoOverlayTitle').innerText = currentConfig.name;
-            document.getElementById('geoOverlayText').innerText = `Mode : ${currentConfig.mode.toUpperCase()} - Cliquez / Espace pour sauter/voler.`;
-            document.getElementById('geoOverlay').classList.remove('hidden');
-        }
-
-        function startGeoLevel() {
-            playSFX('click');
-            document.getElementById('geoOverlay').classList.add('hidden');
-            const config = GEO_LEVELS[geoLevel - 1];
-
-            geoPlayer = {
-                x: 100,
-                y: config.mode === 'cube' ? 350 : 225,
-                width: 30,
-                height: 30,
-                vy: 0,
-                rotation: 0,
-                isGrounded: false,
-                mode: config.mode
-            };
-
-            geoParticles = [];
-            geoObstacles = config.obstacles.map(dist => {
-                const typeRand = Math.random();
-                return {
-                    x: dist + 600,
-                    type: config.mode === 'cube' ? 'spike' : (typeRand > 0.5 ? 'tunnel' : 'spike'),
-                    width: 30,
-                    height: 35
-                };
-            });
-
-            geoRunning = true;
-            stopAllGameLoops();
-            runGeoLoop();
-        }
-
-        function runGeoLoop() {
-            if (!geoRunning || activeScreen !== 'geometryScreen') return;
-            updateGeo();
-            drawGeo();
-            activeGameLoop = requestAnimationFrame(runGeoLoop);
-        }
-
-        function updateGeo() {
-            const config = GEO_LEVELS[geoLevel - 1];
-            const floorY = 380;
-            const ceilingY = 50;
-
-            // Player Physics
-            if (geoPlayer.mode === 'cube') {
-                if (geoHolding && geoPlayer.isGrounded) {
-                    geoPlayer.vy = -12;
-                    geoPlayer.isGrounded = false;
-                    playSFX('jump');
-                }
-                geoPlayer.vy += 0.65; // Gravity
-                geoPlayer.y += geoPlayer.vy;
-
-                if (geoPlayer.y >= floorY - geoPlayer.height) {
-                    geoPlayer.y = floorY - geoPlayer.height;
-                    geoPlayer.vy = 0;
-                    geoPlayer.isGrounded = true;
-                    geoPlayer.rotation = Math.round(geoPlayer.rotation / (Math.PI / 2)) * (Math.PI / 2);
-                } else {
-                    geoPlayer.rotation += 0.15;
-                }
-            } else {
-                // Ship mode physics
-                if (geoHolding) {
-                    geoPlayer.vy -= 0.5; // Thrust upward
-                } else {
-                    geoPlayer.vy += 0.4; // Gravity downward
-                }
-                geoPlayer.vy = Math.max(-7, Math.min(7, geoPlayer.vy));
-                geoPlayer.y += geoPlayer.vy;
-                geoPlayer.rotation = geoPlayer.vy * 0.05;
-
-                // Ceiling & Floor checks for Ship
-                if (geoPlayer.y <= ceilingY || geoPlayer.y >= floorY - geoPlayer.height) {
-                    return gameOverGeo();
-                }
-            }
-
-            // Particle Trail
-            geoParticles.push({
-                x: geoPlayer.x,
-                y: geoPlayer.y + geoPlayer.height / 2,
-                size: Math.random() * 6 + 2,
-                alpha: 1
-            });
-            geoParticles.forEach(p => { p.x -= config.speed; p.alpha -= 0.04; });
-            geoParticles = geoParticles.filter(p => p.alpha > 0);
-
-            // Move Obstacles & Collisions
-            let allPassed = true;
-            for (let obs of geoObstacles) {
-                obs.x -= config.speed;
-                if (obs.x + obs.width > 0) allPassed = false;
-
-                // Collision Detection Box
-                let obsY = obs.type === 'tunnel' ? 150 : floorY - obs.height;
-                if (
-                    geoPlayer.x < obs.x + obs.width &&
-                    geoPlayer.x + geoPlayer.width > obs.x &&
-                    geoPlayer.y < obsY + obs.height &&
-                    geoPlayer.y + geoPlayer.height > obsY
-                ) {
-                    return gameOverGeo();
-                }
-            }
-
-            // Level Complete Check
-            if (allPassed) {
-                winGeoLevel();
-            }
-        }
-
-        function drawGeo() {
-            geoCtx.fillStyle = '#0a0e0a';
-            geoCtx.fillRect(0, 0, geoCanvas.width, geoCanvas.height);
-
-            // Floor & Ceiling lines
-            geoCtx.strokeStyle = '#00f3ff';
-            geoCtx.lineWidth = 3;
-            geoCtx.beginPath();
-            geoCtx.moveTo(0, 380);
-            geoCtx.lineTo(geoCanvas.width, 380);
-            geoCtx.moveTo(0, 50);
-            geoCtx.lineTo(geoCanvas.width, 50);
-            geoCtx.stroke();
-
-            // Draw Particles
-            geoParticles.forEach(p => {
-                geoCtx.fillStyle = `rgba(0, 243, 255, ${p.alpha})`;
-                geoCtx.beginPath();
-                geoCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                geoCtx.fill();
-            });
-
-            // Draw Obstacles
-            geoObstacles.forEach(obs => {
-                geoCtx.fillStyle = '#ff0055';
-                geoCtx.shadowColor = '#ff0055';
-                geoCtx.shadowBlur = 10;
-
-                if (obs.type === 'spike') {
-                    // Triangle Spike
-                    geoCtx.beginPath();
-                    geoCtx.moveTo(obs.x, 380);
-                    geoCtx.lineTo(obs.x + obs.width / 2, 380 - obs.height);
-                    geoCtx.lineTo(obs.x + obs.width, 380);
-                    geoCtx.closePath();
-                    geoCtx.fill();
-                } else {
-                    // Block/Tunnel obstacle
-                    geoCtx.fillRect(obs.x, 150, obs.width, obs.height);
-                }
-            });
-
-            // Draw Player Cube / Ship
-            geoCtx.save();
-            geoCtx.translate(geoPlayer.x + geoPlayer.width / 2, geoPlayer.y + geoPlayer.height / 2);
-            geoCtx.rotate(geoPlayer.rotation);
-            geoCtx.fillStyle = '#00f3ff';
-            geoCtx.shadowColor = '#00f3ff';
-            geoCtx.shadowBlur = 15;
-            
-            if (geoPlayer.mode === 'cube') {
-                geoCtx.fillRect(-geoPlayer.width / 2, -geoPlayer.height / 2, geoPlayer.width, geoPlayer.height);
-                geoCtx.strokeStyle = '#0a0e0a';
-                geoCtx.lineWidth = 3;
-                geoCtx.strokeRect(-geoPlayer.width / 4, -geoPlayer.height / 4, geoPlayer.width / 2, geoPlayer.height / 2);
-            } else {
-                // Ship Triangle Shape
-                geoCtx.beginPath();
-                geoCtx.moveTo(-geoPlayer.width / 2, -geoPlayer.height / 2);
-                geoCtx.lineTo(geoPlayer.width / 2, 0);
-                geoCtx.lineTo(-geoPlayer.width / 2, geoPlayer.height / 2);
-                geoCtx.closePath();
-                geoCtx.fill();
-            }
-            geoCtx.restore();
-            geoCtx.shadowBlur = 0;
-        }
-
-        function gameOverGeo() {
-            playSFX('explode');
-            geoRunning = false;
-            geoAttempts++;
-            document.getElementById('geoAttempts').innerText = geoAttempts;
-            document.getElementById('geoOverlayTitle').innerText = "ÉCHEC DU NIVEAU";
-            document.getElementById('geoOverlayText').innerText = `Tentative #${geoAttempts} échouée. Réessayez !`;
-            document.getElementById('geoOverlay').classList.remove('hidden');
-        }
-
-        function winGeoLevel() {
-            playSFX('win');
-            geoRunning = false;
-            if (geoLevel < 10) {
-                geoLevel++;
-                const savedLevel = parseInt(localStorage.getItem('geometry-record') || '1');
-                if (geoLevel > savedLevel) {
-                    localStorage.setItem('geometry-record', geoLevel);
-                }
-                renderGeoLevelButtons();
-                document.getElementById('geoOverlayTitle').innerText = "NIVEAU COMPLÉTÉ !";
-                document.getElementById('geoOverlayText').innerText = "Niveau suivant déverrouillé !";
-            } else {
-                localStorage.setItem('geometry-record', 10);
-                document.getElementById('geoOverlayTitle').innerText = "VICTOIRE SUPRÊME !";
-                document.getElementById('geoOverlayText').innerText = "Vous avez terrassé les 10 niveaux de Geometry Dash !";
-            }
-            document.getElementById('geoOverlay').classList.remove('hidden');
-        }
-
-        // Geometry Event Controls
-        const handleGeoStart = (e) => {
-            if (activeScreen === 'geometryScreen' && geoRunning) {
-                geoHolding = true;
-            }
-        };
-        const handleGeoEnd = () => { geoHolding = false; };
-
-        window.addEventListener('keydown', e => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') handleGeoStart();
-        });
-        window.addEventListener('keyup', e => {
-            if (e.code === 'Space' || e.code === 'ArrowUp') handleGeoEnd();
-        });
-        document.addEventListener('mousedown', e => {
-            if (e.target.id === 'geoCanvas') handleGeoStart();
-        });
-        document.addEventListener('mouseup', handleGeoEnd);
-        document.addEventListener('touchstart', e => {
-            if (e.target.id === 'geoCanvas') handleGeoStart();
-        });
-        document.addEventListener('touchend', handleGeoEnd);
-
-        /* ==========================================================================
-           STREAMING_CHUNK:Implementing Game 3 - Mario Platformer Engine...
-           5. GAME 3: MARIO PLATFORMER ENGINE
-           ========================================================================== */
-        let marioCanvas, marioCtx;
-        let marioLevel = 1, marioScore = 0, marioCoinsCount = 0;
-        let marioPlayer, marioPlatforms, marioCoins, marioEnemies, marioFlag, marioCameraX, marioRunning = false;
-        let marioKeys = { left: false, right: false, up: false };
-
-        function initMario() {
-            marioCanvas = document.getElementById('marioCanvas');
-            marioCtx = marioCanvas.getContext('2d');
-            document.getElementById('marioOverlay').classList.remove('hidden');
-            document.getElementById('marioOverlayTitle').innerText = "PLATEFORME MARIO";
-            document.getElementById('marioScore').innerText = '0';
-            document.getElementById('marioCoins').innerText = '0';
-            
-            setupMobileMarioControls();
-        }
-
-        function setupMobileMarioControls() {
-            const btnLeft = document.getElementById('btnMarioLeft');
-            const btnRight = document.getElementById('btnMarioRight');
-            const btnJump = document.getElementById('btnMarioJump');
-
-            const bindBtn = (btn, key) => {
-                btn.addEventListener('touchstart', (e) => { e.preventDefault(); marioKeys[key] = true; });
-                btn.addEventListener('touchend', (e) => { e.preventDefault(); marioKeys[key] = false; });
-                btn.addEventListener('mousedown', () => { marioKeys[key] = true; });
-                btn.addEventListener('mouseup', () => { marioKeys[key] = false; });
-            };
-            bindBtn(btnLeft, 'left');
-            bindBtn(btnRight, 'right');
-            bindBtn(btnJump, 'up');
-        }
-
-        function startMarioGame() {
-            playSFX('click');
-            document.getElementById('marioOverlay').classList.add('hidden');
-            marioLevel = 1;
-            marioScore = 0;
-            marioCoinsCount = 0;
-            loadMarioLevel(marioLevel);
-        }
-
-        function loadMarioLevel(lvl) {
-            document.getElementById('marioLevel').innerText = `${lvl}/5`;
-            document.getElementById('marioScore').innerText = marioScore;
-            document.getElementById('marioCoins').innerText = marioCoinsCount;
-
-            marioPlayer = {
-                x: 50,
-                y: 300,
-                w: 24,
-                h: 32,
-                vx: 0,
-                vy: 0,
-                isGrounded: false
-            };
-
-            marioCameraX = 0;
-
-            // Generate platformer map based on level
-            marioPlatforms = [
-                { x: 0, y: 400, w: 600, h: 50 },
-                { x: 700, y: 400, w: 800, h: 50 },
-                { x: 1600, y: 400, w: 1000, h: 50 },
-                // Floating platforms
-                { x: 250, y: 300, w: 100, h: 20 },
-                { x: 450, y: 220, w: 120, h: 20 },
-                { x: 850, y: 310, w: 140, h: 20 },
-                { x: 1100, y: 230, w: 100, h: 20 },
-                { x: 1800, y: 300, w: 120, h: 20 },
-                { x: 2000, y: 220, w: 150, h: 20 }
-            ];
-
-            marioCoins = [
-                { x: 280, y: 260, taken: false },
-                { x: 480, y: 180, taken: false },
-                { x: 510, y: 180, taken: false },
-                { x: 880, y: 270, taken: false },
-                { x: 1130, y: 190, taken: false },
-                { x: 1850, y: 260, taken: false },
-                { x: 2050, y: 180, taken: false }
-            ];
-
-            marioEnemies = [
-                { x: 400, y: 375, w: 25, h: 25, vx: -1.5, minX: 300, maxX: 580, alive: true },
-                { x: 950, y: 375, w: 25, h: 25, vx: -2.0, minX: 750, maxX: 1200, alive: true },
-                { x: 1850, y: 375, w: 25, h: 25, vx: -2.5, minX: 1650, maxX: 2100, alive: true }
-            ];
-
-            marioFlag = { x: 2400, y: 200, w: 20, h: 200 };
-
-            marioRunning = true;
-            stopAllGameLoops();
-            runMarioLoop();
-        }
-
-        function runMarioLoop() {
-            if (!marioRunning || activeScreen !== 'marioScreen') return;
-            updateMario();
-            drawMario();
-            activeGameLoop = requestAnimationFrame(runMarioLoop);
-        }
-
-        function updateMario() {
-            // Horizontal Physics
-            if (marioKeys.left) marioPlayer.vx = -4;
-            else if (marioKeys.right) marioPlayer.vx = 4;
-            else marioPlayer.vx *= 0.8;
-
-            // Vertical Physics / Jump
-            if (marioKeys.up && marioPlayer.isGrounded) {
-                marioPlayer.vy = -12;
-                marioPlayer.isGrounded = false;
-                playSFX('jump');
-            }
-
-            marioPlayer.vy += 0.6; // Gravity
-            marioPlayer.x += marioPlayer.vx;
-            marioPlayer.y += marioPlayer.vy;
-
-            // Platform Collisions
-            marioPlayer.isGrounded = false;
-            marioPlatforms.forEach(plat => {
-                if (
-                    marioPlayer.x + marioPlayer.w > plat.x &&
-                    marioPlayer.x < plat.x + plat.w &&
-                    marioPlayer.y + marioPlayer.h >= plat.y &&
-                    marioPlayer.y + marioPlayer.h <= plat.y + 15 &&
-                    marioPlayer.vy >= 0
-                ) {
-                    marioPlayer.y = plat.y - marioPlayer.h;
-                    marioPlayer.vy = 0;
-                    marioPlayer.isGrounded = true;
-                }
-            });
-
-            // Pit Death
-            if (marioPlayer.y > 500) {
-                return gameOverMario();
-            }
-
-            // Coin Collection (+20 pts)
-            marioCoins.forEach(coin => {
-                if (!coin.taken && 
-                    Math.hypot(marioPlayer.x + 12 - coin.x, marioPlayer.y + 16 - coin.y) < 25) {
-                    coin.taken = true;
-                    marioScore += 20;
-                    marioCoinsCount++;
-                    playSFX('coin');
-                    document.getElementById('marioScore').innerText = marioScore;
-                    document.getElementById('marioCoins').innerText = marioCoinsCount;
-                }
-            });
-
-            // Enemy Logic & Stomping (+50 pts)
-            marioEnemies.forEach(en => {
-                if (!en.alive) return;
-                en.x += en.vx;
-                if (en.x < en.minX || en.x > en.maxX) en.vx *= -1;
-
-                // Collision with player
-                if (
-                    marioPlayer.x < en.x + en.w &&
-                    marioPlayer.x + marioPlayer.w > en.x &&
-                    marioPlayer.y < en.y + en.h &&
-                    marioPlayer.y + marioPlayer.h > en.y
-                ) {
-                    // Stomp check from above
-                    if (marioPlayer.vy > 0 && marioPlayer.y + marioPlayer.h < en.y + 15) {
-                        en.alive = false;
-                        marioPlayer.vy = -8;
-                        marioScore += 50;
-                        playSFX('hit');
-                        document.getElementById('marioScore').innerText = marioScore;
-                    } else {
-                        return gameOverMario();
-                    }
-                }
-            });
-
-            // Camera Scroll
-            marioCameraX = Math.max(0, marioPlayer.x - 200);
-
-            // Level End Flag check
-            if (marioPlayer.x >= marioFlag.x) {
-                winMarioLevel();
-            }
-        }
-
-        function drawMario() {
-            marioCtx.fillStyle = '#0a0e0a';
-            marioCtx.fillRect(0, 0, marioCanvas.width, marioCanvas.height);
-
-            marioCtx.save();
-            marioCtx.translate(-marioCameraX, 0);
-
-            // Draw Parallax Neon Hills in Background
-            marioCtx.strokeStyle = '#1b3821';
-            marioCtx.lineWidth = 2;
-            marioCtx.beginPath();
-            for (let i = 0; i < 3000; i += 200) {
-                marioCtx.arc(i, 400, 100, Math.PI, 0);
-            }
-            marioCtx.stroke();
-
-            // Platforms
-            marioPlatforms.forEach(plat => {
-                marioCtx.fillStyle = '#111813';
-                marioCtx.fillRect(plat.x, plat.y, plat.w, plat.h);
-                marioCtx.strokeStyle = '#ff0055';
-                marioCtx.lineWidth = 2;
-                marioCtx.strokeRect(plat.x, plat.y, plat.w, plat.h);
-            });
-
-            // Coins
-            marioCoins.forEach(coin => {
-                if (coin.taken) return;
-                marioCtx.fillStyle = '#ffcc00';
-                marioCtx.shadowColor = '#ffcc00';
-                marioCtx.shadowBlur = 8;
-                marioCtx.beginPath();
-                marioCtx.arc(coin.x, coin.y, 8, 0, Math.PI * 2);
-                marioCtx.fill();
-            });
-
-            // Enemies
-            marioEnemies.forEach(en => {
-                if (!en.alive) return;
-                marioCtx.fillStyle = '#00f3ff';
-                marioCtx.shadowColor = '#00f3ff';
-                marioCtx.shadowBlur = 8;
-                marioCtx.fillRect(en.x, en.y, en.w, en.h);
-            });
-
-            // Flag
-            marioCtx.fillStyle = '#39ff6a';
-            marioCtx.shadowColor = '#39ff6a';
-            marioCtx.shadowBlur = 10;
-            marioCtx.fillRect(marioFlag.x, marioFlag.y, 6, marioFlag.h);
-            marioCtx.beginPath();
-            marioCtx.moveTo(marioFlag.x + 6, marioFlag.y);
-            marioCtx.lineTo(marioFlag.x + 40, marioFlag.y + 20);
-            marioCtx.lineTo(marioFlag.x + 6, marioFlag.y + 40);
-            marioCtx.closePath();
-            marioCtx.fill();
-
-            // Player
-            marioCtx.fillStyle = '#ff0055';
-            marioCtx.shadowColor = '#ff0055';
-            marioCtx.shadowBlur = 12;
-            marioCtx.fillRect(marioPlayer.x, marioPlayer.y, marioPlayer.w, marioPlayer.h);
-
-            marioCtx.restore();
-            marioCtx.shadowBlur = 0;
-        }
-
-        function gameOverMario() {
-            playSFX('explode');
-            marioRunning = false;
-
-            const savedRecord = parseInt(localStorage.getItem('mario-record') || '0');
-            if (marioScore > savedRecord) {
-                localStorage.setItem('mario-record', marioScore);
-            }
-
-            document.getElementById('marioOverlayTitle').innerText = "GAME OVER";
-            document.getElementById('marioOverlayText').innerText = `Score : ${marioScore} points.`;
-            document.getElementById('marioOverlay').classList.remove('hidden');
-        }
-
-        function winMarioLevel() {
-            playSFX('win');
-            marioRunning = false;
-
-            if (marioLevel < 5) {
-                marioLevel++;
-                document.getElementById('marioOverlayTitle').innerText = `NIVEAU ${marioLevel - 1} RÉUSSI !`;
-                document.getElementById('marioOverlayText').innerText = "Préparez-vous pour le niveau suivant.";
-                setTimeout(() => loadMarioLevel(marioLevel), 1500);
-            } else {
-                const savedRecord = parseInt(localStorage.getItem('mario-record') || '0');
-                if (marioScore > savedRecord) {
-                    localStorage.setItem('mario-record', marioScore);
-                }
-                document.getElementById('marioOverlayTitle').innerText = "VICTOIRE FINALE !";
-                document.getElementById('marioOverlayText').innerText = `Vous avez sauvé le monde cyber ! Score final : ${marioScore}`;
-                document.getElementById('marioOverlay').classList.remove('hidden');
-            }
-        }
-
-        // Mario Controls Listeners
-        window.addEventListener('keydown', e => {
-            if (activeScreen !== 'marioScreen') return;
-            if (['ArrowLeft', 'KeyA'].includes(e.code)) marioKeys.left = true;
-            if (['ArrowRight', 'KeyD'].includes(e.code)) marioKeys.right = true;
-            if (['ArrowUp', 'Space', 'KeyW'].includes(e.code)) marioKeys.up = true;
-        });
-        window.addEventListener('keyup', e => {
-            if (activeScreen !== 'marioScreen') return;
-            if (['ArrowLeft', 'KeyA'].includes(e.code)) marioKeys.left = false;
-            if (['ArrowRight', 'KeyD'].includes(e.code)) marioKeys.right = false;
-            if (['ArrowUp', 'Space', 'KeyW'].includes(e.code)) marioKeys.up = false;
-        });
-
-        /* ==========================================================================
-           STREAMING_CHUNK:Implementing Game 4 - Subway Runner Engine...
-           6. GAME 4: SUBWAY RUNNER ENGINE
-           ========================================================================== */
-        let subwayCanvas, subwayCtx;
-        let subwayDistance = 0, subwayCoinsCount = 0, subwaySpeed = 5, subwayRunning = false;
-        let subwayPlayer = { lane: 1, targetLane: 1, yOffset: 0, isJumping: false, isDucking: false, jumpVY: 0 };
-        let subwayObstacles = [];
-
-        function initSubway() {
-            subwayCanvas = document.getElementById('subwayCanvas');
-            subwayCtx = subwayCanvas.getContext('2d');
-            document.getElementById('subwayOverlay').classList.remove('hidden');
-            document.getElementById('subwayBest').innerText = (localStorage.getItem('subway-record') || '0') + 'm';
-        }
-
-        function startSubwayGame() {
-            playSFX('click');
-            document.getElementById('subwayOverlay').classList.add('hidden');
-            subwayDistance = 0;
-            subwayCoinsCount = 0;
-            subwaySpeed = 6;
-            subwayPlayer = { lane: 1, targetLane: 1, yOffset: 0, isJumping: false, isDucking: false, jumpVY: 0 };
-            subwayObstacles = [];
-
-            subwayRunning = true;
-            stopAllGameLoops();
-            runSubwayLoop();
-        }
-
-        function subwayInput(dir) {
-            if (!subwayRunning) return;
-            if (dir === 'LEFT' && subwayPlayer.targetLane > 0) {
-                subwayPlayer.targetLane--;
-                playSFX('click');
-            }
-            if (dir === 'RIGHT' && subwayPlayer.targetLane < 2) {
-                subwayPlayer.targetLane++;
-                playSFX('click');
-            }
-            if (dir === 'UP' && !subwayPlayer.isJumping) {
-                subwayPlayer.isJumping = true;
-                subwayPlayer.jumpVY = -12;
-                playSFX('jump');
-            }
-            if (dir === 'DOWN' && !subwayPlayer.isDucking) {
-                subwayPlayer.isDucking = true;
-                setTimeout(() => { subwayPlayer.isDucking = false; }, 600);
-            }
-        }
-
-        function runSubwayLoop() {
-            if (!subwayRunning || activeScreen !== 'subwayScreen') return;
-            updateSubway();
-            drawSubway();
-            activeGameLoop = requestAnimationFrame(runSubwayLoop);
-        }
-
-        function updateSubway() {
-            subwayDistance += Math.round(subwaySpeed / 5);
-            subwaySpeed += 0.002; // gradual acceleration
-            document.getElementById('subwayDist').innerText = `${subwayDistance}m`;
-            document.getElementById('subwayCoins').innerText = subwayCoinsCount;
-
-            // Lane interpolation
-            subwayPlayer.lane += (subwayPlayer.targetLane - subwayPlayer.lane) * 0.25;
-
-            // Jump gravity
-            if (subwayPlayer.isJumping) {
-                subwayPlayer.yOffset += subwayPlayer.jumpVY;
-                subwayPlayer.jumpVY += 0.8;
-                if (subwayPlayer.yOffset >= 0) {
-                    subwayPlayer.yOffset = 0;
-                    subwayPlayer.isJumping = false;
-                }
-            }
-
-            // Spawn obstacles
-            if (Math.random() < 0.03) {
-                const laneRand = Math.floor(Math.random() * 3);
-                const typeRand = Math.random();
-                let type = 'train';
-                if (typeRand < 0.33) type = 'high_barrier';
-                else if (typeRand < 0.66) type = 'low_barrier';
-
-                subwayObstacles.push({
-                    lane: laneRand,
-                    z: 500, // Distance away
-                    type: type
-                });
-            }
-
-            // Update obstacles position & check collisions
-            for (let i = subwayObstacles.length - 1; i >= 0; i--) {
-                const obs = subwayObstacles[i];
-                obs.z -= subwaySpeed * 3;
-
-                // Hit Detection box near player (z <= 50)
-                if (obs.z > 0 && obs.z < 50 && Math.abs(obs.lane - subwayPlayer.lane) < 0.4) {
-                    if (obs.type === 'train') {
-                        return gameOverSubway();
-                    }
-                    if (obs.type === 'low_barrier' && (!subwayPlayer.isJumping || subwayPlayer.yOffset > -20)) {
-                        return gameOverSubway();
-                    }
-                    if (obs.type === 'high_barrier' && !subwayPlayer.isDucking) {
-                        return gameOverSubway();
-                    }
-                }
-
-                if (obs.z < -100) {
-                    subwayObstacles.splice(i, 1);
-                }
-            }
-        }
-
-        function drawSubway() {
-            subwayCtx.fillStyle = '#0a0e0a';
-            subwayCtx.fillRect(0, 0, subwayCanvas.width, subwayCanvas.height);
-
-            // Perspective Grid / 3 Lanes lines
-            const centerX = subwayCanvas.width / 2;
-            const horizonY = 120;
-            const bottomY = subwayCanvas.height;
-
-            subwayCtx.strokeStyle = '#1b3821';
-            subwayCtx.lineWidth = 2;
-
-            // Perspective lines
-            [-180, -60, 60, 180].forEach(offset => {
-                subwayCtx.beginPath();
-                subwayCtx.moveTo(centerX + offset * 0.2, horizonY);
-                subwayCtx.lineTo(centerX + offset, bottomY);
-                subwayCtx.stroke();
-            });
-
-            // Draw Obstacles with perspective projection
-            subwayObstacles.sort((a, b) => b.z - a.z).forEach(obs => {
-                const scale = 1 - obs.z / 600;
-                if (scale <= 0) return;
-
-                const laneXOffset = (obs.lane - 1) * 120;
-                const x = centerX + laneXOffset * scale;
-                const y = horizonY + (bottomY - horizonY) * scale;
-                const w = 70 * scale;
-                const h = (obs.type === 'train' ? 90 : 40) * scale;
-
-                subwayCtx.shadowBlur = 10;
-                if (obs.type === 'train') {
-                    subwayCtx.fillStyle = '#ff0055';
-                    subwayCtx.shadowColor = '#ff0055';
-                    subwayCtx.fillRect(x - w / 2, y - h, w, h);
-                } else if (obs.type === 'low_barrier') {
-                    subwayCtx.fillStyle = '#ffcc00';
-                    subwayCtx.shadowColor = '#ffcc00';
-                    subwayCtx.fillRect(x - w / 2, y - h, w, h);
-                } else { // high barrier
-                    subwayCtx.fillStyle = '#00f3ff';
-                    subwayCtx.shadowColor = '#00f3ff';
-                    subwayCtx.fillRect(x - w / 2, y - h * 1.5, w, h * 0.4);
-                }
-            });
-
-            // Draw Player
-            const playerX = centerX + (subwayPlayer.lane - 1) * 120;
-            const playerY = bottomY - 60 + subwayPlayer.yOffset;
-            const playerH = subwayPlayer.isDucking ? 25 : 50;
-
-            subwayCtx.fillStyle = '#39ff6a';
-            subwayCtx.shadowColor = '#39ff6a';
-            subwayCtx.shadowBlur = 15;
-            subwayCtx.fillRect(playerX - 20, playerY - playerH, 40, playerH);
-
-            subwayCtx.shadowBlur = 0;
-        }
-
-        function gameOverSubway() {
-            playSFX('explode');
-            subwayRunning = false;
-
-            const currentRecord = parseInt(localStorage.getItem('subway-record') || '0');
-            if (subwayDistance > currentRecord) {
-                localStorage.setItem('subway-record', subwayDistance);
-                document.getElementById('subwayBest').innerText = subwayDistance + 'm';
-            }
-
-            document.getElementById('subwayOverlayTitle').innerText = "CRASH !";
-            document.getElementById('subwayOverlayText').innerText = `Distance parcourue : ${subwayDistance} mètres.`;
-            document.getElementById('subwayOverlay').classList.remove('hidden');
-        }
-
-        // Keyboard Controls for Subway
-        window.addEventListener('keydown', e => {
-            if (activeScreen !== 'subwayScreen') return;
-            if (['ArrowLeft', 'KeyA'].includes(e.code)) subwayInput('LEFT');
-            if (['ArrowRight', 'KeyD'].includes(e.code)) subwayInput('RIGHT');
-            if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) subwayInput('UP');
-            if (['ArrowDown', 'KeyS'].includes(e.code)) subwayInput('DOWN');
-        });
-
-        /* ==========================================================================
-           STREAMING_CHUNK:Implementing Game 5 - Hacker Puzzles / Riddles...
-           7. GAME 5: ÉNIGMES HACKER ENGINE
-           ========================================================================== */
-        const PUZZLES_DATA = [
-            {
-                q: "1. Si 1=3, 2=3, 3=5, 4=4, 5=4, alors d'après cette logique, combien vaut 6 ?",
-                answers: ["3", "trois"],
-                hint: "Comptez le nombre de lettres dans le mot en français (ex: UN = 2, DEUX = 4 -> wait, SIX a combien de lettres ?)."
-            },
-            {
-                q: "2. Je suis un type de donnée binaire qui ne peut contenir que deux états : VRAI ou FAUX. Que suis-je ?",
-                answers: ["boolean", "booleen", "un booleen", "un boolean", "bool"],
-                hint: "Un type de variable fondamental nommé d'après George Boole."
-            },
-            {
-                q: "3. Quel nombre complète cette suite logique d'octets : 2, 4, 8, 16, 32, ... ?",
-                answers: ["64", "soixante-quatre"],
-                hint: "Multipliez par 2 à chaque étape."
-            },
-            {
-                q: "4. Je chiffre l'ensemble de vos fichiers et exige une clé de rançon pour les déverrouiller. Quel est mon nom ?",
-                answers: ["ransomware", "rancongiciel", "un ransomware", "un rancongiciel"],
-                hint: "Famille de logiciels malveillants extorqueurs de fonds."
-            },
-            {
-                q: "5. Je possède des clés mais aucune serrure. J'ai un espace mais aucune pièce. Vous pouvez entrer mais pas sortir. Que suis-je ?",
-                answers: ["un clavier", "clavier"],
-                hint: "Périphérique d'entrée physique muni de touches."
-            },
-            {
-                q: "6. Si un hacker met 5 minutes pour casser 5 mots de passe, combien de minutes mettront 100 hackers pour casser 100 mots de passe identiques en parallèle ?",
-                answers: ["5", "5 minutes", "cinq"],
-                hint: "Chaque hacker travaille simultanément sur son propre mot de passe."
-            },
-            {
-                q: "7. Dans la table ASCII/Alphabétique simple : A=1, B=2, C=3... Quelle est la valeur numérique de la lettre Z ?",
-                answers: ["26", "vingt-six"],
-                hint: "C'est la dernière lettre de l'alphabet français."
-            },
-            {
-                q: "8. Plus je suis partagé, moins je suis préservé. Dès qu'on me prononce, je disparais. Que suis-je ?",
-                answers: ["un secret", "secret", "le secret"],
-                hint: "Ne le révélez à personne..."
-            }
-        ];
-
-        let currentPuzzleIdx = 0;
-
-        function initPuzzles() {
-            const savedProg = parseInt(localStorage.getItem('puzzles-record') || '0');
-            currentPuzzleIdx = Math.min(savedProg, PUZZLES_DATA.length - 1);
-            if (savedProg >= PUZZLES_DATA.length) {
-                showPuzzlesComplete();
-            } else {
-                renderCurrentPuzzle();
-            }
-        }
-
-        function normalizeText(str) {
-            return str
-                .toLowerCase()
-                .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // strip accents
-                .trim();
-        }
-
-        function renderCurrentPuzzle() {
-            document.getElementById('puzzleActiveArea').classList.remove('hidden');
-            document.getElementById('puzzleCompleteArea').classList.add('hidden');
-            document.getElementById('puzzleHintBox').classList.add('hidden');
-            document.getElementById('puzzleFeedback').innerText = '';
-            document.getElementById('puzzleInput').value = '';
-
-            const p = PUZZLES_DATA[currentPuzzleIdx];
-            document.getElementById('puzzleProgressTag').innerText = `ÉNIGME ${currentPuzzleIdx + 1} / ${PUZZLES_DATA.length}`;
-            document.getElementById('puzzleQuestionText').innerText = p.q;
-            document.getElementById('puzzleHintText').innerText = p.hint;
-        }
-
-        function showPuzzleHint() {
-            playSFX('click');
-            document.getElementById('puzzleHintBox').classList.remove('hidden');
-        }
-
-        function submitPuzzleAnswer() {
-            const val = document.getElementById('puzzleInput').value;
-            const feedback = document.getElementById('puzzleFeedback');
-            const p = PUZZLES_DATA[currentPuzzleIdx];
-
-            const normInput = normalizeText(val);
-            const isCorrect = p.answers.some(ans => normalizeText(ans) === normInput);
-
-            if (isCorrect) {
-                playSFX('win');
-                feedback.className = "text-xs font-bold text-[#39ff6a]";
-                feedback.innerText = "EXCELLENT ! RÉPONSE CORRECTE.";
-
-                currentPuzzleIdx++;
-                localStorage.setItem('puzzles-record', currentPuzzleIdx);
-
-                setTimeout(() => {
-                    if (currentPuzzleIdx >= PUZZLES_DATA.length) {
-                        showPuzzlesComplete();
-                    } else {
-                        renderCurrentPuzzle();
-                    }
-                }, 1200);
-            } else {
-                playSFX('hit');
-                feedback.className = "text-xs font-bold text-red-500 animate-pulse";
-                feedback.innerText = "RÉPONSE INCORRECTE - ESSAYEZ ENCORE.";
-            }
-        }
-
-        function showPuzzlesComplete() {
-            document.getElementById('puzzleActiveArea').classList.add('hidden');
-            document.getElementById('puzzleCompleteArea').classList.remove('hidden');
-            document.getElementById('puzzleProgressTag').innerText = `8 / 8 COMPLÉTÉ`;
-        }
-
-        function resetPuzzles() {
-            playSFX('click');
-            currentPuzzleIdx = 0;
-            localStorage.setItem('puzzles-record', 0);
-            renderCurrentPuzzle();
-        }
-
-        /* Auto-initialize login pass field focus */
-        window.onload = function() {
-            document.getElementById('passInput').focus();
-        };
-    </script>
+        input.value = '';
+        document.querySelector('.terminal-box').scrollTop = document.querySelector('.terminal-box').scrollHeight;
+      }
+    }
+
+    // Initialisation du premier jeu au chargement
+    window.onload = () => {
+      initSnake();
+    };
+  </script>
 </body>
 </html>

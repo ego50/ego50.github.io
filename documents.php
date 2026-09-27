@@ -2,14 +2,10 @@
 require 'gestion.php';
 $erreurConnexion = traiterConnexion();
 
-// Documents a aussi son propre espace "libre" (fichiers non liés à une page précise)
-list($message, $erreur) = traiterFormulaires('documents');
-$dossiersDocuments = listerDossiers('documents');
+list($message, $erreur) = traiterFormulaires('documents');$dossiersDocuments = listerDossiers('documents');
 
-// On récupère aussi tout ce qu'il y a dans les autres catégories, pour la vue globale
 $dossiersCours    = listerDossiers('cours');
-$dossiersTp       = listerDossiers('tp');
-$dossiersProjets  = listerDossiers('projets');
+$dossiersTp       = listerDossiers('tp');$dossiersProjets  = listerDossiers('projets');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -20,11 +16,6 @@ $dossiersProjets  = listerDossiers('projets');
   <title>Documents - Mon classeur numérique</title>
 </head>
 <body>
-
-  <audio id="musique-fond" loop autoplay muted>
-    <source src="musique/musique-fond.mp3" type="audio/mpeg">
-  </audio>
-  <button id="bouton-musique" title="Activer / couper la musique" aria-label="Activer ou couper la musique" style="position:fixed; bottom:20px; right:20px; z-index:999; width:50px; height:50px; border-radius:50%; border:none; background:#ffffffdd; font-size:22px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.25);">🔇</button>
 
   <div class="sakura-container" aria-hidden="true"></div>
 
@@ -67,25 +58,25 @@ $dossiersProjets  = listerDossiers('projets');
     <h3 class="sous-titre">Tous tes fichiers</h3>
     <?php
       $tousLesDossiers = [];
-      foreach ($dossiersCours as $nom => $fichiers)    { $tousLesDossiers[] = ['categorie' => 'cours',     'etiquette' => 'Cours',    'nom' => $nom, 'fichiers' => $fichiers]; }
-      foreach ($dossiersTp as $nom => $fichiers)       { $tousLesDossiers[] = ['categorie' => 'tp',        'etiquette' => 'TP',       'nom' => $nom, 'fichiers' => $fichiers]; }
-      foreach ($dossiersProjets as $nom => $fichiers)  { $tousLesDossiers[] = ['categorie' => 'projets',   'etiquette' => 'Projets',  'nom' => $nom, 'fichiers' => $fichiers]; }
-      foreach ($dossiersDocuments as $nom => $fichiers){ $tousLesDossiers[] = ['categorie' => 'documents', 'etiquette' => 'Libre',    'nom' => $nom, 'fichiers' => $fichiers]; }
+      foreach ($dossiersCours as$nom => $fichiers)    {$tousLesDossiers[] = ['categorie' => 'cours',     'etiquette' => 'Cours',    'nom' => $nom, 'fichiers' =>$fichiers]; }
+      foreach ($dossiersTp as$nom => $fichiers)       {$tousLesDossiers[] = ['categorie' => 'tp',        'etiquette' => 'TP',       'nom' => $nom, 'fichiers' =>$fichiers]; }
+      foreach ($dossiersProjets as$nom => $fichiers)  {$tousLesDossiers[] = ['categorie' => 'projets',   'etiquette' => 'Projets',  'nom' => $nom, 'fichiers' =>$fichiers]; }
+      foreach ($dossiersDocuments as$nom => $fichiers){$tousLesDossiers[] = ['categorie' => 'documents', 'etiquette' => 'Libre',    'nom' => $nom, 'fichiers' =>$fichiers]; }
     ?>
 
     <?php if (count($tousLesDossiers) === 0): ?>
       <p class="intro">Aucun fichier pour le moment sur tout le site.</p>
     <?php else: ?>
       <div class="grille-cartes">
-        <?php foreach ($tousLesDossiers as $d): ?>
+        <?php foreach ($tousLesDossiers as$d): ?>
           <div class="carte">
             <h3><span class="etiquette"><?= htmlspecialchars($d['etiquette']) ?></span> 📁 <?= htmlspecialchars($d['nom']) ?></h3>
             <?php if (count($d['fichiers']) === 0): ?>
               <p>Dossier vide.</p>
             <?php else: ?>
               <ul class="liste-fichiers">
-                <?php foreach ($d['fichiers'] as $fichier): ?>
-                  <?= afficherLigneFichier($d['categorie'], $d['nom'], $fichier) ?>
+                <?php foreach ($d['fichiers'] as$fichier): ?>
+                  <?= afficherLigneFichier($d['categorie'], $d['nom'],$fichier) ?>
                 <?php endforeach; ?>
               </ul>
             <?php endif; ?>
@@ -94,6 +85,9 @@ $dossiersProjets  = listerDossiers('projets');
       </div>
     <?php endif; ?>
   </main>
+
+  <!-- Bouton secret vers le jeu -->
+  <a href="jeux.html" id="bouton-secret" title="Sanctuaire des Kami" style="position:fixed; bottom:20px; left:20px; z-index:999; width:44px; height:44px; border-radius:8px; background:#0c0818; border:1px solid #ffd700; color:#ffd700; display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none; box-shadow:0 0 12px rgba(255, 215, 0, 0.4); backdrop-filter:blur(4px); transition:transform 0.3s ease, box-shadow 0.3s ease;">⛩️</a>
 
   <script>
     const sakuraContainer = document.querySelector(".sakura-container");
@@ -119,14 +113,6 @@ $dossiersProjets  = listerDossiers('projets');
 
       sakuraContainer.appendChild(petal);
     }
-
-    const musique = document.getElementById("musique-fond");
-    const boutonMusique = document.getElementById("bouton-musique");
-    boutonMusique.addEventListener("click", () => {
-      musique.muted = !musique.muted;
-      if (!musique.muted) { musique.play(); }
-      boutonMusique.textContent = musique.muted ? "🔇" : "🔊";
-    });
   </script>
 </body>
 </html>

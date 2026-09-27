@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <link rel="stylesheet" href="style.css">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
   <title>Mon classeur numérique</title>
 </head>
 <body>
+
   <div class="sakura-container" aria-hidden="true"></div>
-  <div class="sakura-energy" aria-hidden="true"></div>
-  <div class="dragon-zone" aria-hidden="true"><div class="dragon"></div></div>
+
+  <div class="dragon-zone" aria-hidden="true">
+    <div class="dragon">
+      <div class="dragon-body"></div>
+      <div class="dragon-head">
+        <span class="dragon-horn horn-one"></span>
+        <span class="dragon-horn horn-two"></span>
+      </div>
+      <div class="dragon-mane"></div>
+      <div class="dragon-spikes"></div>
+      <div class="dragon-tail"></div>
+    </div>
+  </div>
 
   <header>
     <h1>Mon classeur numérique</h1>
@@ -27,38 +39,32 @@
     <p>Ce site me permettra d'organiser mes ressources de SIN.</p>
   </main>
 
+  <!-- Bouton secret vers le jeu -->
+  <a href="jeux.html" id="bouton-secret" title="Sanctuaire des Kami" style="position:fixed; bottom:20px; left:20px; z-index:999; width:44px; height:44px; border-radius:8px; background:#0c0818; border:1px solid #ffd700; color:#ffd700; display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none; box-shadow:0 0 12px rgba(255, 215, 0, 0.4); backdrop-filter:blur(4px); transition:transform 0.3s ease, box-shadow 0.3s ease;">⛩️</a>
+
   <script>
     const sakuraContainer = document.querySelector(".sakura-container");
-    const PETAL_COUNT = 42;
+    const PETAL_COUNT = 35;
+
     for (let i = 0; i < PETAL_COUNT; i++) {
       const petal = document.createElement("span");
       petal.className = "sakura-petal";
-      petal.style.left = `${Math.random() * 100}%`;
-      petal.style.setProperty("--fall", `${14 + Math.random() * 13}s`);
-      petal.style.setProperty("--delay", `${Math.random() * -24}s`);
-      petal.style.setProperty("--drift1", `${-80 + Math.random() * 160}px`);
-      petal.style.setProperty("--drift2", `${-100 + Math.random() * 200}px`);
-      petal.style.setProperty("--drift3", `${-120 + Math.random() * 240}px`);
-      petal.style.setProperty("--drift4", `${-100 + Math.random() * 200}px`);
-      sakuraContainer.appendChild(petal);
-    }
 
-    const dragon = document.querySelector(".dragon");
-    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-    if (finePointer.matches) {
-      let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
-      window.addEventListener("pointermove", (event) => {
-        targetX = (event.clientX / window.innerWidth - 0.5) * 22;
-        targetY = (event.clientY / window.innerHeight - 0.5) * 14;
-      }, { passive: true });
-      function parallax() {
-        currentX += (targetX - currentX) * 0.025;
-        currentY += (targetY - currentY) * 0.025;
-        dragon.style.setProperty("--mx", `${currentX}px`);
-        dragon.style.setProperty("--my", `${currentY}px`);
-        requestAnimationFrame(parallax);
-      }
-      parallax();
+      const size = Math.random() * 7 + 7;
+      const left = Math.random() * 100;
+      const fallDuration = Math.random() * 12 + 10;
+      const swayDuration = Math.random() * 3 + 2;
+      const delay = Math.random() * -20;
+      const opacity = Math.random() * 0.45 + 0.35;
+
+      petal.style.left = `${left}%`;
+      petal.style.width = `${size}px`;
+      petal.style.height = `${size * 0.65}px`;
+      petal.style.opacity = opacity;
+      petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+      petal.style.animationDelay = `${delay}s, ${Math.random() * -5}s`;
+
+      sakuraContainer.appendChild(petal);
     }
   </script>
 </body>

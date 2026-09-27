@@ -1,23 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600&display=swap');
 
-:root {
-  --ink: #202126;
-  --ink-soft: #4b4a4d;
-  --paper: #f7f0df;
-  --paper-glass: rgba(249, 243, 228, .78);
-  --sakura: #c95d78;
-  --sakura-light: #ef9bb0;
-  --rose-glow: #ff78aa;
-  --violet: #b26bba;
-  --gold: #b58a4a;
-  --line: rgba(45, 38, 38, .22);
-  --shadow: rgba(31, 27, 28, .28);
+/* =====================================================
+   VARIABLES
+   ===================================================== */
 
-  --zoom-duration: 26s;
-  --dragon-duration: 52s;
-  --dragon-size: min(65vw, 850px);
-  --petal-count: 35;
+:root {
+  --bg: #09060d;
+  --bg-mist: #1b1220;
+  --panel: rgba(18, 13, 24, 0.85);
+
+  --text: #fff5f8;
+  --text-soft: #cbb8c6;
+
+  /* Sakura & Éclairs */
+  --sakura: #ff65a5;
+  --sakura-light: #ffc0d5;
+  --lightning: #ff1d8e;
+  --red-deep: #b51a4a;
+
+  /* Dragon & Or */
+  --azure: #0088ff;
+  --azure-light: #52d2ff;
+  --azure-dark: #083c82;
+  --dragon-gold: #f5ab35;
+  --dragon-gold-light: #ffe57f;
+
+  /* Bordures & Ombres */
+  --border: rgba(255, 101, 165, 0.22);
+  --border-hover: rgba(255, 29, 142, 0.55);
+  --border-gold: rgba(245, 171, 53, 0.4);
+
+  --shadow: rgba(5, 2, 8, 0.75);
 }
+
+
+/* =====================================================
+   RESET & ARRIÈRE-PLAN
+   ===================================================== */
 
 * {
   margin: 0;
@@ -34,137 +53,118 @@ html {
 body {
   min-height: 100vh;
   overflow-x: hidden;
-  color: var(--ink);
+
+  color: var(--text);
   font-family: "Noto Serif JP", serif;
   line-height: 1.7;
+
   position: relative;
-  isolation: isolate;
-  background-color: #eee4d3;
-  /* L'image de fond qui gère le temple */
-  background-image: 
-    linear-gradient(rgba(255, 248, 235, .08), rgba(255, 248, 235, .08)),
-    url("assets/temple.png");
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  transition: background-position 0.2s ease-out; /* Pour la parallaxe JS */
+
+  background:
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(245, 171, 53, 0.18),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255, 29, 142, 0.25),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 50% 80%,
+      rgba(181, 26, 74, 0.2),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #130a18 0%,
+      #08040b 100%
+    );
 }
 
-/* Voile très léger */
+
+/* =====================================================
+   1. BRANCHES ET ÉCLAIRS ÉLECTRIQUES (PURE CSS)
+   ===================================================== */
+
+/* Branche coin supérieur gauche */
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
-  z-index: -2;
+  top: -60px;
+  left: -60px;
+  width: 360px;
+  height: 360px;
+  border-bottom: 12px solid #140b1e;
+  border-right: 8px solid #140b1e;
+  border-radius: 0 0 100% 0;
+  z-index: 6;
   pointer-events: none;
-  background: 
-    radial-gradient(circle at 50% 42%, transparent 0 38%, rgba(34, 29, 29, .10) 100%),
-    linear-gradient(180deg, rgba(255,255,255,.10), rgba(47,38,38,.08));
-  mix-blend-mode: multiply;
+  filter: drop-shadow(0 0 12px #000);
+  animation: electric-flash-left 2.8s infinite ease-in-out;
 }
 
-/* Respiration très lente du paysage (zoom/dézoom) */
+/* Branche coin supérieur droit */
 body::after {
   content: "";
   position: fixed;
-  inset: -2%;
-  z-index: -3;
+  top: -60px;
+  right: -60px;
+  width: 380px;
+  height: 380px;
+  border-bottom: 14px solid #140b1e;
+  border-left: 9px solid #140b1e;
+  border-radius: 0 0 0 100%;
+  z-index: 6;
   pointer-events: none;
-  background: inherit;
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  animation: paysage-respire var(--zoom-duration) ease-in-out infinite;
-  transform-origin: center center;
-  will-change: transform;
+  filter: drop-shadow(0 0 12px #000);
+  animation: electric-flash-right 3.4s infinite ease-in-out 0.9s;
 }
 
-@keyframes paysage-respire {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.035); }
+@keyframes electric-flash-left {
+  0%, 86%, 100% {
+    border-color: #140b1e;
+    box-shadow: none;
+  }
+  88% {
+    border-color: var(--lightning);
+    box-shadow: inset 0 0 20px var(--lightning), 0 0 30px var(--lightning), 0 0 45px #ffffff;
+  }
+  92% {
+    border-color: #ffffff;
+    box-shadow: inset 0 0 30px var(--sakura-light), 0 0 40px var(--lightning);
+  }
+  95% {
+    border-color: #140b1e;
+    box-shadow: none;
+  }
 }
 
-/* =========================================================
-   ÉLECTRICITÉ ROSE MAGIQUE
-   ========================================================= */
-.electric-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  background: 
-    radial-gradient(ellipse at 15% 25%, transparent 0, rgba(255, 105, 169, 0) 10%, transparent 25%),
-    radial-gradient(ellipse at 85% 20%, transparent 0, rgba(197, 91, 183, 0) 10%, transparent 25%);
-  animation: electric-pulse 6s ease-in-out infinite alternate;
+@keyframes electric-flash-right {
+  0%, 88%, 100% {
+    border-color: #140b1e;
+    box-shadow: none;
+  }
+  90% {
+    border-color: var(--lightning);
+    box-shadow: inset 0 0 25px var(--lightning), 0 0 35px var(--lightning), 0 0 50px #ffffff;
+  }
+  94% {
+    border-color: #ffffff;
+    box-shadow: inset 0 0 15px var(--sakura-light);
+  }
+  97% {
+    border-color: #140b1e;
+    box-shadow: none;
+  }
 }
 
-.electric-overlay::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(circle at 20% 30%, var(--rose-glow) 0%, transparent 2%),
-    radial-gradient(circle at 80% 40%, var(--violet) 0%, transparent 1.5%);
-  opacity: 0.3;
-  filter: blur(4px);
-  animation: spark 3s infinite alternate;
-}
 
-@keyframes electric-pulse {
-  0% { box-shadow: inset 0 0 50px rgba(255, 120, 170, 0.1); }
-  100% { box-shadow: inset 0 0 150px rgba(255, 120, 170, 0.3); }
-}
+/* =====================================================
+   2. PÉTALES DE CERISIER (CHUTE 3D CONTINUÉ)
+   ===================================================== */
 
-@keyframes spark {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.6; }
-}
-
-/* =========================================================
-   DRAGON (IMAGE 2)
-   ========================================================= */
-.dragon-zone {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 8; 
-  opacity: 0.95;
-  transition: transform 0.2s ease-out; /* Pour la parallaxe JS */
-}
-
-.dragon {
-  position: absolute;
-  width: var(--dragon-size);
-  aspect-ratio: 16/9;
-  left: 50%;
-  top: 50%;
-  transform-origin: center center;
-  background-image: url("assets/dragon.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  /* Supprime le blanc de l'image du dragon */
-  mix-blend-mode: multiply;
-  filter: drop-shadow(0 10px 18px rgba(25, 28, 35, .20)) contrast(1.1);
-  animation: dragon-estampe var(--dragon-duration) ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes dragon-estampe {
-  0% { transform: translate(-50%, -50%) translate(-10vw, 5vh) rotate(-2deg) scale(0.9); }
-  25% { transform: translate(-50%, -50%) translate(5vw, -5vh) rotate(1deg) scale(0.95); }
-  50% { transform: translate(-50%, -50%) translate(12vw, 2vh) rotate(-1deg) scale(0.92); }
-  75% { transform: translate(-50%, -50%) translate(-2vw, 8vh) rotate(2deg) scale(0.96); }
-  100% { transform: translate(-50%, -50%) translate(-10vw, 5vh) rotate(-2deg) scale(0.9); }
-}
-
-/* =========================================================
-   PÉTALES (Animés via CSS, générés via JS)
-   ========================================================= */
 .sakura-container {
   position: fixed;
   inset: 0;
@@ -172,156 +172,584 @@ body::after {
   height: 100%;
   pointer-events: none;
   overflow: hidden;
-  z-index: 20;
+  z-index: 7;
 }
 
 .sakura-petal {
   position: absolute;
-  top: -10%;
+  top: -40px;
   width: 14px;
   height: 9px;
-  background: linear-gradient(135deg, #fff1f4, var(--sakura));
+  background: linear-gradient(135deg, var(--sakura-light), var(--lightning));
   border-radius: 100% 0 100% 0;
-  opacity: 0.8;
-  box-shadow: 0 2px 5px rgba(102, 48, 62, 0.3);
-  animation: sakura-fall linear infinite, sakura-sway ease-in-out infinite alternate;
-  will-change: transform;
+  opacity: 0.85;
+  box-shadow: 0 0 10px rgba(255, 29, 142, 0.7);
+  animation: sakura-fall-3d linear infinite;
 }
 
-@keyframes sakura-fall {
-  0% { transform: translateY(-50px) rotate(0deg); }
-  100% { transform: translateY(110vh) rotate(720deg); }
+/* Variabilité des trajectoires */
+.sakura-petal:nth-child(1)  { left: 5%;  animation-duration: 7s;  animation-delay: 0s;   transform: scale(0.8); }
+.sakura-petal:nth-child(2)  { left: 18%; animation-duration: 9.5s;animation-delay: 1.2s; transform: scale(1.1); }
+.sakura-petal:nth-child(3)  { left: 32%; animation-duration: 6.5s;animation-delay: 2.8s; transform: scale(0.7); }
+.sakura-petal:nth-child(4)  { left: 48%; animation-duration: 11s; animation-delay: 0.4s; transform: scale(1.3); }
+.sakura-petal:nth-child(5)  { left: 62%; animation-duration: 8s;  animation-delay: 2.1s; transform: scale(0.9); }
+.sakura-petal:nth-child(6)  { left: 75%; animation-duration: 10s; animation-delay: 3.5s; transform: scale(1.2); }
+.sakura-petal:nth-child(7)  { left: 88%; animation-duration: 7.5s;animation-delay: 0.9s; transform: scale(0.85); }
+.sakura-petal:nth-child(8)  { left: 95%; animation-duration: 9s;  animation-delay: 2.4s; transform: scale(1.0); }
+
+@keyframes sakura-fall-3d {
+  0% {
+    top: -10vh;
+    transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.9; }
+  90% { opacity: 0.9; }
+  100% {
+    top: 110vh;
+    transform: translateX(160px) rotateX(720deg) rotateY(360deg) rotateZ(540deg);
+    opacity: 0;
+  }
 }
 
-@keyframes sakura-sway {
-  0% { margin-left: -30px; }
-  100% { margin-left: 30px; }
+
+/* =====================================================
+   3. ANIMATION DU DRAGON (ORBITE AUTOUR DU CONTENU)
+   ===================================================== */
+
+.dragon-zone {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: auto; /* Permet le changement de z-index relatif à main */
 }
 
-/* =========================================================
-   INTERFACE & HEADER (D'après ton design)
-   ========================================================= */
+.dragon {
+  position: absolute;
+  width: 260px;
+  height: 150px;
+  left: 50%;
+  top: 35%;
+  transform-origin: center;
+  animation: dragon-orbit-house 18s ease-in-out infinite;
+}
+
+@keyframes dragon-orbit-house {
+  /* 0% : Derrière la maison (z-index: 2), en haut à gauche */
+  0% {
+    transform: translate(-130%, -100%) scale(0.65) rotate(-15deg);
+    z-index: 2;
+    filter: brightness(0.55) blur(2px) drop-shadow(0 0 10px rgba(0, 136, 255, 0.4));
+  }
+
+  /* 25% : Descend sur le côté droit toujours derrière */
+  25% {
+    transform: translate(50%, -60%) scale(0.85) rotate(12deg);
+    z-index: 2;
+    filter: brightness(0.75) blur(1px) drop-shadow(0 0 15px rgba(0, 136, 255, 0.6));
+  }
+
+  /* 50% : DEVANT le bâtiment principal (z-index: 10), en bas au centre/droite */
+  50% {
+    transform: translate(20%, 50%) scale(1.25) rotate(5deg);
+    z-index: 10;
+    filter: brightness(1.25) blur(0px) drop-shadow(0 0 25px rgba(0, 136, 255, 0.95)) drop-shadow(0 0 20px rgba(245, 171, 53, 0.6));
+  }
+
+  /* 75% : Remonte par la gauche, toujours devant */
+  75% {
+    transform: translate(-120%, 10%) scale(0.95) rotate(-22deg);
+    z-index: 10;
+    filter: brightness(1.0) blur(0px) drop-shadow(0 0 20px rgba(0, 136, 255, 0.8));
+  }
+
+  /* 100% : Repasse derrière */
+  100% {
+    transform: translate(-130%, -100%) scale(0.65) rotate(-15deg);
+    z-index: 2;
+    filter: brightness(0.55) blur(2px) drop-shadow(0 0 10px rgba(0, 136, 255, 0.4));
+  }
+}
+
+.dragon-body {
+  position: absolute;
+  width: 210px;
+  height: 55px;
+  left: 25px;
+  top: 48px;
+  border-top: 7px solid var(--azure);
+  border-bottom: 5px solid var(--dragon-gold);
+  border-radius: 50%;
+  transform: rotate(-8deg);
+  box-shadow: 0 0 12px var(--azure), 0 0 20px var(--dragon-gold);
+}
+
+.dragon-head {
+  position: absolute;
+  width: 55px;
+  height: 48px;
+  left: 0;
+  top: 35px;
+  background: linear-gradient(135deg, var(--azure-light), var(--azure-dark));
+  border-radius: 55% 45% 45% 35%;
+  transform: rotate(-15deg);
+  box-shadow: 0 0 15px var(--azure), 0 0 25px rgba(255, 229, 127, 0.6);
+}
+
+.dragon-head::before {
+  content: "";
+  position: absolute;
+  width: 27px;
+  height: 17px;
+  right: -17px;
+  bottom: 5px;
+  background: var(--azure);
+  border-radius: 60% 40% 40% 60%;
+}
+
+.dragon-head::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  right: 13px;
+  top: 12px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ffffff, 0 0 18px var(--azure-light);
+}
+
+.dragon-horn {
+  position: absolute;
+  width: 6px;
+  height: 34px;
+  background: linear-gradient(180deg, var(--dragon-gold-light), var(--dragon-gold));
+  border-radius: 100%;
+  transform: rotate(-35deg);
+  box-shadow: 0 0 10px var(--dragon-gold);
+}
+
+.horn-one { left: 18px; top: 4px; }
+.horn-two { left: 32px; top: 1px; transform: rotate(-55deg); }
+
+.dragon-mane {
+  position: absolute;
+  left: 37px;
+  top: 35px;
+  width: 50px;
+  height: 60px;
+  border-left: 8px solid #1a0f20;
+  border-radius: 50%;
+  transform: rotate(15deg);
+  opacity: 0.95;
+  filter: drop-shadow(0 0 6px var(--lightning));
+}
+
+.dragon-tail {
+  position: absolute;
+  width: 120px;
+  height: 75px;
+  right: -35px;
+  top: 35px;
+  border-right: 8px solid var(--azure);
+  border-bottom: 6px solid var(--dragon-gold);
+  border-radius: 0 0 80% 70%;
+  transform: rotate(18deg);
+  box-shadow: 0 0 12px var(--dragon-gold);
+}
+
+.dragon-spikes {
+  position: absolute;
+  left: 70px;
+  top: 32px;
+  width: 150px;
+  height: 20px;
+  background: repeating-linear-gradient(90deg, transparent 0, transparent 15px, var(--dragon-gold-light) 16px, transparent 22px);
+  opacity: 0.9;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
 header {
   position: relative;
-  z-index: 30;
-  padding: 2.2rem 2rem 1.5rem;
+  z-index: 5;
+  padding: 2.8rem 2rem 2rem;
   text-align: center;
-  background: linear-gradient(180deg, rgba(250, 244, 230, .92), rgba(250, 244, 230, .66));
-  border-bottom: 1px solid rgba(60, 45, 45, .20);
-  box-shadow: 0 10px 30px rgba(50, 35, 35, .10);
-  backdrop-filter: blur(3px);
+  background: linear-gradient(180deg, rgba(12, 7, 18, 0.96), rgba(15, 9, 22, 0.85));
+  border-bottom: 1px solid var(--border-gold);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.6), 0 1px 15px rgba(255, 29, 142, 0.35);
 }
 
 header h1 {
   font-family: "Shippori Mincho", serif;
   font-weight: 600;
-  color: #29272a;
-  font-size: clamp(1.65rem, 4vw, 2.65rem);
-  letter-spacing: 6px;
-  text-shadow: 0 2px 12px rgba(255,255,255,.8);
+  color: var(--text);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 8px;
+  text-shadow: 0 0 18px var(--lightning), 0 0 35px rgba(255, 101, 165, 0.4);
 }
 
-header h1::before, header h1::after {
+header h1::before,
+header h1::after {
   content: "❀";
-  color: var(--sakura);
-  font-size: .72em;
+  color: var(--lightning);
+  font-size: 0.75em;
   margin: 0 1rem;
+  text-shadow: 0 0 10px var(--lightning);
 }
 
-nav { margin-top: 1.4rem; display: flex; justify-content: center; gap: .35rem; }
+
+/* =====================================================
+   NAVIGATION
+   ===================================================== */
+
+nav {
+  margin-top: 1.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 nav a {
   position: relative;
-  color: #51484b;
+  color: var(--text-soft);
   text-decoration: none;
   font-family: "Shippori Mincho", serif;
-  font-size: .88rem;
-  letter-spacing: 1.5px;
-  padding: .55rem 1rem;
-  transition: all .3s ease;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  padding: 0.55rem 1.1rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
 }
+
 nav a::after {
   content: "";
   position: absolute;
-  left: 50%; bottom: 3px;
-  width: 0; height: 1px;
-  background: var(--sakura);
+  left: 50%;
+  bottom: 3px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sakura), var(--dragon-gold));
   transform: translateX(-50%);
-  transition: width .3s ease;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
 }
-nav a:hover { color: #a33e5c; transform: translateY(-1px); }
-nav a:hover::after { width: 65%; }
+
+nav a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px var(--sakura-light);
+}
+
+nav a:hover::after {
+  width: 70%;
+  box-shadow: 0 0 8px var(--dragon-gold);
+}
+
+
+/* =====================================================
+   CONTENU PRINCIPAL (Représente la Pagode/Maison)
+   ===================================================== */
 
 main {
   position: relative;
-  z-index: 25;
+  z-index: 5; /* Z-Index fixe pour permettre l'orbite du dragon autour */
   width: min(100% - 2rem, 980px);
   margin: 4rem auto;
   padding: clamp(2rem, 5vw, 4rem);
-  background: linear-gradient(145deg, rgba(250, 246, 235, .90), rgba(246, 237, 220, .76));
-  border: 1px solid rgba(74, 52, 53, .20);
-  border-radius: 10px;
-  box-shadow: 0 25px 70px var(--shadow), inset 0 1px 0 rgba(255,255,255,.65);
-  backdrop-filter: blur(7px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 30px 80px var(--shadow), 
+              0 0 30px rgba(255, 29, 142, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
   text-align: center;
 }
 
 main::before {
-  content: "❀";
+  content: "";
   display: block;
-  width: 100%;
-  margin: 0 auto 1.2rem;
-  color: var(--sakura);
-  font-size: 1.4rem;
+  width: 60px;
+  height: 2px;
+  margin: 0 auto 2rem;
+  background: linear-gradient(90deg, var(--lightning), var(--dragon-gold));
+  box-shadow: 0 0 10px var(--lightning);
 }
 
 main h2 {
   font-family: "Shippori Mincho", serif;
   font-weight: 600;
-  color: #302c30;
-  font-size: clamp(1.4rem, 3vw, 1.95rem);
-  letter-spacing: 3px;
+  color: var(--text);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  letter-spacing: 4px;
   margin-bottom: 1rem;
+  text-shadow: 0 0 12px rgba(255, 192, 213, 0.3);
 }
 
-main p.intro {
+main p {
+  color: var(--text-soft);
+  font-size: 0.98rem;
+}
+
+.intro {
   max-width: 650px;
   margin: 0 auto 1.5rem;
-  color: var(--ink-soft);
+  color: var(--text-soft);
 }
+
+
+/* =====================================================
+   BOUTONS
+   ===================================================== */
+
+.document-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.8rem;
+  color: #120509;
+  background: linear-gradient(135deg, var(--sakura-light), var(--sakura), var(--dragon-gold));
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: "Shippori Mincho", serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(255, 29, 142, 0.3), 0 0 15px rgba(245, 171, 53, 0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.document-link:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.12);
+  box-shadow: 0 12px 35px rgba(255, 29, 142, 0.5), 0 0 25px rgba(245, 171, 53, 0.4);
+}
+
+
+/* =====================================================
+   FORMULAIRE
+   ===================================================== */
+
+.formulaire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  padding: 1.4rem;
+  background: rgba(10, 6, 14, 0.65);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.formulaire input[type="text"],
+.formulaire input[type="file"],
+.formulaire select {
+  background: rgba(16, 10, 22, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  padding: 0.7rem 0.9rem;
+  border-radius: 3px;
+  font-family: "Noto Serif JP", serif;
+  font-size: 0.88rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.formulaire input[type="text"]:focus,
+.formulaire select:focus {
+  outline: none;
+  border-color: var(--lightning);
+  box-shadow: 0 0 12px rgba(255, 29, 142, 0.25);
+}
+
+.formulaire button {
+  margin-top: 0;
+}
+
+
+/* =====================================================
+   CARTES
+   ===================================================== */
 
 .grille-cartes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1.2rem;
+  gap: 1.3rem;
   margin-top: 2.5rem;
   text-align: left;
 }
 
 .carte {
   position: relative;
-  background: rgba(255, 249, 237, .76);
-  border: 1px solid rgba(75, 52, 55, .17);
-  border-radius: 8px;
-  padding: 1.4rem;
-  box-shadow: 0 12px 30px rgba(55, 39, 41, .10);
-  transition: transform .3s ease;
+  background: linear-gradient(145deg, rgba(26, 18, 34, 0.85), rgba(12, 8, 18, 0.92));
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1.5rem;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
-.carte::before {
-  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-  background: linear-gradient(90deg, transparent, var(--sakura), transparent);
-}
-.carte:hover { transform: translateY(-5px); }
-.carte h3 { font-family: "Shippori Mincho", serif; color: #a3445f; margin-bottom: .6rem; }
-.carte p { color: var(--ink-soft); font-size: .88rem; }
 
-/* Responsive Mobile */
-@media (max-width: 900px) {
-  body { background-attachment: scroll; }
-  .dragon { --dragon-size: min(85vw, 620px); }
+.carte::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--lightning), var(--dragon-gold), transparent);
+  opacity: 0.8;
 }
+
+.carte:hover {
+  transform: translateY(-5px);
+  background: rgba(33, 22, 44, 0.95);
+  border-color: var(--border-hover);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 29, 142, 0.2);
+}
+
+.carte h3 {
+  font-family: "Shippori Mincho", serif;
+  color: var(--sakura-light);
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 0 8px rgba(255, 101, 165, 0.3);
+}
+
+.carte p {
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
+}
+
+.liste-fichiers {
+  list-style: none;
+}
+
+.liste-fichiers li {
+  margin-bottom: 0.45rem;
+}
+
+.liste-fichiers a {
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease, padding-left 0.2s ease, text-shadow 0.2s ease;
+}
+
+.liste-fichiers a:hover {
+  color: var(--sakura-light);
+  padding-left: 5px;
+  text-shadow: 0 0 8px var(--sakura);
+}
+
+
+/* =====================================================
+   MESSAGES
+   ===================================================== */
+
+.msg-succes {
+  color: var(--sakura-light);
+  border: 1px solid var(--lightning);
+  padding: 0.7rem 1.1rem;
+  margin: 1rem 0;
+  background-color: rgba(255, 29, 142, 0.12);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(255, 29, 142, 0.2);
+}
+
+.msg-erreur {
+  color: #ff8a8a;
+  border: 1px solid var(--red-deep);
+  padding: 0.7rem 1.1rem;
+  margin: 1rem 0;
+  background-color: rgba(181, 26, 74, 0.15);
+  border-radius: 4px;
+}
+
+
+/* =====================================================
+   SOUS-TITRES
+   ===================================================== */
+
+.sous-titre {
+  position: relative;
+  font-family: "Shippori Mincho", serif;
+  color: var(--sakura);
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-size: 1.05rem;
+  margin: 2rem 0 0.8rem;
+  padding-left: 1.2rem;
+  text-align: left;
+}
+
+.sous-titre::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 70%;
+  background: linear-gradient(180deg, var(--lightning), var(--dragon-gold));
+  transform: translateY(-50%);
+  box-shadow: 0 0 10px var(--lightning);
+}
+
+
+/* =====================================================
+   ÉTIQUETTES
+   ===================================================== */
+
+.etiquette {
+  display: inline-block;
+  background: rgba(255, 29, 142, 0.15);
+  color: var(--sakura-light);
+  border: 1px solid rgba(255, 101, 165, 0.4);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  padding: 0.15rem 0.55rem;
+  text-transform: uppercase;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-right: 0.3rem;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+  header { padding: 2rem 1rem 1.4rem; }
+  header h1 { letter-spacing: 4px; }
+  header h1::before, header h1::after { margin: 0 0.4rem; }
+  nav { gap: 0.2rem; }
+  nav a { font-size: 0.8rem; }
+  main { width: calc(100% - 1rem); margin: 2rem auto; padding: 2rem 1.2rem; }
+  .grille-cartes { grid-template-columns: 1fr; }
+  .dragon { width: 190px; height: 110px; }
+  body::before, body::after { width: 200px; height: 200px; }
+}
+
+
+/* =====================================================
+   ACCESSIBILITÉ
+   ===================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

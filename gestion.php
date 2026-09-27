@@ -45,19 +45,52 @@ function estAdmin() {
     return ($_SESSION['role'] ?? '') === 'admin';
 }
 
+// Anti brute-force : au bout de 5 mots de passe faux d'affilée, on bloque
+// les nouvelles tentatives pendant 5 minutes.
+define('TENTATIVES_MAX', 5);
+define('BLOCAGE_SECONDES', 300);
+
+function estBloque() {
+    $tentatives = $_SESSION['tentatives_ratees'] ?? 0;
+    $depuis = $_SESSION['derniere_tentative'] ?? 0;
+    if ($tentatives >= TENTATIVES_MAX && (time() - $depuis) < BLOCAGE_SECONDES) {
+        return true;
+    }
+    // Le blocage a expiré : on remet le compteur à zéro
+    if ($tentatives >= TENTATIVES_MAX) {
+        $_SESSION['tentatives_ratees'] = 0;
+    }
+    return false;
+}
+
+function secondesAvantDeblocage() {
+    $depuis = $_SESSION['derniere_tentative'] ?? 0;
+    return max(0, BLOCAGE_SECONDES - (time() - $depuis));
+}
+
 // Traite le formulaire de connexion / déconnexion (à appeler en tout début de page).
 // Retourne un message d'erreur éventuel, sinon une chaîne vide.
 function traiterConnexion() {
     $erreur = '';
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'connexion') {
+
+        if (estBloque()) {
+            $minutes = ceil(secondesAvantDeblocage() / 60);
+            return "Trop de tentatives ratées. Réessaie dans environ $minutes minute(s).";
+        }
+
         $motDePasseSaisi = $_POST['mot_de_passe'] ?? '';
 
         if (hash_equals(MOT_DE_PASSE_ADMIN, $motDePasseSaisi)) {
             $_SESSION['role'] = 'admin';
+            $_SESSION['tentatives_ratees'] = 0;
         } elseif (hash_equals(MOT_DE_PASSE_MODERATEUR, $motDePasseSaisi)) {
             $_SESSION['role'] = 'moderateur';
+            $_SESSION['tentatives_ratees'] = 0;
         } else {
+            $_SESSION['tentatives_ratees'] = ($_SESSION['tentatives_ratees'] ?? 0) + 1;
+            $_SESSION['derniere_tentative'] = time();
             $erreur = "Mot de passe incorrect.";
         }
     }
@@ -69,7 +102,7 @@ function traiterConnexion() {
     return $erreur;
 }
 
-// Affiche la barre de connexion : mot de passe, ou saisie du code, ou statut connecté
+// Affiche la barre de connexion : mot de passe, statut connecté, ou message de blocage
 function afficherBarreConnexion($erreurConnexion = '') {
     $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
 
@@ -82,6 +115,10 @@ function afficherBarreConnexion($erreurConnexion = '') {
         echo '<span class="msg-succes">🔓 Connecté (' . htmlspecialchars($libelleRole) . ')</span> ';
         echo '<button type="submit" class="document-link">Se déconnecter</button>';
         echo '</form>';
+
+    } elseif (estBloque()) {
+        $minutes = ceil(secondesAvantDeblocage() / 60);
+        echo '<p class="msg-erreur">🔒 Trop de tentatives ratées. Réessaie dans environ ' . $minutes . ' minute(s).</p>';
 
     } else {
         echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';

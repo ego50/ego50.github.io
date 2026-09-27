@@ -2,24 +2,20 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sanctuaire Divin — Archives & Salles de Jeu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sanctuaire Divin - Centre Arcade & Hack</title>
   <style>
-    /* ===================================================
-       1. VARIABLES GLOBALES & THÈME JAPONAIS DIVIN
-       =================================================== */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Noto+Serif+JP:wght@400;700&display=swap');
+
     :root {
-      --bg-ink: #0a0a12;
-      --bg-card: rgba(20, 18, 30, 0.85);
-      --red-torii: #d62828;
-      --red-bright: #ff3b38;
-      --gold-divine: #ffb703;
-      --gold-light: #ffe599;
-      --sakura-pink: #ffb7c5;
-      --white-sacred: #f8f9fa;
-      --border-gold: 1px solid rgba(255, 183, 3, 0.3);
-      --glow-gold: 0 0 15px rgba(255, 183, 3, 0.4);
-      --glow-red: 0 0 15px rgba(214, 40, 40, 0.5);
+      --bg-color: #0b0b10;
+      --card-bg: rgba(22, 20, 31, 0.9);
+      --gold: #f4c430;
+      --gold-glow: rgba(244, 196, 48, 0.4);
+      --vermilion: #d62828;
+      --vermilion-glow: rgba(214, 40, 40, 0.5);
+      --text-light: #f8f9fa;
+      --border-color: #e0a96d;
     }
 
     * {
@@ -27,875 +23,1049 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
     body {
-      background-color: var(--bg-ink);
-      color: var(--white-sacred);
-      font-family: 'Segoe UI', 'Cinzel', -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(214, 40, 40, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(244, 196, 48, 0.08) 0%, transparent 50%);
+      color: var(--text-light);
+      font-family: 'Noto Serif JP', serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding: 15px;
       overflow-x: hidden;
-      position: relative;
     }
 
-    /* Canvas d'arrière-plan : Pétales de Cerisier (Sakura) */
-    #sakura-canvas {
+    /* Animation de pétales divins */
+    .sakura-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .petal {
+      position: absolute;
+      background: linear-gradient(135deg, #ffb7c5, #e63946);
+      border-radius: 15px 0 15px 0;
+      opacity: 0.3;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ÉCRAN DE VERROUILLAGE / MOT DE PASSE */
+    #password-modal {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      pointer-events: none;
-      z-index: 0;
+      background: rgba(5, 5, 8, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    /* Container Principal */
-    .app-container {
-      position: relative;
-      z-index: 1;
+    .pass-box {
+      background: var(--card-bg);
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 30px var(--gold-glow);
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
       width: 100%;
-      max-width: 1000px;
-      padding: 20px;
-      display: flex;
+    }
+
+    .pass-box h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+    }
+
+    .pass-input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      background: #000;
+      border: 1px solid var(--border-color);
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      text-align: center;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .pass-input:focus {
+      border-color: var(--vermilion);
+      box-shadow: 0 0 10px var(--vermilion-glow);
+    }
+
+    .pass-error {
+      color: var(--vermilion);
+      font-size: 0.85rem;
+      margin-top: 8px;
+      display: none;
+    }
+
+    /* CONTENU PRINCIPAL MASQUÉ SI VERROUILLÉ */
+    #app-container {
+      display: none;
+      width: 100%;
+      max-width: 950px;
       flex-direction: column;
       align-items: center;
+      z-index: 10;
     }
 
-    /* ===================================================
-       2. EN-TÊTE DIVIN & TORII
-       =================================================== */
     header {
       text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .torii-icon {
-      width: 70px;
-      height: 60px;
-      margin: 0 auto 10px auto;
-      fill: var(--red-torii);
-      filter: drop-shadow(0 0 8px var(--red-bright));
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 12px;
+      width: 100%;
     }
 
     h1 {
-      font-size: 2.2rem;
-      letter-spacing: 4px;
-      color: var(--gold-divine);
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+      font-family: 'Cinzel', serif;
+      font-size: 2.4rem;
+      color: var(--gold);
+      text-shadow: 0 0 15px var(--gold-glow), 0 0 30px var(--vermilion-glow);
+      letter-spacing: 2px;
       margin-bottom: 5px;
     }
 
     .subtitle {
-      font-size: 0.95rem;
-      color: var(--sakura-pink);
-      letter-spacing: 2px;
-      opacity: 0.9;
+      font-size: 0.9rem;
+      color: #ccc;
+      font-style: italic;
     }
 
-    /* ===================================================
-       3. NAVIGATION PAR ONGLET (6 EMPLACEMENTS)
-       =================================================== */
+    /* Navigation */
     nav {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 25px;
+      gap: 8px;
+      margin-bottom: 20px;
       width: 100%;
     }
 
-    .tab-btn {
-      background: rgba(15, 13, 25, 0.9);
-      border: 1px solid rgba(255, 183, 3, 0.3);
-      color: var(--white-sacred);
-      padding: 10px 16px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+    .nav-btn {
+      background: linear-gradient(145deg, #1f1c2c, #12101a);
+      border: 1px solid var(--border-color);
+      color: var(--gold);
+      padding: 8px 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
     }
 
-    .tab-btn:hover {
-      border-color: var(--gold-divine);
-      box-shadow: var(--glow-gold);
-      transform: translateY(-2px);
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--red-torii), #800f2f);
-      border-color: var(--gold-light);
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--vermilion);
       color: #fff;
-      box-shadow: var(--glow-red);
-      font-weight: bold;
+      border-color: var(--gold);
+      box-shadow: 0 0 12px var(--vermilion-glow);
     }
 
-    /* ===================================================
-       4. CONTENEUR DES JEUX ET PAGES
-       =================================================== */
+    /* Espace de Jeu */
     main {
       width: 100%;
-      background: var(--bg-card);
-      border: var(--border-gold);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), var(--glow-gold);
-      padding: 25px;
-      backdrop-filter: blur(8px);
-      min-height: 520px;
+      background: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
     }
 
-    .section-content {
+    .tab-content {
       display: none;
       width: 100%;
       flex-direction: column;
       align-items: center;
     }
 
-    .section-content.active {
+    .tab-content.active {
       display: flex;
     }
 
     .game-header {
-      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 183, 3, 0.2);
-    }
-
-    .game-title {
-      font-size: 1.4rem;
-      color: var(--gold-divine);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      background: rgba(0,0,0,0.5);
+      border-left: 3px solid var(--vermilion);
+      border-right: 3px solid var(--gold);
     }
 
     .score-board {
       font-size: 1rem;
-      color: var(--sakura-pink);
-      background: rgba(0,0,0,0.4);
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 183, 3, 0.2);
+      color: var(--gold);
     }
 
-    canvas.game-canvas {
+    canvas {
       background: #050508;
-      border: 2px solid var(--gold-divine);
-      border-radius: 8px;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.8), var(--glow-gold);
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.9);
       max-width: 100%;
-    }
-
-    .controls-hint {
-      margin-top: 15px;
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.7);
-      text-align: center;
+      height: auto;
     }
 
     .btn-action {
       margin-top: 15px;
-      background: linear-gradient(135deg, var(--gold-divine), #b58200);
-      color: #000;
-      font-weight: bold;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 6px;
+      padding: 8px 18px;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: 0.3s;
+      border-radius: 3px;
     }
 
     .btn-action:hover {
-      transform: scale(1.05);
-      box-shadow: var(--glow-gold);
+      background: var(--gold);
+      color: #000;
     }
 
-    /* ===================================================
-       5. STYLE DU 6ᵉ EMPLACEMENT (RELIQUE SACRÉE)
-       =================================================== */
-    .relic-container {
+    /* BARS DE CONTRÔLE MOBILE (TACTILE) */
+    .touch-controls {
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: 15px;
+      gap: 8px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .touch-row {
+      display: flex;
       justify-content: center;
-      text-align: center;
-      padding: 20px;
+      gap: 10px;
       width: 100%;
     }
 
-    .relic-frame {
-      position: relative;
+    .touch-btn {
+      background: rgba(244, 196, 48, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 1.3rem;
       padding: 12px;
-      background: linear-gradient(135deg, rgba(214,40,40,0.2), rgba(255,183,3,0.2));
-      border: 2px solid var(--gold-divine);
-      border-radius: 12px;
-      box-shadow: var(--glow-gold), 0 0 30px rgba(214, 40, 40, 0.3);
-      margin-top: 20px;
-      transition: transform 0.3s ease;
+      min-width: 55px;
+      min-height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
     }
 
-    .relic-frame:hover {
-      transform: scale(1.02);
+    .touch-btn:active {
+      background: var(--vermilion);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .touch-btn-wide {
+      flex: 1;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    /* Relique (Espace 6) */
+    .relic-card {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .relic-img-container {
+      margin: 15px 0;
+      border: 2px solid var(--gold);
+      padding: 8px;
+      background: #000;
+      display: inline-block;
+      box-shadow: 0 0 20px var(--gold-glow);
     }
 
     .relic-img {
       max-width: 100%;
-      max-height: 350px;
-      border-radius: 6px;
+      height: auto;
+      max-height: 250px;
       display: block;
-      object-fit: contain;
     }
 
-    .relic-description {
-      margin-top: 20px;
-      font-size: 0.95rem;
-      color: var(--sakura-pink);
-      max-width: 600px;
-      line-height: 1.6;
+    .relic-link {
+      display: inline-block;
+      margin-top: 10px;
+      word-break: break-all;
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: bold;
+      border: 1px solid var(--vermilion);
+      padding: 8px 12px;
+      border-radius: 4px;
+      background: rgba(214, 40, 40, 0.15);
     }
 
-    /* ===================================================
-       6. TERMINAL DIVIN (SALLE 5)
-       =================================================== */
-    .terminal-box {
+    /* Architecture Section */
+    .architecture-section {
+      margin-top: 25px;
       width: 100%;
-      height: 320px;
-      background: #040406;
-      border: 1px solid var(--gold-divine);
+      background: rgba(15, 14, 23, 0.9);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 15px;
-      font-family: 'Courier New', monospace;
-      color: var(--gold-light);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      padding: 20px;
     }
 
-    .terminal-output {
-      flex: 1;
-      white-space: pre-wrap;
-      line-height: 1.4;
+    .architecture-section h2 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .architecture-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .arch-card {
+      background: rgba(255,255,255,0.03);
+      padding: 10px;
+      border-left: 3px solid var(--vermilion);
+    }
+
+    .arch-card h3 {
       font-size: 0.9rem;
+      color: var(--gold);
+      margin-bottom: 4px;
     }
 
-    .terminal-input-row {
+    .arch-card p {
+      font-size: 0.8rem;
+      color: #ccc;
+      line-height: 1.3;
+    }
+
+    /* Grille Mémoire */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 70px);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .memory-card {
+      width: 70px;
+      height: 70px;
+      background: #181524;
+      border: 2px solid var(--gold);
+      font-size: 1.8rem;
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-top: 10px;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 6px;
     }
 
-    .terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
+    .memory-card.flipped {
+      background: var(--vermilion);
       color: #fff;
-      font-family: inherit;
-      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.7rem; }
+      .memory-grid { grid-template-columns: repeat(4, 55px); }
+      .memory-card { width: 55px; height: 55px; font-size: 1.3rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Canevas dynamique d'arrière-plan pour les pétales de Cerisier -->
-  <canvas id="sakura-canvas"></canvas>
+  <div class="sakura-container" id="sakura"></div>
 
-  <div class="app-container">
-    
-    <!-- En-tête du Sanctuaire -->
+  <!-- MODAL DE MOT DE PASSE -->
+  <div id="password-modal">
+    <div class="pass-box">
+      <h2>⛩️ SANCTUAIRE DIVIN ⛩️</h2>
+      <p style="font-size:0.85rem; color:#aaa;">Saisissez le sceau sacré pour entrer :</p>
+      <input type="password" id="pass-input" class="pass-input" placeholder="Mot de passe..." autofocus onkeydown="if(event.key==='Enter') verifyPass()">
+      <button class="btn-action" style="width:100%;" onclick="verifyPass()">Déverrouiller</button>
+      <div id="pass-error" class="pass-error">Sceau incorrect. Recommencez.</div>
+      <p style="font-size:0.75rem; color:#666; margin-top:12px;">(Mot de passe par défaut : DIVIN)</p>
+    </div>
+  </div>
+
+  <!-- CONTENU DU SITE -->
+  <div id="app-container">
     <header>
-      <svg class="torii-icon" viewBox="0 0 100 80">
-        <path d="M 5 15 Q 50 5 95 15 L 90 25 Q 50 18 10 25 Z"/>
-        <path d="M 15 30 L 85 30 L 85 36 L 15 36 Z"/>
-        <rect x="25" y="25" width="10" height="50"/>
-        <rect x="65" y="25" width="10" height="50"/>
-        <rect x="45" y="15" width="10" height="15"/>
-      </svg>
-      <h1>Sanctuaire Divin</h1>
-      <p class="subtitle">ARCHIVES ÉTHÉRÉES & ÉPREUVES SACRÉES</p>
+      <h1>⛩️ SANTUAIRE DIVIN ⛩️</h1>
+      <p class="subtitle">Espace Arcade & Épreuves Sacrées (PC / Mobile)</p>
     </header>
 
-    <!-- Navigation à 6 emplacements -->
     <nav>
-      <button class="tab-btn active" onclick="switchTab(0)">🐍 Serpent Céleste</button>
-      <button class="tab-btn" onclick="switchTab(1)">👾 Défense des Esprits</button>
-      <button class="tab-btn" onclick="switchTab(2)">🏓 Duel des Ombrages</button>
-      <button class="tab-btn" onclick="switchTab(3)">🏃 Course des Nuages</button>
-      <button class="tab-btn" onclick="switchTab(4)">📜 Oracles du Torii</button>
-      <button class="tab-btn" onclick="switchTab(5)">⛩️ Relique Sacrée</button>
+      <button class="nav-btn active" onclick="switchTab('snake')">🐍 Orochi</button>
+      <button class="nav-btn" onclick="switchTab('invaders')">👹 Yōkai</button>
+      <button class="nav-btn" onclick="switchTab('tetris')">⛩️ Torii</button>
+      <button class="nav-btn" onclick="switchTab('pong')">🪞 Miroir</button>
+      <button class="nav-btn" onclick="switchTab('memory')">📜 Sceaux</button>
+      <button class="nav-btn" onclick="switchTab('relic')">🖼️ Relique</button>
     </nav>
 
-    <!-- Zone de contenu principal -->
     <main>
-
-      <!-- 1. JEU : SERPENT CÉLESTE (SNAKE) -->
-      <section id="sec-0" class="section-content active">
+      <!-- 1. OROCHI (SNAKE) -->
+      <div id="tab-snake" class="tab-content active">
         <div class="game-header">
-          <div class="game-title">🐍 Serpent Céleste</div>
-          <div class="score-board">Score: <span id="snake-score">0</span></div>
+          <h2>Le Serpent Sacré (Orochi)</h2>
+          <div class="score-board">Magatama : <span id="snake-score">0</span></div>
         </div>
-        <canvas id="snake-canvas" class="game-canvas" width="400" height="400"></canvas>
-        <p class="controls-hint">Contrôles : Touches Fléchées / ZQSD pour guider le serpent divin</p>
-        <button class="btn-action" onclick="initSnake()">Recommencer la Quête</button>
-      </section>
-
-      <!-- 2. JEU : DÉFENSE DES ESPRITS (SPACE INVADERS) -->
-      <section id="sec-1" class="section-content">
-        <div class="game-header">
-          <div class="game-title">👾 Défense des Esprits</div>
-          <div class="score-board">Score: <span id="invaders-score">0</span></div>
-        </div>
-        <canvas id="invaders-canvas" class="game-canvas" width="480" height="360"></canvas>
-        <p class="controls-hint">Contrôles : Flèches Gauche/Droite pour bouger | Espace pour tirer</p>
-        <button class="btn-action" onclick="initInvaders()">Purifier les Ombres</button>
-      </section>
-
-      <!-- 3. JEU : DUEL DES OMBRAGES (PONG) -->
-      <section id="sec-2" class="section-content">
-        <div class="game-header">
-          <div class="game-title">🏓 Duel des Ombrages</div>
-          <div class="score-board">Joueur: <span id="pong-p1">0</span> | Kami: <span id="pong-p2">0</span></div>
-        </div>
-        <canvas id="pong-canvas" class="game-canvas" width="480" height="320"></canvas>
-        <p class="controls-hint">Contrôles : Flèches Haut/Bas pour déplacer votre raquette</p>
-        <button class="btn-action" onclick="initPong()">Lancer le Duel</button>
-      </section>
-
-      <!-- 4. JEU : COURSE DES NUAGES (RUNNER) -->
-      <section id="sec-3" class="section-content">
-        <div class="game-header">
-          <div class="game-title">🏃 Course des Nuages</div>
-          <div class="score-board">Distance: <span id="runner-score">0</span>m</div>
-        </div>
-        <canvas id="runner-canvas" class="game-canvas" width="480" height="280"></canvas>
-        <p class="controls-hint">Contrôles : Appuyez sur Espace ou Flèche Haut pour sauter les obstacles</p>
-        <button class="btn-action" onclick="initRunner()">Prendre l'Envol</button>
-      </section>
-
-      <!-- 5. TERMINAL : ORACLES DU TORII -->
-      <section id="sec-4" class="section-content">
-        <div class="game-header">
-          <div class="game-title">📜 Oracles du Torii</div>
-          <div class="score-board">Statut: Connecté au Sanctuaire</div>
-        </div>
-        <div class="terminal-box">
-          <div id="term-output" class="terminal-output">Bienvenue dans les archives ancestrales du Sanctuaire.\nTapez 'help' ou 'oracle' pour consulter les esprits.</div>
-          <div class="terminal-input-row">
-            <span style="color:var(--gold-divine)">&gt;</span>
-            <input type="text" id="term-input" class="terminal-input" placeholder="Entrez une commande..." onkeydown="handleTerminal(event)">
+        <canvas id="canvas-snake" width="360" height="360"></canvas>
+        
+        <!-- Contrôles Tactiles Mobile -->
+        <div class="touch-controls">
+          <div class="touch-row">
+            <div class="touch-btn" onclick="triggerKey('snake', 'ArrowUp')">▲</div>
+          </div>
+          <div class="touch-row">
+            <div class="touch-btn" onclick="triggerKey('snake', 'ArrowLeft')">◄</div>
+            <div class="touch-btn" onclick="triggerKey('snake', 'ArrowDown')">▼</div>
+            <div class="touch-btn" onclick="triggerKey('snake', 'ArrowRight')">►</div>
           </div>
         </div>
-      </section>
+        <button class="btn-action" onclick="initSnake()">Réinitialiser le Rite</button>
+      </div>
 
-      <!-- 6. 6ᵉ EMPLACEMENT : RELIQUE SACRÉE (IMAGE DEMANDÉE) -->
-      <section id="sec-5" class="section-content">
+      <!-- 2. YOKAI DEFENSE (SPACE INVADERS) -->
+      <div id="tab-invaders" class="tab-content">
         <div class="game-header">
-          <div class="game-title">⛩️ Relique Sacrée</div>
-          <div class="score-board">Espace V</div>
+          <h2>Défense des Yōkai</h2>
+          <div class="score-board">Purifications : <span id="invaders-score">0</span></div>
         </div>
-        <div class="relic-container">
-          <h2 style="color: var(--gold-divine); margin-bottom: 10px;">L'Emblème Céleste</h2>
-          <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Image sacrée conservée au cœur du sixième sanctuaire.</p>
+        <canvas id="canvas-invaders" width="360" height="360"></canvas>
+        
+        <!-- Contrôles Tactiles Mobile -->
+        <div class="touch-controls">
+          <div class="touch-row">
+            <div class="touch-btn" onclick="triggerKey('invaders', 'ArrowLeft')">◄ Gauche</div>
+            <div class="touch-btn touch-btn-wide" onclick="triggerKey('invaders', ' ')">🔥 TIRER</div>
+            <div class="touch-btn" onclick="triggerKey('invaders', 'ArrowRight')">Droite ►</div>
+          </div>
+        </div>
+        <button class="btn-action" onclick="initInvaders()">Réinitialiser la Bataille</button>
+      </div>
+
+      <!-- 3. BLOC TORII (TETRIS) -->
+      <div id="tab-tetris" class="tab-content">
+        <div class="game-header">
+          <h2>Pierres du Torii</h2>
+          <div class="score-board">Énergie : <span id="tetris-score">0</span></div>
+        </div>
+        <canvas id="canvas-tetris" width="240" height="360"></canvas>
+        
+        <!-- Contrôles Tactiles Mobile -->
+        <div class="touch-controls">
+          <div class="touch-row">
+            <div class="touch-btn" onclick="triggerKey('tetris', 'ArrowLeft')">◄</div>
+            <div class="touch-btn" onclick="triggerKey('tetris', 'ArrowUp')">🔄 Pivoter</div>
+            <div class="touch-btn" onclick="triggerKey('tetris', 'ArrowRight')">►</div>
+          </div>
+          <div class="touch-row">
+            <div class="touch-btn touch-btn-wide" onclick="triggerKey('tetris', 'ArrowDown')">▼ Chute Rapide</div>
+          </div>
+        </div>
+        <button class="btn-action" onclick="initTetris()">Réorganiser les Pierres</button>
+      </div>
+
+      <!-- 4. MIROIR DIVIN (PONG) -->
+      <div id="tab-pong" class="tab-content">
+        <div class="game-header">
+          <h2>Reflet Yata no Kagami</h2>
+          <div class="score-board">Vous : <span id="pong-player">0</span> | Esprit : <span id="pong-ai">0</span></div>
+        </div>
+        <canvas id="canvas-pong" width="360" height="300"></canvas>
+        
+        <!-- Contrôles Tactiles Mobile -->
+        <div class="touch-controls">
+          <div class="touch-row">
+            <div class="touch-btn touch-btn-wide" onclick="triggerKey('pong', 'ArrowUp')">▲ Monter</div>
+            <div class="touch-btn touch-btn-wide" onclick="triggerKey('pong', 'ArrowDown')">▼ Descendre</div>
+          </div>
+        </div>
+        <button class="btn-action" onclick="initPong()">Relancer l'Orbe Divin</button>
+      </div>
+
+      <!-- 5. SCEAUX KUJI-IN (MEMORY) -->
+      <div id="tab-memory" class="tab-content">
+        <div class="game-header">
+          <h2>Alignement des Sceaux</h2>
+          <div class="score-board">Paires : <span id="memory-score">0</span> / 8</div>
+        </div>
+        <div class="memory-grid" id="memory-board"></div>
+        <button class="btn-action" onclick="initMemory()">Mélanger les Sceaux</button>
+      </div>
+
+      <!-- 6. RELIQUE DIVIN -->
+      <div id="tab-relic" class="tab-content">
+        <div class="relic-card">
+          <h2 style="color: var(--gold); font-family: 'Cinzel', serif;">🖼️ Relique Sacrée Shinto</h2>
+          <p style="margin-top: 8px; color: #ccc; font-size: 0.85rem;">Artéfact mystique conservé dans l'enceinte :</p>
           
-          <div class="relic-frame">
-            <img class="relic-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcS0HeGwAqWR0vDBAzjflymZVYp2B0VB_1d1kzD5FFnw&s=10" alt="Relique Sacrée">
+          <div class="relic-img-container">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcS0HeGwAqWR0vDBAzjflymZVYp2B0VB_1d1kzD5FFnw&s=10" alt="Relique Divin" class="relic-img">
           </div>
 
-          <p class="relic-description">
-            Cet espace réservé accueille le lien visuel précieux transmis par l'oracle.
-          </p>
+          <br>
+          <a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcS0HeGwAqWR0vDBAzjflymZVYp2B0VB_1d1kzD5FFnw&s=10" target="_blank" class="relic-link">
+            🔗 Ouvrir la Relique (Lien Direct)
+          </a>
         </div>
-      </section>
-
+      </div>
     </main>
+
+    <!-- ARCHITECTURE -->
+    <section class="architecture-section">
+      <h2>⛩️ Architecture & Conception du Site</h2>
+      <div class="architecture-grid">
+        <div class="arch-card">
+          <h3>1. Securité & Accès</h3>
+          <p>Système de modalité avec validation de mot de passe en mémoire pour restreindre l'accès à l'arcade.</p>
+        </div>
+        <div class="arch-card">
+          <h3>2. Compatibilité PC & Mobile</h3>
+          <p>Double gestion des événements (événements Clavier <code>keydown</code> et touches tactiles <code>touchstart</code> / <code>click</code>).</p>
+        </div>
+        <div class="arch-card">
+          <h3>3. Web Audio API</h3>
+          <p>Génération d'effets sonores à la volée par synthétiseur d'ondes sans fichiers audio externes.</p>
+        </div>
+        <div class="arch-card">
+          <h3>4. Canvas 2D Adaptatif</h3>
+          <p>Moteurs de rendu 60 FPS avec cadencement régulé pour une vitesse optimale sur tout type d'écran.</p>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
-    /* ===================================================
-       1. SYSTÈME SONORE DIVIN (WEB AUDIO API)
-       =================================================== */
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playTone(freq, type = 'sine', duration = 0.15) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    }
+    /* ==========================================
+       1. SYSTÈME MOT DE PASSE
+    ========================================== */
+    const PASS_CORRECT = "DIVIN";
 
-    /* ===================================================
-       2. GESTION DES ONGLETS / SECTIONS
-       =================================================== */
-    let activeTabIndex = 0;
-    function switchTab(index) {
-      activeTabIndex = index;
-      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-      });
-      document.querySelectorAll('.section-content').forEach((sec, i) => {
-        sec.classList.toggle('active', i === index);
-      });
-      
-      playTone(523.25, 'sine', 0.1); // Son doux lors du changement d'onglet
-
-      // Réinitialiser le jeu correspondant lors de l'ouverture
-      if (index === 0) initSnake();
-      if (index === 1) initInvaders();
-      if (index === 2) initPong();
-      if (index === 3) initRunner();
-    }
-
-    /* ===================================================
-       3. ANIMATION DU FOND : PÉTALES DE SAKURA
-       =================================================== */
-    const sakuraCanvas = document.getElementById('sakura-canvas');
-    const sCtx = sakuraCanvas.getContext('2d');
-    let petals = [];
-
-    function resizeSakura() {
-      sakuraCanvas.width = window.innerWidth;
-      sakuraCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeSakura);
-    resizeSakura();
-
-    for (let i = 0; i < 35; i++) {
-      petals.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        size: Math.random() * 5 + 4,
-        speedY: Math.random() * 0.8 + 0.4,
-        speedX: Math.random() * 0.5 - 0.25,
-        angle: Math.random() * Math.PI * 2
-      });
-    }
-
-    function renderSakura() {
-      sCtx.clearRect(0, 0, sakuraCanvas.width, sakuraCanvas.height);
-      sCtx.fillStyle = '#ffb7c5';
-      
-      petals.forEach(p => {
-        p.y += p.speedY;
-        p.x += Math.sin(p.angle) * 0.5 + p.speedX;
-        p.angle += 0.01;
-
-        if (p.y > sakuraCanvas.height) {
-          p.y = -10;
-          p.x = Math.random() * sakuraCanvas.width;
-        }
-
-        sCtx.beginPath();
-        sCtx.ellipse(p.x, p.y, p.size, p.size / 2, p.angle, 0, Math.PI * 2);
-        sCtx.fill();
-      });
-      requestAnimationFrame(renderSakura);
-    }
-    renderSakura();
-
-    /* ===================================================
-       4. JEU 1 : SERPENT CÉLESTE (VITESSE MODÉRÉE & FLUIDE)
-       =================================================== */
-    const snakeCanvas = document.getElementById('snake-canvas');
-    const snakeCtx = snakeCanvas.getContext('2d');
-    let snake, snakeDir, snakeFood, snakeScore, snakeTimer;
-
-    function initSnake() {
-      clearInterval(snakeTimer);
-      snake = [{x: 10, y: 10}, {x: 9, y: 10}];
-      snakeDir = {x: 1, y: 0};
-      snakeScore = 0;
-      document.getElementById('snake-score').innerText = snakeScore;
-      spawnSnakeFood();
-      // Vitesse tempérée : 130ms par pas
-      snakeTimer = setInterval(updateSnake, 130);
-    }
-
-    function spawnSnakeFood() {
-      snakeFood = {
-        x: Math.floor(Math.random() * 20),
-        y: Math.floor(Math.random() * 20)
-      };
-    }
-
-    function updateSnake() {
-      if (activeTabIndex !== 0) return;
-      
-      const head = {x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y};
-
-      // Collision murs ou corps
-      if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) {
-        playTone(150, 'sawtooth', 0.3);
+    function verifyPass() {
+      const input = document.getElementById('pass-input').value.trim();
+      if (input.toUpperCase() === PASS_CORRECT) {
+        document.getElementById('password-modal').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
         initSnake();
-        return;
-      }
-
-      snake.unshift(head);
-      if (head.x === snakeFood.x && head.y === snakeFood.y) {
-        snakeScore += 10;
-        document.getElementById('snake-score').innerText = snakeScore;
-        playTone(659.25, 'sine', 0.1);
-        spawnSnakeFood();
       } else {
-        snake.pop();
+        document.getElementById('pass-error').style.display = 'block';
       }
-
-      // Rendu du Serpent
-      snakeCtx.fillStyle = '#050508';
-      snakeCtx.fillRect(0, 0, 400, 400);
-
-      // Nourriture (Orbe Dorée)
-      snakeCtx.fillStyle = '#ffb703';
-      snakeCtx.beginPath();
-      snakeCtx.arc(snakeFood.x * 20 + 10, snakeFood.y * 20 + 10, 8, 0, Math.PI * 2);
-      snakeCtx.fill();
-
-      // Corps du Serpent
-      snake.forEach((seg, i) => {
-        snakeCtx.fillStyle = i === 0 ? '#d62828' : '#ffb7c5';
-        snakeCtx.fillRect(seg.x * 20 + 1, seg.y * 20 + 1, 18, 18);
-      });
     }
 
-    /* ===================================================
-       5. JEU 2 : DÉFENSE DES ESPRITS (SPACE INVADERS)
-       =================================================== */
-    const invCanvas = document.getElementById('invaders-canvas');
-    const invCtx = invCanvas.getContext('2d');
-    let invPlayer, invBullets, invEnemies, invScore, invLoopId;
+    /* ==========================================
+       2. SYSTÈME AUDIO (Web Audio API)
+    ========================================== */
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
 
-    function initInvaders() {
-      cancelAnimationFrame(invLoopId);
-      invPlayer = { x: 220, y: 320, w: 40, h: 15, speed: 5 };
-      invBullets = [];
-      invEnemies = [];
-      invScore = 0;
-      document.getElementById('invaders-score').innerText = invScore;
-
-      for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 7; c++) {
-          invEnemies.push({ x: 40 + c * 55, y: 30 + r * 35, w: 30, h: 20, alive: true });
-        }
-      }
-      invLastTime = performance.now();
-      requestAnimationFrame(updateInvaders);
+    function playSound(freq, type = 'sine', duration = 0.08) {
+      if (!audioCtx) audioCtx = new AudioCtx();
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
     }
 
-    let invLastTime = 0;
-    let invEnemySpeed = 0.5;
-
-    function updateInvaders(now) {
-      if (activeTabIndex !== 1) return;
-
-      invCtx.fillStyle = '#050508';
-      invCtx.fillRect(0, 0, 480, 360);
-
-      // Déplacement joueur
-      if (keys['ArrowLeft'] || keys['q'] || keys['Q']) invPlayer.x = Math.max(0, invPlayer.x - invPlayer.speed);
-      if (keys['ArrowRight'] || keys['d'] || keys['D']) invPlayer.x = Math.min(480 - invPlayer.w, invPlayer.x + invPlayer.speed);
-
-      // Dessin Joueur
-      invCtx.fillStyle = '#ffb703';
-      invCtx.fillRect(invPlayer.x, invPlayer.y, invPlayer.w, invPlayer.h);
-
-      // Mettre à jour balles
-      invBullets.forEach((b, bi) => {
-        b.y -= 6;
-        invCtx.fillStyle = '#ff3b38';
-        invCtx.fillRect(b.x, b.y, 4, 10);
-
-        // Test collision ennemis
-        invEnemies.forEach(e => {
-          if (e.alive && b.x > e.x && b.x < e.x + e.w && b.y > e.y && b.y < e.y + e.h) {
-            e.alive = false;
-            invBullets.splice(bi, 1);
-            invScore += 20;
-            document.getElementById('invaders-score').innerText = invScore;
-            playTone(440, 'triangle', 0.08);
-          }
-        });
-      });
-
-      // Mettre à jour ennemis
-      let moveDown = false;
-      invEnemies.forEach(e => {
-        if (!e.alive) return;
-        e.x += invEnemySpeed;
-        if (e.x > 450 || e.x < 10) moveDown = true;
-
-        invCtx.fillStyle = '#d62828';
-        invCtx.fillRect(e.x, e.y, e.w, e.h);
-      });
-
-      if (moveDown) {
-        invEnemySpeed = -invEnemySpeed;
-        invEnemies.forEach(e => e.y += 10);
+    /* ==========================================
+       3. PETALES DE CERISIER
+    ========================================== */
+    function createPetals() {
+      const container = document.getElementById('sakura');
+      for (let i = 0; i < 20; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.left = Math.random() * 100 + 'vw';
+        petal.style.width = (Math.random() * 8 + 6) + 'px';
+        petal.style.height = (Math.random() * 10 + 8) + 'px';
+        petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        petal.style.animationDelay = (Math.random() * 5) + 's';
+        container.appendChild(petal);
       }
+    }
+    createPetals();
 
-      invLoopId = requestAnimationFrame(updateInvaders);
+    /* ==========================================
+       4. GESTION DES ONGLETS & TOUCHES MULTI-PLATEFORME
+    ========================================== */
+    let currentLoop = null;
+    let snakeInterval = null;
+
+    function switchTab(tabId) {
+      if (currentLoop) cancelAnimationFrame(currentLoop);
+      if (snakeInterval) clearInterval(snakeInterval);
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById('tab-' + tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+
+      if (tabId === 'snake') initSnake();
+      if (tabId === 'invaders') initInvaders();
+      if (tabId === 'tetris') initTetris();
+      if (tabId === 'pong') initPong();
+      if (tabId === 'memory') initMemory();
     }
 
-    /* ===================================================
-       6. JEU 3 : DUEL DES OMBRAGES (PONG ÉQUILIBRÉ)
-       =================================================== */
-    const pongCanvas = document.getElementById('pong-canvas');
-    const pongCtx = pongCanvas.getContext('2d');
-    let p1Y, p2Y, ballX, ballY, ballVX, ballVY, p1Score, p2Score, pongLoopId;
-
-    function initPong() {
-      cancelAnimationFrame(pongLoopId);
-      p1Y = 120;
-      p2Y = 120;
-      ballX = 240;
-      ballY = 160;
-      ballVX = 3.5;
-      ballVY = 2.5;
-      p1Score = 0;
-      p2Score = 0;
-      document.getElementById('pong-p1').innerText = p1Score;
-      document.getElementById('pong-p2').innerText = p2Score;
-      requestAnimationFrame(updatePong);
+    // Fonction globale pour declencher des actions tactiles/boutons mobiles
+    let activeHandler = null;
+    function triggerKey(game, key) {
+      if (activeHandler) activeHandler({ key });
     }
 
-    function updatePong() {
-      if (activeTabIndex !== 2) return;
+    /* ==========================================
+       JEU 1 : OROCHI (SNAKE)
+    ========================================== */
+    function initSnake() {
+      const canvas = document.getElementById('canvas-snake');
+      const ctx = canvas.getContext('2d');
+      const grid = 18;
+      let snake = [{x: 10, y: 10}, {x: 9, y: 10}];
+      let food = {x: 14, y: 10};
+      let dx = 1, dy = 0;
+      let score = 0;
+      document.getElementById('snake-score').innerText = score;
 
-      // Joueur
-      if (keys['ArrowUp']) p1Y = Math.max(0, p1Y - 4);
-      if (keys['ArrowDown']) p1Y = Math.min(260, p1Y + 4);
+      if (snakeInterval) clearInterval(snakeInterval);
 
-      // IA Kami (vitesse modérée)
-      if (ballY > p2Y + 30) p2Y = Math.min(260, p2Y + 2.8);
-      else if (ballY < p2Y + 30) p2Y = Math.max(0, p2Y - 2.8);
-
-      // Balle
-      ballX += ballVX;
-      ballY += ballVY;
-
-      if (ballY <= 0 || ballY >= 310) ballVY = -ballVY;
-
-      // Collisions raquettes
-      if (ballX <= 25 && ballY >= p1Y && ballY <= p1Y + 60) {
-        ballVX = Math.abs(ballVX);
-        playTone(523, 'sine', 0.05);
-      }
-      if (ballX >= 455 && ballY >= p2Y && ballY <= p2Y + 60) {
-        ballVX = -Math.abs(ballVX);
-        playTone(440, 'sine', 0.05);
+      function placeFood() {
+        food = {
+          x: Math.floor(Math.random() * (canvas.width / grid)),
+          y: Math.floor(Math.random() * (canvas.height / grid))
+        };
       }
 
-      // Point marqué
-      if (ballX < 0) {
-        p2Score++;
-        document.getElementById('pong-p2').innerText = p2Score;
-        resetPongBall();
-      } else if (ballX > 480) {
-        p1Score++;
-        document.getElementById('pong-p1').innerText = p1Score;
-        resetPongBall();
-      }
+      function gameStep() {
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
 
-      // Rendu
-      pongCtx.fillStyle = '#050508';
-      pongCtx.fillRect(0, 0, 480, 320);
-
-      // Ligne centrale
-      pongCtx.strokeStyle = 'rgba(255, 183, 3, 0.2)';
-      pongCtx.beginPath();
-      pongCtx.setLineDash([5, 5]);
-      pongCtx.moveTo(240, 0);
-      pongCtx.lineTo(240, 320);
-      pongCtx.stroke();
-      pongCtx.setLineDash([]);
-
-      // Raquettes
-      pongCtx.fillStyle = '#d62828';
-      pongCtx.fillRect(15, p1Y, 10, 60);
-      pongCtx.fillStyle = '#ffb703';
-      pongCtx.fillRect(455, p2Y, 10, 60);
-
-      // Balle
-      pongCtx.fillStyle = '#ffb7c5';
-      pongCtx.beginPath();
-      pongCtx.arc(ballX, ballY, 6, 0, Math.PI * 2);
-      pongCtx.fill();
-
-      pongLoopId = requestAnimationFrame(updatePong);
-    }
-
-    function resetPongBall() {
-      ballX = 240;
-      ballY = 160;
-      ballVX = -ballVX;
-    }
-
-    /* ===================================================
-       7. JEU 4 : COURSE DES NUAGES (RUNNER MODÉRÉ)
-       =================================================== */
-    const runCanvas = document.getElementById('runner-canvas');
-    const runCtx = runCanvas.getContext('2d');
-    let runnerY, runnerVY, isJumping, obstacles, runScore, runLoopId;
-
-    function initRunner() {
-      cancelAnimationFrame(runLoopId);
-      runnerY = 200;
-      runnerVY = 0;
-      isJumping = false;
-      obstacles = [];
-      runScore = 0;
-      document.getElementById('runner-score').innerText = runScore;
-      requestAnimationFrame(updateRunner);
-    }
-
-    function updateRunner() {
-      if (activeTabIndex !== 3) return;
-
-      // Physique du saut
-      if (isJumping) {
-        runnerVY += 0.6; // Gravité douce
-        runnerY += runnerVY;
-        if (runnerY >= 200) {
-          runnerY = 200;
-          isJumping = false;
-        }
-      }
-
-      // Génération obstacles
-      if (Math.random() < 0.015 && (obstacles.length === 0 || obstacles[obstacles.length - 1].x < 320)) {
-        obstacles.push({ x: 480, w: 18, h: 30 });
-      }
-
-      // Rendu
-      runCtx.fillStyle = '#050508';
-      runCtx.fillRect(0, 0, 480, 280);
-
-      // Sol divin
-      runCtx.strokeStyle = '#ffb703';
-      runCtx.lineWidth = 2;
-      runCtx.beginPath();
-      runCtx.moveTo(0, 230);
-      runCtx.lineTo(480, 230);
-      runCtx.stroke();
-
-      // Joueur
-      runCtx.fillStyle = '#d62828';
-      runCtx.fillRect(50, runnerY, 20, 30);
-
-      // Obstacles
-      obstacles.forEach((ob, i) => {
-        ob.x -= 3.8; // Vitesse contrôlée
-        runCtx.fillStyle = '#ffb703';
-        runCtx.fillRect(ob.x, 230 - ob.h, ob.w, ob.h);
-
-        // Collision
-        if (ob.x < 70 && ob.x + ob.w > 50 && runnerY + 30 > 230 - ob.h) {
-          playTone(180, 'sawtooth', 0.2);
-          initRunner();
+        if (head.x < 0 || head.x >= canvas.width / grid || head.y < 0 || head.y >= canvas.height / grid) {
+          playSound(150, 'sawtooth', 0.2);
+          initSnake();
           return;
         }
-      });
 
-      // Nettoyage obstacles
-      if (obstacles.length > 0 && obstacles[0].x < -20) {
-        obstacles.shift();
-        runScore += 10;
-        document.getElementById('runner-score').innerText = runScore;
-      }
-
-      runLoopId = requestAnimationFrame(updateRunner);
-    }
-
-    /* ===================================================
-       8. GESTION DES CLAVIERS ET COMMANDES TERMINAL
-       =================================================== */
-    const keys = {};
-    window.addEventListener('keydown', e => {
-      keys[e.key] = true;
-
-      // Saut Runner
-      if ((e.key === ' ' || e.key === 'ArrowUp') && activeTabIndex === 3 && !isJumping) {
-        isJumping = true;
-        runnerVY = -11;
-        playTone(350, 'sine', 0.1);
-      }
-
-      // Tir Space Invaders
-      if (e.key === ' ' && activeTabIndex === 1) {
-        invBullets.push({ x: invPlayer.x + invPlayer.w / 2 - 2, y: invPlayer.y });
-        playTone(800, 'square', 0.05);
-      }
-
-      // Empêcher le défilement de la page avec la barre d'espace/flèches
-      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
-        if (document.activeElement.id !== 'term-input') e.preventDefault();
-      }
-    });
-
-    window.addEventListener('keyup', e => {
-      keys[e.key] = false;
-    });
-
-    // Terminal
-    function handleTerminal(e) {
-      if (e.key === 'Enter') {
-        const input = document.getElementById('term-input');
-        const output = document.getElementById('term-output');
-        const cmd = input.value.trim().toLowerCase();
-        
-        output.innerText += `\n> ${input.value}`;
-
-        if (cmd === 'help') {
-          output.innerText += `\nCommandes disponibles :
-- oracle : Recevoir une prédiction des Kami.
-- kami   : Invoquer la bénédiction divine.
-- clear  : Effacer l'écran.
-- relic  : Obtenir des détails sur le 6e emplacement.`;
-        } else if (cmd === 'oracle') {
-          const quotes = [
-            "L'eau qui coule ne s'agite jamais sans raison.",
-            "La patience ouvre les portes du sanctuaire le plus élevé.",
-            "Un esprit apaisé triomphe de toutes les ombres."
-          ];
-          output.innerText += `\n[Oracle] : "${quotes[Math.floor(Math.random() * quotes.length)]}"`;
-        } else if (cmd === 'kami') {
-          output.innerText += `\n✨ Les Kami accordent leur harmonie à votre quête.`;
-        } else if (cmd === 'clear') {
-          output.innerText = "Bienvenue dans les archives ancestrales du Sanctuaire.";
-        } else if (cmd === 'relic') {
-          output.innerText += `\n⛩️ Rendez-vous dans le 6e onglet pour contempler la Relique Sacrée.`;
-        } else if (cmd !== '') {
-          output.innerText += `\nCommande non reconnue. Tapez 'help' pour la liste des oracles.`;
+        for (let segment of snake) {
+          if (segment.x === head.x && segment.y === head.y) {
+            playSound(150, 'sawtooth', 0.2);
+            initSnake();
+            return;
+          }
         }
 
-        input.value = '';
-        document.querySelector('.terminal-box').scrollTop = document.querySelector('.terminal-box').scrollHeight;
+        snake.unshift(head);
+
+        if (head.x === food.x && head.y === food.y) {
+          score += 10;
+          document.getElementById('snake-score').innerText = score;
+          playSound(520, 'sine', 0.08);
+          placeFood();
+        } else {
+          snake.pop();
+        }
+
+        ctx.fillStyle = '#050508';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        snake.forEach((part, i) => {
+          ctx.fillStyle = i === 0 ? '#f4c430' : '#d62828';
+          ctx.beginPath();
+          ctx.arc((part.x + 0.5) * grid, (part.y + 0.5) * grid, grid/2 - 1, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.fillStyle = '#4cc9f0';
+        ctx.beginPath();
+        ctx.arc((food.x + 0.5) * grid, (food.y + 0.5) * grid, grid/3, 0, Math.PI * 2);
+        ctx.fill();
       }
+
+      activeHandler = (e) => {
+        if ((e.key === 'ArrowUp' || e.key === 'z') && dy === 0) { dx = 0; dy = -1; }
+        if ((e.key === 'ArrowDown' || e.key === 's') && dy === 0) { dx = 0; dy = 1; }
+        if ((e.key === 'ArrowLeft' || e.key === 'q') && dx === 0) { dx = -1; dy = 0; }
+        if ((e.key === 'ArrowRight' || e.key === 'd') && dx === 0) { dx = 1; dy = 0; }
+      };
+      window.onkeydown = activeHandler;
+
+      snakeInterval = setInterval(gameStep, 110);
     }
 
-    // Initialisation du premier jeu au chargement
-    window.onload = () => {
-      initSnake();
-    };
+    /* ==========================================
+       JEU 2 : YOKAI DEFENSE (SPACE INVADERS)
+    ========================================== */
+    function initInvaders() {
+      const canvas = document.getElementById('canvas-invaders');
+      const ctx = canvas.getContext('2d');
+      let player = { x: canvas.width / 2 - 15, y: canvas.height - 25, w: 30, h: 12 };
+      let bullets = [];
+      let yokais = [];
+      let score = 0;
+      let keys = {};
+      let dir = 1;
+
+      document.getElementById('invaders-score').innerText = score;
+
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 6; c++) {
+          yokais.push({ x: 40 + c * 48, y: 30 + r * 35, alive: true });
+        }
+      }
+
+      window.onkeydown = (e) => keys[e.key] = true;
+      window.onkeyup = (e) => keys[e.key] = false;
+
+      activeHandler = (e) => {
+        if (e.key === 'ArrowLeft') player.x = Math.max(0, player.x - 12);
+        if (e.key === 'ArrowRight') player.x = Math.min(canvas.width - player.w, player.x + 12);
+        if (e.key === ' ') {
+          bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 8 });
+          playSound(750, 'square', 0.05);
+        }
+      };
+
+      let lastShot = 0;
+
+      function loop(time) {
+        if ((keys['ArrowLeft'] || keys['q']) && player.x > 0) player.x -= 3;
+        if ((keys['ArrowRight'] || keys['d']) && player.x < canvas.width - player.w) player.x += 3;
+
+        bullets.forEach(b => b.y -= 4.5);
+        bullets = bullets.filter(b => b.y > 0);
+
+        let moveDown = false;
+        yokais.forEach(y => {
+          if (y.alive) {
+            y.x += dir * 0.7;
+            if (y.x > canvas.width - 25 || y.x < 10) moveDown = true;
+          }
+        });
+
+        if (moveDown) {
+          dir *= -1;
+          yokais.forEach(y => y.y += 10);
+        }
+
+        bullets.forEach(b => {
+          yokais.forEach(y => {
+            if (y.alive && b.x > y.x && b.x < y.x + 22 && b.y > y.y && b.y < y.y + 22) {
+              y.alive = false;
+              b.y = -100;
+              score += 20;
+              document.getElementById('invaders-score').innerText = score;
+              playSound(300, 'sine', 0.08);
+            }
+          });
+        });
+
+        ctx.fillStyle = '#050508';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#f4c430';
+        ctx.fillRect(player.x, player.y, player.w, player.h);
+
+        ctx.fillStyle = '#d62828';
+        bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+        yokais.forEach(y => {
+          if (y.alive) {
+            ctx.fillStyle = '#a855f7';
+            ctx.beginPath();
+            ctx.arc(y.x + 10, y.y + 10, 8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+
+        currentLoop = requestAnimationFrame(loop);
+      }
+      currentLoop = requestAnimationFrame(loop);
+    }
+
+    /* ==========================================
+       JEU 3 : BLOC TORII (TETRIS)
+    ========================================== */
+    function initTetris() {
+      const canvas = document.getElementById('canvas-tetris');
+      const ctx = canvas.getContext('2d');
+      const cols = 10, rows = 15, size = 24;
+      let grid = Array(rows).fill(null).map(() => Array(cols).fill(0));
+      let score = 0;
+      let dropCounter = 0;
+      let lastTime = 0;
+
+      document.getElementById('tetris-score').innerText = score;
+
+      const shapes = [
+        [[1, 1, 1, 1]],
+        [[1, 1], [1, 1]],
+        [[0, 1, 0], [1, 1, 1]],
+        [[1, 0, 0], [1, 1, 1]]
+      ];
+
+      let piece = newPiece();
+
+      function newPiece() {
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        return { shape, x: Math.floor(cols / 2) - 1, y: 0 };
+      }
+
+      function collide(p, gx, gy) {
+        for (let r = 0; r < p.shape.length; r++) {
+          for (let c = 0; c < p.shape[r].length; c++) {
+            if (p.shape[r][c]) {
+              let newX = p.x + c + gx;
+              let newY = p.y + r + gy;
+              if (newX < 0 || newX >= cols || newY >= rows || (newY >= 0 && grid[newY][newX])) {
+                return true;
+              }
+            }
+          }
+        }
+        return false;
+      }
+
+      function merge() {
+        piece.shape.forEach((row, r) => {
+          row.forEach((val, c) => {
+            if (val) grid[piece.y + r][piece.x + c] = 1;
+          });
+        });
+
+        for (let r = rows - 1; r >= 0; r--) {
+          if (grid[r].every(v => v === 1)) {
+            grid.splice(r, 1);
+            grid.unshift(Array(cols).fill(0));
+            score += 100;
+            document.getElementById('tetris-score').innerText = score;
+            playSound(600, 'sine', 0.12);
+          }
+        }
+        piece = newPiece();
+        if (collide(piece, 0, 0)) grid = Array(rows).fill(null).map(() => Array(cols).fill(0));
+      }
+
+      activeHandler = (e) => {
+        if (e.key === 'ArrowLeft' && !collide(piece, -1, 0)) piece.x--;
+        if (e.key === 'ArrowRight' && !collide(piece, 1, 0)) piece.x++;
+        if (e.key === 'ArrowDown' && !collide(piece, 0, 1)) piece.y++;
+        if (e.key === 'ArrowUp') {
+          const rotated = piece.shape[0].map((_, i) => piece.shape.map(row => row[i]).reverse());
+          const old = piece.shape;
+          piece.shape = rotated;
+          if (collide(piece, 0, 0)) piece.shape = old;
+        }
+      };
+      window.onkeydown = activeHandler;
+
+      function update(time = 0) {
+        const dt = time - lastTime;
+        lastTime = time;
+        dropCounter += dt;
+
+        if (dropCounter > 650) {
+          if (!collide(piece, 0, 1)) {
+            piece.y++;
+          } else {
+            merge();
+          }
+          dropCounter = 0;
+        }
+
+        ctx.fillStyle = '#050508';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        grid.forEach((row, r) => {
+          row.forEach((val, c) => {
+            if (val) {
+              ctx.fillStyle = '#d62828';
+              ctx.fillRect(c * size, r * size, size - 1, size - 1);
+            }
+          });
+        });
+
+        ctx.fillStyle = '#f4c430';
+        piece.shape.forEach((row, r) => {
+          row.forEach((val, c) => {
+            if (val) ctx.fillRect((piece.x + c) * size, (piece.y + r) * size, size - 1, size - 1);
+          });
+        });
+
+        currentLoop = requestAnimationFrame(update);
+      }
+      update();
+    }
+
+    /* ==========================================
+       JEU 4 : MIROIR DIVIN (PONG)
+    ========================================== */
+    function initPong() {
+      const canvas = document.getElementById('canvas-pong');
+      const ctx = canvas.getContext('2d');
+      let pY = 110, aiY = 110;
+      let ball = { x: 180, y: 150, dx: 2.8, dy: 2.8 };
+      let pScore = 0, aiScore = 0;
+      let keys = {};
+
+      window.onkeydown = (e) => keys[e.key] = true;
+      window.onkeyup = (e) => keys[e.key] = false;
+
+      activeHandler = (e) => {
+        if (e.key === 'ArrowUp') pY = Math.max(0, pY - 25);
+        if (e.key === 'ArrowDown') pY = Math.min(canvas.height - 60, pY + 25);
+      };
+
+      function loop() {
+        if (keys['ArrowUp'] && pY > 0) pY -= 3.5;
+        if (keys['ArrowDown'] && pY < canvas.height - 60) pY += 3.5;
+
+        if (aiY + 30 < ball.y) aiY += 2.2;
+        else if (aiY + 30 > ball.y) aiY -= 2.2;
+
+        ball.x += ball.dx;
+        ball.y += ball.dy;
+
+        if (ball.y <= 0 || ball.y >= canvas.height) ball.dy *= -1;
+
+        if (ball.x <= 18 && ball.y >= pY && ball.y <= pY + 60) {
+          ball.dx = Math.abs(ball.dx);
+          playSound(400, 'sine', 0.05);
+        }
+
+        if (ball.x >= canvas.width - 18 && ball.y >= aiY && ball.y <= aiY + 60) {
+          ball.dx = -Math.abs(ball.dx);
+          playSound(350, 'sine', 0.05);
+        }
+
+        if (ball.x < 0) {
+          aiScore++;
+          document.getElementById('pong-ai').innerText = aiScore;
+          ball = { x: 180, y: 150, dx: 2.8, dy: 2.8 };
+        }
+        if (ball.x > canvas.width) {
+          pScore++;
+          document.getElementById('pong-player').innerText = pScore;
+          ball = { x: 180, y: 150, dx: -2.8, dy: 2.8 };
+        }
+
+        ctx.fillStyle = '#050508';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#f4c430';
+        ctx.fillRect(8, pY, 8, 60);
+        ctx.fillRect(canvas.width - 16, aiY, 8, 60);
+
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#d62828';
+        ctx.fill();
+
+        currentLoop = requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    /* ==========================================
+       JEU 5 : SCEAUX KUJI-IN (MEMORY)
+    ========================================== */
+    function initMemory() {
+      const board = document.getElementById('memory-board');
+      board.innerHTML = '';
+      const symbols = ['⛩️', '🌸', '☯️', '⚔️', '👺', '🐉', '🌕', '🔥'];
+      const cardsData = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+
+      let flipped = [];
+      let matchedCount = 0;
+      document.getElementById('memory-score').innerText = 0;
+
+      cardsData.forEach((sym) => {
+        const card = document.createElement('div');
+        card.className = 'memory-card';
+        card.dataset.symbol = sym;
+        card.innerText = '❓';
+
+        card.onclick = () => {
+          if (flipped.length < 2 && !card.classList.contains('flipped')) {
+            card.classList.add('flipped');
+            card.innerText = sym;
+            flipped.push(card);
+            playSound(500, 'sine', 0.05);
+
+            if (flipped.length === 2) {
+              if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
+                matchedCount++;
+                document.getElementById('memory-score').innerText = matchedCount;
+                flipped = [];
+                playSound(800, 'sine', 0.1);
+              } else {
+                setTimeout(() => {
+                  flipped.forEach(c => {
+                    c.classList.remove('flipped');
+                    c.innerText = '❓';
+                  });
+                  flipped = [];
+                }, 700);
+              }
+            }
+          }
+        };
+        board.appendChild(card);
+      });
+    }
   </script>
 </body>
 </html>

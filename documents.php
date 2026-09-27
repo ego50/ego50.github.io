@@ -21,6 +21,11 @@ $dossiersProjets  = listerDossiers('projets');
 </head>
 <body>
 
+  <audio id="musique-fond" loop autoplay muted>
+    <source src="musique/musique-fond.mp3" type="audio/mpeg">
+  </audio>
+  <button id="bouton-musique" title="Activer / couper la musique" aria-label="Activer ou couper la musique" style="position:fixed; bottom:20px; right:20px; z-index:999; width:50px; height:50px; border-radius:50%; border:none; background:#ffffffdd; font-size:22px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.25);">🔇</button>
+
   <div class="sakura-container" aria-hidden="true"></div>
 
   <div class="dragon-zone" aria-hidden="true">
@@ -80,7 +85,7 @@ $dossiersProjets  = listerDossiers('projets');
             <?php else: ?>
               <ul class="liste-fichiers">
                 <?php foreach ($d['fichiers'] as $fichier): ?>
-                  <li><a href="fichiers/<?= rawurlencode($d['categorie']) ?>/<?= rawurlencode($d['nom']) ?>/<?= rawurlencode($fichier) ?>" target="_blank"><?= htmlspecialchars($fichier) ?></a></li>
+                  <?= afficherLigneFichier($d['categorie'], $d['nom'], $fichier) ?>
                 <?php endforeach; ?>
               </ul>
             <?php endif; ?>
@@ -114,6 +119,14 @@ $dossiersProjets  = listerDossiers('projets');
 
       sakuraContainer.appendChild(petal);
     }
+
+    const musique = document.getElementById("musique-fond");
+    const boutonMusique = document.getElementById("bouton-musique");
+    boutonMusique.addEventListener("click", () => {
+      musique.muted = !musique.muted;
+      if (!musique.muted) { musique.play(); }
+      boutonMusique.textContent = musique.muted ? "🔇" : "🔊";
+    });
   </script>
 </body>
 </html>

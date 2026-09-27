@@ -7,7 +7,7 @@
 session_start();
 
 // ⚠️ CHANGE CE MOT DE PASSE avant de mettre le site en ligne !
-define('MOT_DE_PASSE_ADMIN', 'change-moi');
+define('MOT_DE_PASSE_ADMIN', 'lex4');
 
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];

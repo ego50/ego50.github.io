@@ -259,7 +259,7 @@
       color: #000;
     }
 
-    /* BARS DE CONTRÔLE MOBILE (TACTILE) */
+    /* BARRES DE CONTRÔLE MOBILE (TACTILE) */
     .touch-controls {
       display: flex;
       flex-direction: column;
@@ -341,49 +341,6 @@
       background: rgba(214, 40, 40, 0.15);
     }
 
-    /* Architecture Section */
-    .architecture-section {
-      margin-top: 25px;
-      width: 100%;
-      background: rgba(15, 14, 23, 0.9);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .architecture-section h2 {
-      font-family: 'Cinzel', serif;
-      color: var(--gold);
-      border-bottom: 1px solid var(--gold);
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-    }
-
-    .architecture-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .arch-card {
-      background: rgba(255,255,255,0.03);
-      padding: 10px;
-      border-left: 3px solid var(--vermilion);
-    }
-
-    .arch-card h3 {
-      font-size: 0.9rem;
-      color: var(--gold);
-      margin-bottom: 4px;
-    }
-
-    .arch-card p {
-      font-size: 0.8rem;
-      color: #ccc;
-      line-height: 1.3;
-    }
-
     /* Grille Mémoire */
     .memory-grid {
       display: grid;
@@ -429,14 +386,13 @@
       <input type="password" id="pass-input" class="pass-input" placeholder="Mot de passe..." autofocus onkeydown="if(event.key==='Enter') verifyPass()">
       <button class="btn-action" style="width:100%;" onclick="verifyPass()">Déverrouiller</button>
       <div id="pass-error" class="pass-error">Sceau incorrect. Recommencez.</div>
-      <p style="font-size:0.75rem; color:#666; margin-top:12px;">(Mot de passe par défaut : DIVIN)</p>
     </div>
   </div>
 
   <!-- CONTENU DU SITE -->
   <div id="app-container">
     <header>
-      <h1>⛩️ SANTUAIRE DIVIN ⛩️</h1>
+      <h1>⛩️ SANCTUAIRE DIVIN ⛩️</h1>
       <p class="subtitle">Espace Arcade & Épreuves Sacrées (PC / Mobile)</p>
     </header>
 
@@ -558,29 +514,6 @@
         </div>
       </div>
     </main>
-
-    <!-- ARCHITECTURE -->
-    <section class="architecture-section">
-      <h2>⛩️ Architecture & Conception du Site</h2>
-      <div class="architecture-grid">
-        <div class="arch-card">
-          <h3>1. Securité & Accès</h3>
-          <p>Système de modalité avec validation de mot de passe en mémoire pour restreindre l'accès à l'arcade.</p>
-        </div>
-        <div class="arch-card">
-          <h3>2. Compatibilité PC & Mobile</h3>
-          <p>Double gestion des événements (événements Clavier <code>keydown</code> et touches tactiles <code>touchstart</code> / <code>click</code>).</p>
-        </div>
-        <div class="arch-card">
-          <h3>3. Web Audio API</h3>
-          <p>Génération d'effets sonores à la volée par synthétiseur d'ondes sans fichiers audio externes.</p>
-        </div>
-        <div class="arch-card">
-          <h3>4. Canvas 2D Adaptatif</h3>
-          <p>Moteurs de rendu 60 FPS avec cadencement régulé pour une vitesse optimale sur tout type d'écran.</p>
-        </div>
-      </div>
-    </section>
   </div>
 
   <script>
@@ -663,7 +596,6 @@
       if (tabId === 'memory') initMemory();
     }
 
-    // Fonction globale pour declencher des actions tactiles/boutons mobiles
     let activeHandler = null;
     function triggerKey(game, key) {
       if (activeHandler) activeHandler({ key });
@@ -779,9 +711,7 @@
         }
       };
 
-      let lastShot = 0;
-
-      function loop(time) {
+      function loop() {
         if ((keys['ArrowLeft'] || keys['q']) && player.x > 0) player.x -= 3;
         if ((keys['ArrowRight'] || keys['d']) && player.x < canvas.width - player.w) player.x += 3;
 

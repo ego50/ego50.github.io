@@ -1,5 +1,6 @@
 <?php
 require 'gestion.php';
+$erreurConnexion = traiterConnexion();
 
 // Documents a aussi son propre espace "libre" (fichiers non liés à une page précise)
 list($message, $erreur) = traiterFormulaires('documents');
@@ -49,6 +50,8 @@ $dossiersProjets  = listerDossiers('projets');
   <main>
     <h2>Documents</h2>
     <p class="intro">Vue globale de tous tes fichiers (Cours, TP, Projets et fichiers libres), sans tri particulier.</p>
+
+    <?php afficherBarreConnexion($erreurConnexion); ?>
 
     <?php if ($message): ?><p class="msg-succes"><?= htmlspecialchars($message) ?></p><?php endif; ?>
     <?php if ($erreur): ?><p class="msg-erreur"><?= htmlspecialchars($erreur) ?></p><?php endif; ?>

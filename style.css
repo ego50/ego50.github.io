@@ -1,24 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600&display=swap');
 
+/* =========================================================
+   ESTAMPE JAPONAISE VIVANTE (100% CSS)
+   ---------------------------------------------------------
+   Images attendues dans votre dossier assets/ :
+   assets/temple.png  = Image 1, décor principal
+   assets/dragon.png  = Image 2, dragon sur fond blanc
+   ========================================================= */
+
 :root {
   --ink: #202126;
   --ink-soft: #4b4a4d;
   --paper: #f7f0df;
-  --paper-glass: rgba(249, 243, 228, .76);
-
+  --paper-glass: rgba(249, 243, 228, .78);
   --sakura: #c95d78;
   --sakura-light: #ef9bb0;
   --rose-glow: #ff78aa;
   --violet: #b26bba;
   --gold: #b58a4a;
-
-  --line: rgba(45, 38, 38, .20);
+  --line: rgba(45, 38, 38, .22);
   --shadow: rgba(31, 27, 28, .28);
 
-  --zoom-duration: 30s;
-  --dragon-duration: 64s;
-  --dragon-size: min(61vw, 800px);
-  --petal-count: 35;
+  --zoom-duration: 26s;
+  --dragon-duration: 52s;
+  --dragon-size: min(68vw, 820px);
 }
 
 * {
@@ -36,308 +41,112 @@ html {
 body {
   min-height: 100vh;
   overflow-x: hidden;
-  position: relative;
-  isolation: isolate;
-
   color: var(--ink);
   font-family: "Noto Serif JP", serif;
   line-height: 1.7;
+  position: relative;
+  isolation: isolate;
 
+  /* IMAGE 1 : décor principal */
   background-color: #eee4d3;
   background-image:
-    linear-gradient(
-      rgba(255, 248, 235, .06),
-      rgba(255, 248, 235, .06)
-    ),
+    linear-gradient(rgba(255, 248, 235, .08), rgba(255, 248, 235, .08)),
     url("assets/temple.png");
-
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
-/* =========================================================
-   ATMOSPHÈRE DU PAYSAGE
-   ========================================================= */
-
+/* Voile d'estampe & texture de papier */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -2;
   pointer-events: none;
-
   background:
-    radial-gradient(
-      circle at 50% 40%,
-      transparent 0 32%,
-      rgba(42, 32, 32, .05) 58%,
-      rgba(34, 29, 29, .15) 100%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.12),
-      rgba(47,38,38,.10)
-    );
-
+    radial-gradient(circle at 50% 42%, transparent 0 38%, rgba(34, 29, 29, .10) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, .10), rgba(47, 38, 38, .08));
   mix-blend-mode: multiply;
 }
 
+/* Respiration ultra-subtile du paysage (Zoom 1 -> 1.035 -> 1) */
 body::after {
   content: "";
   position: fixed;
-  inset: -3%;
+  inset: -2%;
   z-index: -3;
   pointer-events: none;
-
-  background-image:
-    linear-gradient(
-      rgba(255, 248, 235, .04),
-      rgba(255, 248, 235, .04)
-    ),
-    url("assets/temple.png");
-
+  background: inherit;
   background-position: center center;
   background-size: cover;
   background-repeat: no-repeat;
-
   animation: paysage-respire var(--zoom-duration) ease-in-out infinite;
   transform-origin: center center;
-
   will-change: transform;
 }
 
 @keyframes paysage-respire {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.035);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
 }
 
 /* =========================================================
-   PÉTALES DE SAKURA
+   ÉLECTRICITÉ ROSE MAGIQUE DANS LES BRANCHES
    ========================================================= */
 
-.sakura-container {
+.electric-overlay {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-
   pointer-events: none;
-  overflow: hidden;
-  z-index: 20;
-}
-
-.sakura-petal {
-  position: absolute;
-  top: -30px;
-
-  width: 11px;
-  height: 7px;
-
+  z-index: 6;
+  opacity: .75;
   background:
-    linear-gradient(
-      135deg,
-      rgba(255, 244, 247, .95),
-      var(--sakura)
-    );
-
-  border-radius: 100% 0 100% 0;
-
-  opacity: .68;
-
-  box-shadow:
-    0 2px 6px rgba(102, 48, 62, .20);
-
-  animation:
-    sakura-fall linear infinite,
-    sakura-sway ease-in-out infinite alternate;
-
-  will-change: transform;
+    radial-gradient(ellipse at 18% 28%, rgba(255, 120, 170, .45) 0%, transparent 12%),
+    radial-gradient(ellipse at 12% 45%, rgba(197, 91, 183, .35) 0%, transparent 15%),
+    radial-gradient(ellipse at 88% 22%, rgba(255, 120, 170, .40) 0%, transparent 14%),
+    radial-gradient(ellipse at 80% 35%, rgba(201, 93, 120, .30) 0%, transparent 12%);
+  filter: drop-shadow(0 0 8px rgba(255, 120, 170, .6));
+  animation: energie-branches 5s ease-in-out infinite alternate;
 }
 
-@keyframes sakura-fall {
+@keyframes energie-branches {
   0% {
-    transform:
-      translate3d(0, -50px, 0)
-      rotate(0deg);
+    opacity: .35;
+    filter: blur(1.5px) drop-shadow(0 0 4px var(--rose-glow));
   }
-
-  20% {
-    transform:
-      translate3d(55px, 20vh, 0)
-      rotate(150deg);
-  }
-
-  40% {
-    transform:
-      translate3d(-30px, 42vh, 0)
-      rotate(300deg);
-  }
-
-  60% {
-    transform:
-      translate3d(75px, 63vh, 0)
-      rotate(470deg);
-  }
-
-  80% {
-    transform:
-      translate3d(-20px, 84vh, 0)
-      rotate(610deg);
-  }
-
-  100% {
-    transform:
-      translate3d(35px, 115vh, 0)
-      rotate(760deg);
-  }
-}
-
-@keyframes sakura-sway {
-  0% {
-    margin-left: -24px;
-  }
-
   50% {
-    margin-left: 30px;
+    opacity: .85;
+    filter: blur(.2px) drop-shadow(0 0 12px var(--rose-glow));
   }
-
   100% {
-    margin-left: -18px;
+    opacity: .45;
+    filter: blur(1px) drop-shadow(0 0 6px var(--violet));
   }
 }
 
 /* =========================================================
-   ZONE DU DRAGON
+   DRAGON (IMAGE 2)
    ========================================================= */
 
 .dragon-zone {
   position: fixed;
   inset: 0;
-
   width: 100%;
   height: 100%;
-
   pointer-events: none;
   overflow: hidden;
-
   z-index: 8;
-  opacity: .94;
+  opacity: .95;
 }
-
-/* Lumière rose diffuse */
-
-.dragon-zone::before {
-  content: "";
-  position: absolute;
-  inset: -10%;
-
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      ellipse at 12% 20%,
-      rgba(255, 105, 169, .18) 0,
-      transparent 24%
-    ),
-    radial-gradient(
-      ellipse at 87% 23%,
-      rgba(198, 91, 183, .15) 0,
-      transparent 25%
-    ),
-    radial-gradient(
-      ellipse at 72% 75%,
-      rgba(255, 120, 170, .08) 0,
-      transparent 25%
-    );
-
-  filter: blur(8px);
-
-  animation:
-    energie-respire 9s ease-in-out infinite alternate;
-}
-
-@keyframes energie-respire {
-  0% {
-    opacity: .35;
-    transform: scale(.98);
-  }
-
-  50% {
-    opacity: .65;
-    transform: scale(1.02);
-  }
-
-  100% {
-    opacity: .42;
-    transform: scale(1);
-  }
-}
-
-/* Halo sous le dragon */
-
-.dragon-zone::after {
-  content: "";
-  position: absolute;
-
-  width: 46vw;
-  height: 20vw;
-
-  min-width: 260px;
-  min-height: 120px;
-
-  left: 27%;
-  top: 40%;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      ellipse,
-      rgba(210, 91, 157, .13),
-      rgba(178, 107, 186, .05) 38%,
-      transparent 72%
-    );
-
-  filter: blur(22px);
-
-  animation:
-    souffle-dragon 10s ease-in-out infinite;
-}
-
-@keyframes souffle-dragon {
-  0%,
-  100% {
-    opacity: .25;
-    transform: scale(.94);
-  }
-
-  50% {
-    opacity: .72;
-    transform: scale(1.07);
-  }
-}
-
-/* =========================================================
-   DRAGON — IMAGE 2
-   ========================================================= */
 
 .dragon {
   position: absolute;
-
   width: var(--dragon-size);
   aspect-ratio: 584 / 342;
-
   left: 50%;
   top: 50%;
-
   transform-origin: center center;
 
   background-image: url("assets/dragon.png");
@@ -345,100 +154,164 @@ body::after {
   background-repeat: no-repeat;
   background-size: contain;
 
+  /* Incrustation propre sans le fond blanc de l'image */
   mix-blend-mode: multiply;
-
   filter:
-    drop-shadow(
-      0 12px 20px rgba(25, 28, 35, .18)
-    )
-    drop-shadow(
-      0 0 18px rgba(181, 109, 186, .10)
-    )
-    contrast(1.04);
+    contrast(1.08)
+    drop-shadow(0 12px 22px rgba(25, 28, 35, .25))
+    drop-shadow(0 0 15px rgba(201, 93, 120, .18));
 
-  animation:
-    dragon-estampe var(--dragon-duration)
-    cubic-bezier(.45, .05, .55, .95)
-    infinite;
-
+  animation: dragon-estampe var(--dragon-duration) ease-in-out infinite;
   will-change: transform;
 }
 
-/* Masque les anciennes formes éventuelles */
-
-.dragon-body,
-.dragon-head,
-.dragon-mane,
-.dragon-spikes,
-.dragon-tail,
-.dragon-horn {
-  display: none !important;
-}
-
+/* Mouvement sinueux du dragon autour du temple */
 @keyframes dragon-estampe {
   0% {
-    transform:
-      translate(-54%, -50%)
-      translate(-12vw, 5vh)
-      rotate(-4deg)
-      scale(.82);
+    transform: translate(-54%, -50%) translate(-14vw, 4vh) rotate(-4deg) scale(.82);
   }
-
-  14% {
-    transform:
-      translate(-50%, -50%)
-      translate(-6vw, -8vh)
-      rotate(-1deg)
-      scale(.87);
+  16% {
+    transform: translate(-50%, -50%) translate(-5vw, -10vh) rotate(2deg) scale(.88);
   }
-
-  28% {
-    transform:
-      translate(-47%, -50%)
-      translate(6vw, -14vh)
-      rotate(4deg)
-      scale(.94);
+  33% {
+    transform: translate(-45%, -50%) translate(11vw, -16vh) rotate(6deg) scale(.95);
   }
-
-  42% {
-    transform:
-      translate(-50%, -50%)
-      translate(16vw, -5vh)
-      rotate(6deg)
-      scale(.98);
+  50% {
+    transform: translate(-50%, -50%) translate(18vw, 2vh) rotate(1deg) scale(.90);
   }
-
-  56% {
-    transform:
-      translate(-52%, -50%)
-      translate(18vw, 8vh)
-      rotate(1deg)
-      scale(.92);
+  67% {
+    transform: translate(-54%, -50%) translate(4vw, 14vh) rotate(-5deg) scale(.84);
   }
-
-  70% {
-    transform:
-      translate(-54%, -50%)
-      translate(7vw, 15vh)
-      rotate(-5deg)
-      scale(.86);
-  }
-
   84% {
-    transform:
-      translate(-50%, -50%)
-      translate(-9vw, 10vh)
-      rotate(-2deg)
-      scale(.90);
+    transform: translate(-50%, -50%) translate(-15vw, 8vh) rotate(-1deg) scale(.90);
   }
-
   100% {
-    transform:
-      translate(-54%, -50%)
-      translate(-12vw, 5vh)
-      rotate(-4deg)
-      scale(.82);
+    transform: translate(-54%, -50%) translate(-14vw, 4vh) rotate(-4deg) scale(.82);
   }
+}
+
+/* Souffle de magie autour du dragon */
+.dragon-zone::after {
+  content: "";
+  position: absolute;
+  width: 45vw;
+  height: 20vw;
+  min-width: 290px;
+  min-height: 130px;
+  left: 30%;
+  top: 40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgba(210, 91, 157, .16),
+    transparent 70%
+  );
+  filter: blur(22px);
+  animation: souffle-dragon 9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes souffle-dragon {
+  0%, 100% { opacity: .20; transform: scale(.95); }
+  50% { opacity: .75; transform: scale(1.06); }
+}
+
+.dragon-zone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .55;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 10% 18%, transparent 0 22%, rgba(255, 105, 169, .38) 22.2%, transparent 22.6%),
+    radial-gradient(ellipse at 24% 12%, transparent 0 18%, rgba(197, 91, 183, .28) 18.2%, transparent 18.6%),
+    radial-gradient(ellipse at 88% 19%, transparent 0 16%, rgba(255, 112, 175, .28) 16.2%, transparent 16.6%);
+  filter: blur(.5px);
+  animation: energie-ambiance 7s ease-in-out infinite alternate;
+}
+
+@keyframes energie-ambiance {
+  from { opacity: .25; filter: blur(1.2px); }
+  to { opacity: .65; filter: blur(.2px); }
+}
+
+/* =========================================================
+   PÉTALES DE SAKURA (100% CSS)
+   ========================================================= */
+
+.sakura-container {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.sakura-petal,
+.sakura-container::before,
+.sakura-container::after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  width: 12px;
+  height: 8px;
+  background: linear-gradient(135deg, #fff1f4, var(--sakura));
+  border-radius: 100% 0 100% 0;
+  opacity: .78;
+  box-shadow: 0 2px 7px rgba(102, 48, 62, .20);
+  will-change: transform;
+}
+
+.sakura-petal {
+  left: 15%;
+  animation: sakura-fall-1 16s linear infinite, sakura-sway 4s ease-in-out infinite alternate;
+}
+
+.sakura-container::before {
+  left: 45%;
+  width: 15px;
+  height: 10px;
+  opacity: .90;
+  filter: blur(.8px);
+  animation: sakura-fall-2 22s linear infinite 3s, sakura-sway 5s ease-in-out infinite alternate;
+}
+
+.sakura-container::after {
+  left: 75%;
+  width: 9px;
+  height: 6px;
+  opacity: .60;
+  filter: blur(1.5px);
+  animation: sakura-fall-3 18s linear infinite 7s, sakura-sway 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes sakura-fall-1 {
+  0% { transform: translate3d(0, -50px, 0) rotate(0deg); }
+  25% { transform: translate3d(60px, 25vh, 0) rotate(180deg); }
+  50% { transform: translate3d(-30px, 50vh, 0) rotate(360deg); }
+  75% { transform: translate3d(80px, 75vh, 0) rotate(540deg); }
+  100% { transform: translate3d(20px, 115vh, 0) rotate(720deg); }
+}
+
+@keyframes sakura-fall-2 {
+  0% { transform: translate3d(0, -50px, 0) rotate(0deg); }
+  30% { transform: translate3d(-80px, 35vh, 0) rotate(210deg); }
+  60% { transform: translate3d(50px, 70vh, 0) rotate(420deg); }
+  100% { transform: translate3d(-10px, 115vh, 0) rotate(720deg); }
+}
+
+@keyframes sakura-fall-3 {
+  0% { transform: translate3d(0, -50px, 0) rotate(0deg); }
+  40% { transform: translate3d(90px, 40vh, 0) rotate(270deg); }
+  80% { transform: translate3d(-40px, 80vh, 0) rotate(540deg); }
+  100% { transform: translate3d(30px, 115vh, 0) rotate(720deg); }
+}
+
+@keyframes sakura-sway {
+  0% { margin-left: -25px; }
+  100% { margin-left: 25px; }
 }
 
 /* =========================================================
@@ -448,187 +321,116 @@ body::after {
 header {
   position: relative;
   z-index: 30;
-
   padding: 2.2rem 2rem 1.5rem;
-
   text-align: center;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(250, 244, 230, .93),
-      rgba(250, 244, 230, .67)
-    );
-
-  border-bottom:
-    1px solid rgba(60, 45, 45, .20);
-
-  box-shadow:
-    0 10px 30px rgba(50, 35, 35, .10);
-
-  backdrop-filter: blur(4px);
+  background: linear-gradient(
+    180deg,
+    rgba(250, 244, 230, .92),
+    rgba(250, 244, 230, .66)
+  );
+  border-bottom: 1px solid rgba(60, 45, 45, .20);
+  box-shadow: 0 10px 30px rgba(50, 35, 35, .10);
+  backdrop-filter: blur(3px);
 }
 
 header h1 {
   font-family: "Shippori Mincho", serif;
   font-weight: 600;
-
   color: #29272a;
-
-  font-size:
-    clamp(1.65rem, 4vw, 2.65rem);
-
+  font-size: clamp(1.65rem, 4vw, 2.65rem);
   letter-spacing: 6px;
-
-  text-shadow:
-    0 2px 12px rgba(255,255,255,.8);
+  text-shadow: 0 2px 12px rgba(255, 255, 255, .8);
 }
 
 header h1::before,
 header h1::after {
   content: "❀";
-
   color: var(--sakura);
-
   font-size: .72em;
-
   margin: 0 1rem;
-
-  text-shadow:
-    0 0 12px rgba(201, 93, 120, .20);
 }
-
-/* =========================================================
-   NAVIGATION
-   ========================================================= */
 
 nav {
   margin-top: 1.4rem;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   gap: .35rem;
   flex-wrap: wrap;
 }
 
 nav a {
   position: relative;
-
   color: #51484b;
-
   text-decoration: none;
-
   font-family: "Shippori Mincho", serif;
   font-size: .88rem;
   letter-spacing: 1.5px;
-
   padding: .55rem 1rem;
-
-  transition:
-    color .3s ease,
-    transform .3s ease;
+  transition: color .3s ease, background .3s ease, transform .3s ease;
 }
 
 nav a::after {
   content: "";
-
   position: absolute;
-
   left: 50%;
   bottom: 3px;
-
   width: 0;
   height: 1px;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--sakura),
-      transparent
-    );
-
+  background: var(--sakura);
   transform: translateX(-50%);
-
-  transition:
-    width .3s ease;
+  transition: width .3s ease;
 }
 
 nav a:hover {
   color: #a33e5c;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 nav a:hover::after {
-  width: 70%;
+  width: 65%;
 }
 
 /* =========================================================
-   CONTENU PRINCIPAL
+   CONTENU
    ========================================================= */
 
 main {
   position: relative;
   z-index: 25;
-
   width: min(100% - 2rem, 980px);
-
   margin: 4rem auto;
-
-  padding:
-    clamp(2rem, 5vw, 4rem);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(250, 246, 235, .91),
-      rgba(246, 237, 220, .75)
-    );
-
-  border:
-    1px solid rgba(74, 52, 53, .20);
-
-  border-radius: 12px;
-
+  padding: clamp(2rem, 5vw, 4rem);
+  background: linear-gradient(
+    145deg,
+    rgba(250, 246, 235, .90),
+    rgba(246, 237, 220, .76)
+  );
+  border: 1px solid rgba(74, 52, 53, .20);
+  border-radius: 10px;
   box-shadow:
     0 25px 70px var(--shadow),
-    inset 0 1px 0 rgba(255,255,255,.68);
-
-  backdrop-filter: blur(8px);
-
+    inset 0 1px 0 rgba(255, 255, 255, .65);
+  backdrop-filter: blur(7px);
   text-align: center;
 }
 
 main::before {
   content: "❀";
-
   display: block;
-
   width: 100%;
-
   margin: 0 auto 1.2rem;
-
   color: var(--sakura);
-
   font-size: 1.4rem;
-
-  text-shadow:
-    0 0 15px rgba(201, 93, 120, .25);
+  text-shadow: 0 0 15px rgba(201, 93, 120, .25);
 }
 
 main h2 {
   font-family: "Shippori Mincho", serif;
   font-weight: 600;
-
   color: #302c30;
-
-  font-size:
-    clamp(1.4rem, 3vw, 1.95rem);
-
+  font-size: clamp(1.4rem, 3vw, 1.95rem);
   letter-spacing: 3px;
-
   margin-bottom: 1rem;
 }
 
@@ -649,51 +451,26 @@ main p {
 
 .document-link {
   display: inline-block;
-
   margin-top: 1.5rem;
-
   padding: .75rem 1.5rem;
-
   color: #fff9f0;
-
-  background:
-    linear-gradient(
-      135deg,
-      #bd526d,
-      #8e3e55
-    );
-
-  border:
-    1px solid rgba(255,255,255,.45);
-
+  background: linear-gradient(135deg, #bd526d, #8e3e55);
+  border: 1px solid rgba(255, 255, 255, .45);
   border-radius: 5px;
-
   text-decoration: none;
-
   font-family: "Shippori Mincho", serif;
   font-weight: 600;
-
   letter-spacing: 1.5px;
   font-size: .88rem;
-
   cursor: pointer;
-
-  box-shadow:
-    0 8px 25px rgba(112, 47, 67, .20);
-
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease,
-    filter .25s ease;
+  box-shadow: 0 8px 25px rgba(112, 47, 67, .20);
+  transition: transform .25s ease, box-shadow .25s ease, filter .25s ease;
 }
 
 .document-link:hover {
   transform: translateY(-3px);
-
-  filter: brightness(1.07);
-
-  box-shadow:
-    0 13px 32px rgba(112, 47, 67, .29);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 30px rgba(112, 47, 67, .28);
 }
 
 /* =========================================================
@@ -703,62 +480,35 @@ main p {
 .formulaire {
   display: flex;
   flex-wrap: wrap;
-
   gap: .8rem;
-
   justify-content: center;
   align-items: center;
-
   margin: 2rem 0;
-
   padding: 1.3rem;
-
-  background:
-    rgba(255, 249, 237, .62);
-
-  border:
-    1px solid var(--line);
-
+  background: rgba(255, 249, 237, .62);
+  border: 1px solid var(--line);
   border-radius: 8px;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
 }
 
 .formulaire input[type="text"],
 .formulaire input[type="file"],
 .formulaire select {
-  background:
-    rgba(255, 251, 241, .88);
-
-  border:
-    1px solid rgba(66, 52, 53, .20);
-
+  background: rgba(255, 251, 241, .88);
+  border: 1px solid rgba(66, 52, 53, .20);
   color: var(--ink);
-
   padding: .65rem .85rem;
-
   border-radius: 5px;
-
   font-family: "Noto Serif JP", serif;
   font-size: .85rem;
-
-  transition:
-    border-color .25s ease,
-    box-shadow .25s ease,
-    background .25s ease;
+  transition: border-color .25s ease, box-shadow .25s ease;
 }
 
 .formulaire input[type="text"]:focus,
 .formulaire select:focus {
   outline: none;
-
   border-color: var(--sakura);
-
-  background: #fffdf7;
-
-  box-shadow:
-    0 0 0 3px rgba(201,93,120,.10);
+  box-shadow: 0 0 0 3px rgba(201, 93, 120, .10);
 }
 
 .formulaire button {
@@ -771,94 +521,52 @@ main p {
 
 .grille-cartes {
   display: grid;
-
-  grid-template-columns:
-    repeat(auto-fit, minmax(230px, 1fr));
-
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 1.2rem;
-
   margin-top: 2.5rem;
-
   text-align: left;
 }
 
 .carte {
   position: relative;
-
-  background:
-    rgba(255, 249, 237, .76);
-
-  border:
-    1px solid rgba(75, 52, 55, .17);
-
+  background: rgba(255, 249, 237, .76);
+  border: 1px solid rgba(75, 52, 55, .17);
   border-radius: 8px;
-
   padding: 1.4rem;
-
   overflow: hidden;
-
-  box-shadow:
-    0 12px 30px rgba(55, 39, 41, .10);
-
-  transition:
-    transform .3s ease,
-    border-color .3s ease,
-    background .3s ease,
-    box-shadow .3s ease;
+  box-shadow: 0 12px 30px rgba(55, 39, 41, .10);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease, box-shadow .3s ease;
 }
 
 .carte::before {
   content: "";
-
   position: absolute;
-
   top: 0;
   left: 0;
-
   width: 100%;
   height: 3px;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      var(--sakura),
-      transparent
-    );
-
+  background: linear-gradient(90deg, transparent, var(--sakura), transparent);
   opacity: .72;
 }
 
 .carte:hover {
   transform: translateY(-5px);
-
-  background:
-    rgba(255, 251, 243, .91);
-
-  border-color:
-    rgba(201,93,120,.38);
-
-  box-shadow:
-    0 18px 40px rgba(55, 39, 41, .16);
+  background: rgba(255, 251, 243, .91);
+  border-color: rgba(201, 93, 120, .38);
+  box-shadow: 0 18px 40px rgba(55, 39, 41, .16);
 }
 
 .carte h3 {
   font-family: "Shippori Mincho", serif;
-
   color: #a3445f;
-
   letter-spacing: 1px;
-
   font-size: 1.05rem;
-
   margin-bottom: .6rem;
 }
 
 .carte p {
   color: var(--ink-soft);
-
   font-size: .88rem;
-
   margin-bottom: 1rem;
 }
 
@@ -872,14 +580,9 @@ main p {
 
 .liste-fichiers a {
   color: #62585b;
-
   text-decoration: none;
-
   font-size: .83rem;
-
-  transition:
-    color .2s ease,
-    padding-left .2s ease;
+  transition: color .2s ease, padding-left .2s ease;
 }
 
 .liste-fichiers a:hover {
@@ -891,116 +594,69 @@ main p {
    MESSAGES
    ========================================================= */
 
-.msg-succes,
-.msg-erreur {
-  padding: .6rem 1rem;
-  margin: 1rem 0;
-
-  border-radius: 5px;
-}
-
 .msg-succes {
   color: #874255;
-
-  border:
-    1px solid rgba(201,93,120,.55);
-
-  background:
-    rgba(201,93,120,.08);
+  border: 1px solid rgba(201, 93, 120, .55);
+  padding: .6rem 1rem;
+  margin: 1rem 0;
+  background: rgba(201, 93, 120, .08);
+  border-radius: 5px;
 }
 
 .msg-erreur {
   color: #a23d45;
-
-  border:
-    1px solid rgba(177,55,69,.55);
-
-  background:
-    rgba(177,55,69,.08);
+  border: 1px solid rgba(177, 55, 69, .55);
+  padding: .6rem 1rem;
+  margin: 1rem 0;
+  background: rgba(177, 55, 69, .08);
+  border-radius: 5px;
 }
 
 /* =========================================================
-   SOUS-TITRES
+   SOUS-TITRES / ÉTIQUETTES
    ========================================================= */
 
 .sous-titre {
   position: relative;
-
   font-family: "Shippori Mincho", serif;
-
   color: #a3445f;
-
   font-weight: 600;
-
   letter-spacing: 1.5px;
-
   font-size: 1rem;
-
   margin: 2rem 0 .7rem;
-
   padding-left: 1rem;
-
   text-align: left;
 }
 
 .sous-titre::before {
   content: "";
-
   position: absolute;
-
   left: 0;
   top: 50%;
-
   width: 3px;
   height: 65%;
-
-  background:
-    linear-gradient(
-      180deg,
-      var(--sakura-light),
-      var(--sakura)
-    );
-
+  background: var(--sakura);
   transform: translateY(-50%);
-
-  box-shadow:
-    0 0 8px rgba(201,93,120,.45);
+  box-shadow: 0 0 8px rgba(201, 93, 120, .45);
 }
-
-/* =========================================================
-   ÉTIQUETTES
-   ========================================================= */
 
 .etiquette {
   display: inline-block;
-
-  background:
-    rgba(201,93,120,.10);
-
+  background: rgba(201, 93, 120, .10);
   color: #9b4660;
-
-  border:
-    1px solid rgba(201,93,120,.28);
-
+  border: 1px solid rgba(201, 93, 120, .28);
   font-size: .62rem;
-
   font-weight: 600;
-
   letter-spacing: 1px;
-
   padding: .12rem .5rem;
-
   text-transform: uppercase;
-
   border-radius: 3px;
-
   vertical-align: middle;
-
   margin-right: .3rem;
 }
 
 /* =========================================================
-   RESPONSIVE TABLETTE
+   MOBILE
    ========================================================= */
 
 @media (max-width: 900px) {
@@ -1013,13 +669,9 @@ main p {
   }
 
   .dragon-zone::before {
-    opacity: .35;
+    opacity: .34;
   }
 }
-
-/* =========================================================
-   RESPONSIVE MOBILE
-   ========================================================= */
 
 @media (max-width: 600px) {
   body {
@@ -1050,13 +702,8 @@ main p {
 
   main {
     width: calc(100% - 1rem);
-
     margin: 2rem auto;
-
-    padding:
-      2rem 1.15rem;
-
-    border-radius: 9px;
+    padding: 2rem 1.15rem;
   }
 
   .grille-cartes {
@@ -1065,9 +712,7 @@ main p {
 
   .dragon {
     --dragon-size: min(108vw, 500px);
-
     top: 47%;
-
     opacity: .78;
   }
 
@@ -1076,54 +721,7 @@ main p {
   }
 
   .dragon-zone::after {
-    width: 80vw;
-    height: 32vw;
-
-    left: 10%;
-    top: 43%;
-
-    opacity: .48;
-  }
-
-  .formulaire {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .formulaire input,
-  .formulaire select,
-  .formulaire button {
-    width: 100%;
-  }
-}
-
-/* =========================================================
-   TRÈS PETITS ÉCRANS
-   ========================================================= */
-
-@media (max-width: 380px) {
-  header h1 {
-    font-size: 1.4rem;
-    letter-spacing: 2px;
-  }
-
-  header h1::before,
-  header h1::after {
-    display: none;
-  }
-
-  nav a {
-    font-size: .72rem;
-    padding: .4rem .5rem;
-  }
-
-  main {
-    padding:
-      1.6rem .9rem;
-  }
-
-  .dragon {
-    --dragon-size: 120vw;
+    opacity: .55;
   }
 }
 
@@ -1138,6 +736,5 @@ main p {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
   }
 }

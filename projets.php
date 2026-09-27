@@ -1,8 +1,7 @@
 <?php
 require 'gestion.php';
 $erreurConnexion = traiterConnexion();
-list($message, $erreur) = traiterFormulaires('projets');
-$dossiers = listerDossiers('projets');
+list($message, $erreur) = traiterFormulaires('projets');$dossiers = listerDossiers('projets');
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -13,11 +12,6 @@ $dossiers = listerDossiers('projets');
   <title>Projets - Mon classeur numérique</title>
 </head>
 <body>
-
-  <audio id="musique-fond" loop autoplay muted>
-    <source src="musique/musique-fond.mp3" type="audio/mpeg">
-  </audio>
-  <button id="bouton-musique" title="Activer / couper la musique" aria-label="Activer ou couper la musique" style="position:fixed; bottom:20px; right:20px; z-index:999; width:50px; height:50px; border-radius:50%; border:none; background:#ffffffdd; font-size:22px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.25);">🔇</button>
 
   <div class="sakura-container" aria-hidden="true"></div>
 
@@ -58,6 +52,9 @@ $dossiers = listerDossiers('projets');
     <?php afficherDossiers('projets', $dossiers); ?>
   </main>
 
+  <!-- Bouton secret vers le jeu -->
+  <a href="jeux.html" id="bouton-secret" title="Sanctuaire des Kami" style="position:fixed; bottom:20px; left:20px; z-index:999; width:44px; height:44px; border-radius:8px; background:#0c0818; border:1px solid #ffd700; color:#ffd700; display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none; box-shadow:0 0 12px rgba(255, 215, 0, 0.4); backdrop-filter:blur(4px); transition:transform 0.3s ease, box-shadow 0.3s ease;">⛩️</a>
+
   <script>
     const sakuraContainer = document.querySelector(".sakura-container");
     const PETAL_COUNT = 35;
@@ -82,14 +79,6 @@ $dossiers = listerDossiers('projets');
 
       sakuraContainer.appendChild(petal);
     }
-
-    const musique = document.getElementById("musique-fond");
-    const boutonMusique = document.getElementById("bouton-musique");
-    boutonMusique.addEventListener("click", () => {
-      musique.muted = !musique.muted;
-      if (!musique.muted) { musique.play(); }
-      boutonMusique.textContent = musique.muted ? "🔇" : "🔊";
-    });
   </script>
 </body>
 </html>

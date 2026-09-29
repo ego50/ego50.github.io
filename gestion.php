@@ -22,10 +22,10 @@ if (!is_file($fichierConfig)) {
     exit('Configuration manquante : copie config.example.php en config.php et définis tes mots de passe.');
 }
 require $fichierConfig;
-define('MOT_DE_PASSE_ADMIN', $motDePasseAdmin);
-define('MOT_DE_PASSE_MODERATEUR', $motDePasseProf);
+define('maman', $motDePasseAdmin);
+define('sinprof2027', $motDePasseProf);
 // Mot de passe du Sanctuaire (jeux.php). Vide ou absent de config.php = réservé à l'admin.
-define('MOT_DE_PASSE_JEU', (string) ($motDePasseJeu ?? ''));
+define('fabricio', (string) ($motDePasseJeu ?? ''));
 
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];
@@ -355,6 +355,36 @@ function traiterFormulaires($categorie) {
                 }
             }
         }
+
+        // Suppression d'un dossier entier avec ses fichiers (ADMIN UNIQUEMENT)
+        if (($_POST['action'] ?? '') === 'supprimer_dossier') {
+            if (!estAdmin()) {
+                return ['', "Seul l'admin peut supprimer un dossier."];
+            }
+            $nomDossier = nettoyerNom($_POST['dossier_cible'] ?? '');
+            $chemin = $dossierCategorie . $nomDossier;
+            if ($nomDossier === '' || !is_dir($chemin)) {
+                $erreur = "Dossier introuvable.";
+            } else {
+                $ok = true;
+                foreach (scandir($chemin) as $element) {
+                    if ($element === '.' || $element === '..') {
+                        continue;
+                    }
+                    $sous = $chemin . '/' . $element;
+                    if (is_file($sous)) {
+                        if (!unlink($sous)) { $ok = false; }
+                    } else {
+                        $ok = false; // on ne touche pas aux sous-dossiers inattendus
+                    }
+                }
+                if ($ok && rmdir($chemin)) {
+                    $message = "Dossier « " . htmlspecialchars($nomDossier) . " » supprimé.";
+                } else {
+                    $erreur = "Impossible de supprimer entièrement ce dossier.";
+                }
+            }
+        }
     }
 
     return [$message, $erreur];
@@ -419,6 +449,27 @@ function afficherFormulaires($categorie, $dossiers) {
     <?php endif;
 }
 
+// Bouton « supprimer le dossier » (visible uniquement pour l'admin).
+function boutonSupprimerDossier($categorie, $nomDossier, $nbFichiers, $cible = null) {
+    if (!estAdmin()) {
+        return '';
+    }
+    if ($cible === null) {
+        $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
+    }
+    $question = $nbFichiers > 0
+        ? "Supprimer ce dossier ET ses " . $nbFichiers . " fichier(s) ? Action définitive."
+        : "Supprimer ce dossier vide ?";
+    $js = htmlspecialchars(json_encode($question, JSON_UNESCAPED_UNICODE), ENT_QUOTES);
+    $html  = ' <form class="formulaire-suppression" method="post" action="' . $cible . '" style="display:inline" onsubmit="return confirm(' . $js . ');">';
+    $html .= '<input type="hidden" name="categorie" value="' . htmlspecialchars($categorie) . '">';
+    $html .= '<input type="hidden" name="action" value="supprimer_dossier">' . champCsrf();
+    $html .= '<input type="hidden" name="dossier_cible" value="' . htmlspecialchars($nomDossier) . '">';
+    $html .= '<button type="submit" class="document-link bouton-supprimer" title="Supprimer le dossier">🗑 Dossier</button>';
+    $html .= '</form>';
+    return $html;
+}
+
 // Affiche la grille des dossiers/fichiers pour une catégorie.
 // Le bouton de suppression n'apparaît que pour l'admin.
 function afficherDossiers($categorie, $dossiers, $etiquette = null) {
@@ -431,7 +482,7 @@ function afficherDossiers($categorie, $dossiers, $etiquette = null) {
     foreach ($dossiers as $nom => $fichiers) {
         echo '<div class="carte">';
         $prefixe = $etiquette ? '<span class="etiquette">' . htmlspecialchars($etiquette) . '</span> ' : '';
-        echo '<h3>' . $prefixe . '📁 ' . htmlspecialchars($nom) . '</h3>';
+        echo '<h3>' . $prefixe . '📁 ' . htmlspecialchars($nom) . boutonSupprimerDossier($categorie, $nom, count($fichiers), $cible) . '</h3>';
         if (count($fichiers) === 0) {
             echo '<p>Dossier vide.</p>';
         } else {

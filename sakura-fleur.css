@@ -113,6 +113,15 @@ main p, .intro { color: var(--text-soft); }
 }
 .document-link:hover { filter: none; background: linear-gradient(135deg, #d0648a, #bf4c72); box-shadow: 0 10px 22px rgba(184, 69, 106, 0.4); }
 
+/* Boutons de suppression (admin) : petits et discrets */
+.document-link.bouton-supprimer {
+  min-height: 30px; width: auto; margin-left: 0.4rem; padding: 0.1rem 0.6rem;
+  font-size: 0.85rem; letter-spacing: 0; vertical-align: middle;
+  background: #fff; color: #9c1f18; border: 1px solid #f0b9b3;
+  border-radius: 8px 2px 8px 2px; box-shadow: none;
+}
+.document-link.bouton-supprimer:hover { background: #fdecea; transform: none; box-shadow: none; }
+
 /* 8. FORMULAIRES */
 .formulaire { background: rgba(253, 236, 241, 0.75); border-radius: 4px 20px 4px 20px; box-shadow: none; }
 .formulaire input[type="text"], .formulaire input[type="password"], .formulaire input[type="file"], .formulaire select,

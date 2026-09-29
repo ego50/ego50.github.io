@@ -11,11 +11,15 @@ $dossiersTp       = listerDossiers('tp');$dossiersProjets  = listerDossiers('pro
 <html lang="fr">
 <head>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="sakura-fleur.css">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Documents - Mon classeur numérique</title>
+  <link rel="icon" href="logo.svg">
 </head>
 <body>
+  <div id="veil" aria-hidden="true"></div>
+  <script src="transitions.js"></script>
 
   <div class="sakura-container" aria-hidden="true"></div>
 
@@ -86,33 +90,13 @@ $dossiersTp       = listerDossiers('tp');$dossiersProjets  = listerDossiers('pro
     <?php endif; ?>
   </main>
 
+  <footer class="bas-de-page">
+    <div><a href="index.html">Accueil</a></div>
+  </footer>
+
   <!-- Bouton secret vers le jeu -->
-  <a href="jeux.html" id="bouton-secret" title="Sanctuaire des Kami" style="position:fixed; bottom:20px; left:20px; z-index:999; width:44px; height:44px; border-radius:8px; background:#0c0818; border:1px solid #ffd700; color:#ffd700; display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none; box-shadow:0 0 12px rgba(255, 215, 0, 0.4); backdrop-filter:blur(4px); transition:transform 0.3s ease, box-shadow 0.3s ease;">⛩️</a>
+  <a href="jeux.php" id="bouton-secret" title="Sanctuaire des Kami" style="position:fixed; bottom:20px; left:20px; z-index:999; width:44px; height:44px; border-radius:8px; background:#0c0818; border:1px solid #ffd700; color:#ffd700; display:flex; align-items:center; justify-content:center; font-size:22px; text-decoration:none; box-shadow:0 0 12px rgba(255, 215, 0, 0.4); backdrop-filter:blur(4px); transition:transform 0.3s ease, box-shadow 0.3s ease;">⛩️</a>
 
-  <script>
-    const sakuraContainer = document.querySelector(".sakura-container");
-    const PETAL_COUNT = 35;
-
-    for (let i = 0; i < PETAL_COUNT; i++) {
-      const petal = document.createElement("span");
-      petal.className = "sakura-petal";
-
-      const size = Math.random() * 7 + 7;
-      const left = Math.random() * 100;
-      const fallDuration = Math.random() * 12 + 10;
-      const swayDuration = Math.random() * 3 + 2;
-      const delay = Math.random() * -20;
-      const opacity = Math.random() * 0.45 + 0.35;
-
-      petal.style.left = `${left}%`;
-      petal.style.width = `${size}px`;
-      petal.style.height = `${size * 0.65}px`;
-      petal.style.opacity = opacity;
-      petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
-      petal.style.animationDelay = `${delay}s, ${Math.random() * -5}s`;
-
-      sakuraContainer.appendChild(petal);
-    }
-  </script>
+  <script src="sakura.js" defer></script>
 </body>
 </html>

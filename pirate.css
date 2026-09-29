@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@500;700&display=swap');
+
+/* =====================================================
+   PIRATE.CSS — direction artistique « aventure en mer »
+   Chargé APRÈS style.css : il redéfinit les variables
+   puis ajoute décor, profondeur et responsive.
+   Pour l'enlever : retire la ligne <link ... pirate.css>.
+   ===================================================== */
+
+/* 1. PALETTE (mêmes noms de variables que style.css) */
+:root {
+  --bg: #04141c;
+  --panel: rgba(8, 26, 36, 0.88);
+  --shadow: rgba(0, 0, 0, 0.6);
+  --text: #f4ecd8;
+  --text-soft: #cfc3a2;
+  --text-muted: #cfc3a2;
+  --sakura: #d9a441;
+  --sakura-light: #f0d9a0;
+  --lightning: #d9a441;
+  --neon-magenta: #b9832b;
+  --neon-cyan: #3fa7b5;
+  --red-oni: #a3392b;
+  --oni-gold: #d9a441;
+  --oni-gold-glow: #f2c96b;
+  --border: rgba(217, 164, 65, 0.38);
+  --border-hover: rgba(63, 167, 181, 0.8);
+  --border-gold: rgba(217, 164, 65, 0.65);
+  --border-strong: #d9a441;
+  --accent: #f2c96b;
+  --accent-soft: #f0d9a0;
+  --glow: rgba(217, 164, 65, 0.35);
+  --error: #ff9b8a;
+  --bois: linear-gradient(180deg, #2b1a10, #1a0f08);
+  --laiton: linear-gradient(180deg, #f2c96b, #b9832b);
+  --mer: clamp(80px, 17vh, 180px);
+}
+
+/* 2. FOND : océan profond, lune, brume */
+body {
+  background:
+    radial-gradient(900px 560px at 80% -6%, rgba(150, 195, 210, 0.2), transparent 62%),
+    radial-gradient(1000px 640px at 8% 108%, rgba(28, 95, 115, 0.4), transparent 66%),
+    linear-gradient(180deg, #061a24 0%, #04141c 48%, #020c12 100%);
+  background-attachment: fixed;
+  font-family: "Noto Serif JP", Georgia, serif;
+}
+/* lune (remplace l'arc néon gauche) */
+body::before {
+  top: -14vw; left: auto; right: 6vw;
+  width: 34vw; height: 34vw; max-width: 460px; max-height: 460px;
+  border: 0; border-radius: 50%; transform: none; box-shadow: none;
+  background: radial-gradient(circle, rgba(225, 238, 240, 0.22) 0, rgba(150, 195, 210, 0.08) 45%, transparent 70%);
+  z-index: 1;
+}
+/* brume + grain de carte (remplace l'arc néon droit) */
+body::after {
+  top: 0; bottom: 0; right: auto; left: -8%;
+  width: 116%; height: auto;
+  border: 0; border-radius: 0; box-shadow: none; transform: none;
+  z-index: 2;
+  background:
+    radial-gradient(60% 30% at 20% 92%, rgba(190, 215, 225, 0.11), transparent 70%),
+    radial-gradient(50% 24% at 70% 78%, rgba(190, 215, 225, 0.07), transparent 70%);
+  animation: brume 45s ease-in-out infinite alternate;
+}
+@keyframes brume { from { transform: translateX(-3%); } to { transform: translateX(3%); } }
+
+/* Le flash plein écran toutes les 5 s est supprimé */
+.sakura-container::before { display: none !important; }
+/* Les pétales deviennent de l'écume très discrète */
+.sakura-container { opacity: 0.28; filter: hue-rotate(160deg) saturate(0.5); z-index: 2; }
+
+/* 3. CÔTÉ GAUCHE : vagues + bateau (le dragon est remplacé, HTML inchangé) */
+.dragon-zone {
+  z-index: 1; overflow: hidden; contain: paint;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 34%, transparent 58%);
+          mask-image: linear-gradient(90deg, #000 0, #000 34%, transparent 58%);
+}
+.dragon-zone::before, .dragon-zone::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: calc(min(60vw, 900px) + 400px);
+  background-repeat: repeat-x; background-position: left bottom; background-size: 400px 100%;
+  will-change: transform;
+}
+.dragon-zone::before { height: var(--mer); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0 40 Q50 10 100 40 T200 40 T300 40 T400 40 V80 H0z' fill='%230d3a4a' opacity='.88'/%3E%3C/svg%3E"); opacity: 0.9; animation: houle 30s linear infinite; }
+.dragon-zone::after  { height: calc(var(--mer) * 0.62); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 80' preserveAspectRatio='none'%3E%3Cpath d='M0 30 Q50 60 100 30 T200 30 T300 30 T400 30 V80 H0z' fill='%230a2c3a'/%3E%3Cpath d='M0 30 Q50 60 100 30 T200 30 T300 30 T400 30' fill='none' stroke='%23f0d9a0' stroke-opacity='.28' stroke-width='2'/%3E%3C/svg%3E"); animation: houle 19s linear infinite reverse; }
+@keyframes houle { from { transform: translateX(0); } to { transform: translateX(-400px); } }
+
+.dragon > * { display: none; }
+.dragon {
+  all: unset; display: block; position: absolute; box-sizing: border-box;
+  left: 3vw; bottom: calc(var(--mer) * 0.5);
+  width: clamp(150px, 21vw, 340px); aspect-ratio: 1;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cline x1='150' y1='44' x2='40' y2='214' stroke='%231c110a' stroke-width='1.5'/%3E%3Cline x1='150' y1='44' x2='262' y2='214' stroke='%231c110a' stroke-width='1.5'/%3E%3Crect x='148' y='40' width='5' height='192' fill='%233b2616'/%3E%3Cpath d='M153 40 l40 10 l-40 12z' fill='%23b23a2a'/%3E%3Cpath d='M144 100 L20 192 L144 188z' fill='%23cdbf9c' opacity='.85'/%3E%3Cpath d='M148 66 C96 96 92 150 100 186 L148 190z' fill='%23eadfc4' opacity='.95'/%3E%3Cpath d='M153 66 C205 96 209 150 201 186 L153 190z' fill='%23dccfae' opacity='.95'/%3E%3Cline x1='60' y1='222' x2='12' y2='194' stroke='%233b2616' stroke-width='4'/%3E%3Cpath d='M40 214 L262 214 C250 252 220 268 180 270 L110 270 C74 266 50 246 40 214z' fill='%232a1a10' stroke='%23d9a441' stroke-width='3'/%3E%3Crect x='52' y='226' width='196' height='4' fill='%23d9a441' opacity='.7'/%3E%3Cg fill='%23f2c96b' opacity='.6'%3E%3Ccircle cx='100' cy='246' r='5'/%3E%3Ccircle cx='140' cy='246' r='5'/%3E%3Ccircle cx='180' cy='246' r='5'/%3E%3Ccircle cx='220' cy='246' r='5'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0.85; filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55));
+  transform-origin: 50% 90%; animation: tangage 9s ease-in-out infinite;
+}
+@keyframes tangage {
+  0%, 100% { transform: translateY(0) rotate(-1.4deg); }
+  50%      { transform: translateY(-7px) rotate(1.4deg); }
+}
+
+/* 4. EN-TÊTE : planche de navire + cordage */
+header {
+  background: repeating-linear-gradient(92deg, rgba(255,255,255,.025) 0 2px, transparent 2px 9px), var(--bois);
+  border-bottom: 3px solid #d9a441;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.75), inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+}
+header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -11px; height: 8px; pointer-events: none;
+  background: repeating-linear-gradient(115deg, #b98a4a 0 6px, #7b5a2a 6px 12px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+header h1 {
+  font-family: "Pirata One", "Shippori Mincho", serif; font-weight: 400;
+  font-size: clamp(2.2rem, 5.4vw, 3.7rem); letter-spacing: 0.12em; color: #f6e7bd;
+  text-shadow: 0 2px 0 #5a3b12, 0 6px 18px rgba(0, 0, 0, 0.7), 0 0 26px rgba(217, 164, 65, 0.35);
+}
+header h1::before, header h1::after { content: "⚓"; font-size: 0.5em; opacity: 0.7; margin: 0 0.7em; vertical-align: middle; }
+nav a {
+  font-family: "Cinzel", serif; font-weight: 500; letter-spacing: 0.14em; color: #eadcb5;
+  padding: 0.55rem 1.1rem; min-height: 44px; display: inline-flex; align-items: center;
+  background: linear-gradient(180deg, rgba(60,38,20,.9), rgba(30,18,10,.95));
+  border: 1px solid rgba(217, 164, 65, 0.45); border-radius: 4px;
+  box-shadow: 0 3px 0 #120a05, 0 8px 14px rgba(0, 0, 0, 0.45);
+  transition: transform .25s ease, box-shadow .25s ease, color .25s;
+}
+nav a:hover { color: #fff3c9; transform: translateY(-3px); box-shadow: 0 6px 0 #120a05, 0 14px 20px rgba(0,0,0,.5), 0 0 16px rgba(217,164,65,.3); }
+
+/* 5. PANNEAU PRINCIPAL : carte marine sombre, rivets aux coins */
+main {
+  border: 2px solid rgba(217, 164, 65, 0.5); border-radius: 6px;
+  background:
+    radial-gradient(circle at 50% 50%, #f2c96b 0 3px, transparent 4px) top 10px left 10px / 10px 10px no-repeat,
+    radial-gradient(circle at 50% 50%, #f2c96b 0 3px, transparent 4px) top 10px right 10px / 10px 10px no-repeat,
+    radial-gradient(circle at 50% 50%, #f2c96b 0 3px, transparent 4px) bottom 10px left 10px / 10px 10px no-repeat,
+    radial-gradient(circle at 50% 50%, #f2c96b 0 3px, transparent 4px) bottom 10px right 10px / 10px 10px no-repeat,
+    linear-gradient(160deg, rgba(12, 38, 50, 0.9), rgba(5, 20, 28, 0.94));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(0,0,0,.6), inset 0 0 40px rgba(0, 0, 0, 0.4);
+}
+main::before { width: 110px; height: 4px; background: linear-gradient(90deg, transparent, #d9a441, transparent); box-shadow: none; }
+main h2 { font-family: "Pirata One", "Shippori Mincho", serif; font-weight: 400; letter-spacing: 0.06em; color: #f6e7bd; font-size: clamp(1.8rem, 4vw, 2.5rem); }
+
+/* 6. BOUTONS : laiton en relief */
+.document-link {
+  font-family: "Cinzel", serif; color: #23140a; min-height: 44px;
+  background: var(--laiton); border: 1px solid #6b4a14; border-radius: 5px;
+  box-shadow: 0 4px 0 #6b4a14, 0 12px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,.45);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s;
+}
+.document-link:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 6px 0 #6b4a14, 0 16px 24px rgba(0,0,0,.5), 0 0 18px rgba(242,201,107,.4); }
+.document-link:active { transform: translateY(3px); box-shadow: 0 1px 0 #6b4a14, 0 4px 8px rgba(0,0,0,.5); }
+
+/* 7. FORMULAIRES */
+input[type="text"], input[type="password"], input[type="file"], select, .formulaire input, .formulaire select {
+  background: rgba(4, 16, 22, 0.85); color: var(--text); border: 1px solid rgba(217, 164, 65, 0.5); border-radius: 4px;
+}
+:focus-visible { outline: 2px solid #f2c96b; outline-offset: 3px; }
+
+/* 8. CARTES : parchemin, profondeur 3D au survol */
+.grille-cartes { perspective: 1100px; }
+.carte {
+  transform-style: preserve-3d; border-radius: 4px; border: 1px solid #8a6a2f; color: #3a220f;
+  background:
+    radial-gradient(120% 90% at 20% 0, rgba(255, 255, 255, 0.35), transparent 60%),
+    linear-gradient(145deg, #ecdcb0, #cdb47a);
+  box-shadow: 0 2px 0 #6f5220, 0 14px 26px rgba(0, 0, 0, 0.55), inset 0 0 26px rgba(120, 80, 20, 0.28);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.carte::before { height: 6px; background: repeating-linear-gradient(115deg, #7b5a2a 0 6px, #b98a4a 6px 12px); }
+.carte::after {
+  content: ""; position: absolute; top: 12px; right: 12px; width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f2c96b, #6b4a14); box-shadow: 0 1px 2px rgba(0,0,0,.6);
+}
+.carte h3 { font-family: "Pirata One", serif; font-weight: 400; letter-spacing: .05em; color: #3a220f; text-shadow: none; font-size: 1.3rem; }
+.carte p, .carte li, .carte .liste-fichiers { color: #4a3520; }
+.carte .liste-fichiers a { color: #6b2a10; }
+.carte .liste-fichiers a:hover { color: #a3392b; }
+.carte .etiquette { background: #3a220f; color: #f2c96b; border-radius: 3px; padding: 0 .4em; font-size: .7em; letter-spacing: .08em; }
+.carte .msg-erreur { color: #8a1c12; } .carte .msg-succes { color: #1f5a2a; }
+.carte input, .carte select { background: #f6ecd0; color: #3a220f; border: 1px solid #8a6a2f; }
+
+/* 9. ACCUEIL : la bannière d'éclairs devient une tempête en mer */
+.premier-plan { background: transparent; }
+.lightning-canvas { filter: hue-rotate(215deg) saturate(0.8); opacity: 0.6; }
+.premier-plan h2 { font-family: "Pirata One", serif; font-weight: 400; letter-spacing: .06em; font-size: clamp(2.6rem, 8vw, 4.6rem); text-shadow: 0 3px 0 #5a3b12, 0 8px 24px rgba(0,0,0,.8); }
+.premier-plan p { font-family: "Cinzel", serif; letter-spacing: .14em; }
+#veil { background: radial-gradient(circle at 50% 50%, #0d2f3e, #04141c); }
+
+/* 10. Effets 3D seulement là où existe un vrai survol */
+@media (hover: hover) and (pointer: fine) {
+  .carte:hover { transform: translateY(-8px) rotateX(4deg) rotateY(-3deg); border-color: #d9a441;
+    box-shadow: 0 3px 0 #6f5220, 0 26px 40px rgba(0,0,0,.65), 0 0 22px rgba(217,164,65,.25), inset 0 0 26px rgba(120,80,20,.28); }
+}
+@media (hover: none) { .carte:hover, nav a:hover, .document-link:hover { transform: none; } }
+
+/* 11. RESPONSIVE */
+@media (max-width: 1100px) { .dragon { width: clamp(130px, 22vw, 240px); left: 2vw; } .dragon-zone::before, .dragon-zone::after { width: calc(70vw + 400px); } }
+@media (max-width: 860px) {
+  :root { --mer: clamp(60px, 11vh, 110px); }
+  .dragon { opacity: .5; width: 26vw; }
+  body::before { opacity: .6; }
+  header h1::before, header h1::after { display: none; }
+  main { margin: 2.5rem auto; }
+}
+@media (max-width: 600px) {
+  .dragon { display: none; }
+  :root { --mer: 60px; }
+  .dragon-zone { opacity: .55; -webkit-mask-image: none; mask-image: none; }
+  body { background-attachment: scroll; }
+  body::after, .sakura-container { display: none; }
+  header { padding: 2rem 1rem 1.6rem; } header::after { bottom: -9px; height: 6px; }
+  header h1 { letter-spacing: .05em; }
+  nav { gap: .5rem; } nav a { padding: .5rem .8rem; font-size: .82rem; }
+  main { width: calc(100% - 1.2rem); padding: 1.6rem 1.1rem; margin: 2rem auto; }
+  .document-link { width: 100%; text-align: center; }
+  .grille-cartes { grid-template-columns: 1fr; perspective: none; }
+}
+
+/* 12. ACCESSIBILITÉ : moins de mouvement */
+@media (prefers-reduced-motion: reduce) {
+  .dragon, .dragon-zone::before, .dragon-zone::after, body::after { animation: none !important; }
+  .sakura-container, .lightning-canvas { display: none !important; }
+  .carte, nav a, .document-link { transition: none; }
+}

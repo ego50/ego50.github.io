@@ -1,268 +1,184 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Noto+Serif+JP:wght@400;500;600&display=swap');
 
-/* =========================================================
-   MON CLASSEUR NUMÉRIQUE — DIRECTION ARTISTIQUE MARITIME
-   Refonte visuelle uniquement : les classes/IDs existants sont
-   conservés afin de ne pas toucher au PHP, HTML ou JavaScript.
-   ========================================================= */
+/* =====================================================
+   VARIABLES (Néon & Ambiance Oni)
+   ===================================================== */
 
 :root {
-  --ocean-950: #03131b;
-  --ocean-900: #06202a;
-  --ocean-800: #0a3340;
-  --ocean-700: #0d4654;
-  --sea-glow: #5fd4dc;
-  --foam: #d9f3ee;
-  --ink: #10252a;
-  --parchment: #e8d2a5;
-  --parchment-light: #f5e7c5;
-  --wood: #4d2e1c;
-  --wood-dark: #21150f;
-  --wood-light: #8a5a35;
-  --brass: #c99a45;
-  --brass-light: #f0c66a;
-  --rust: #8e4d2e;
-  --text: #f5f1e4;
-  --text-soft: #c7d7d3;
-  --text-muted: #9eb6b4;
-  --success: #9ee1c2;
-  --error: #ffaaa0;
-  --panel: rgba(8, 31, 38, .88);
-  --panel-deep: rgba(4, 22, 29, .94);
-  --border: rgba(201, 154, 69, .34);
-  --border-strong: rgba(240, 198, 106, .76);
-  --shadow: rgba(0, 7, 10, .72);
-  --glow: rgba(95, 212, 220, .20);
-  --accent: #d4ad60;
-  --accent-soft: #ead29e;
-  --text-muted-old: #c7d7d3;
-  --nebula: #0b3540;
-  --error-old: #ffaaa0;
-  --sakura: #b9dfe0;
-  --sakura-light: #eff8ec;
-  --lightning: #8ce9ee;
-  --neon-magenta: #d1a75b;
-  --neon-cyan: #72dce2;
-  --red-oni: #754735;
-  --oni-gold: #c99a45;
-  --oni-gold-glow: #f0c66a;
-  --border-hover: rgba(114, 220, 226, .65);
-  --border-gold: rgba(240, 198, 106, .58);
-  --bg: var(--ocean-950);
-  --text-soft: #c7d7d3;
+  --bg: #07040b;
+  --panel: rgba(16, 9, 24, 0.88);
+
+  --text: #fff5f8;
+  --text-soft: #d8c2d3;
+
+  /* Néons & Sakura */
+  --sakura: #ff2a8d;
+  --sakura-light: #ffb5db;
+  --lightning: #ff0077;
+  --neon-magenta: #ff0055;
+  --neon-cyan: #00f0ff;
+  --red-oni: #d6113a;
+
+  /* Cornes & Or */
+  --oni-gold: #ffb700;
+  --oni-gold-glow: #ffe600;
+
+  /* Bordures & Ombres */
+  --border: rgba(255, 0, 119, 0.35);
+  --border-hover: rgba(0, 240, 255, 0.7);
+  --border-gold: rgba(255, 183, 0, 0.6);
+
+  --shadow: rgba(3, 1, 6, 0.85);
 }
 
-/* -------------------------
-   RESET / BASE
-   ------------------------- */
 
-*, *::before, *::after { box-sizing: border-box; }
+/* =====================================================
+   RESET & ARRIÈRE-PLAN
+   ===================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html {
   min-height: 100%;
-  overflow-x: hidden;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   min-height: 100vh;
-  margin: 0;
   overflow-x: hidden;
+
   color: var(--text);
-  font-family: "Libre Baskerville", Georgia, serif;
+  font-family: "Noto Serif JP", serif;
   line-height: 1.7;
+
   position: relative;
-  isolation: isolate;
+
   background:
-    radial-gradient(circle at 14% 35%, rgba(74, 190, 199, .16), transparent 30%),
-    radial-gradient(circle at 82% 12%, rgba(240, 198, 106, .09), transparent 24%),
-    radial-gradient(circle at 55% 80%, rgba(9, 83, 98, .32), transparent 44%),
-    linear-gradient(180deg, #041a23 0%, #03131b 45%, #020c11 100%);
+    radial-gradient(
+      circle at 75% 20%,
+      rgba(255, 0, 85, 0.22),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(0, 240, 255, 0.18),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 50% 75%,
+      rgba(214, 17, 58, 0.22),
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #0d0514 0%,
+      #040108 100%
+    );
 }
 
-/* Texture carte marine très discrète + lumière lunaire. */
+
+/* =====================================================
+   1. ARCS DE CERCLE NÉON LATÉRAUX
+   ===================================================== */
+
+/* Arc latéral gauche */
 body::before {
   content: "";
   position: fixed;
-  inset: 0;
-  z-index: -5;
+  top: 50%;
+  left: -130px;
+  width: 260px;
+  height: 520px;
+  border: 3px solid var(--neon-cyan);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 25px var(--neon-cyan), inset 0 0 18px var(--neon-cyan);
+  z-index: 4;
   pointer-events: none;
-  opacity: .25;
-  background:
-    repeating-linear-gradient(0deg, transparent 0 47px, rgba(224, 199, 143, .025) 48px 49px),
-    repeating-linear-gradient(90deg, transparent 0 71px, rgba(224, 199, 143, .018) 72px 73px),
-    radial-gradient(ellipse at 16% 22%, rgba(224, 245, 235, .12), transparent 27%),
-    radial-gradient(ellipse at 84% 74%, rgba(95, 212, 220, .08), transparent 34%);
-  mix-blend-mode: screen;
 }
 
-/* Halo océanique gauche : base de la future scène bateau/vagues. */
+/* Arc latéral droit */
 body::after {
   content: "";
   position: fixed;
-  left: -13vw;
-  bottom: -15vh;
-  width: min(62vw, 850px);
-  height: min(58vh, 560px);
-  z-index: -2;
+  top: 50%;
+  right: -130px;
+  width: 260px;
+  height: 520px;
+  border: 3px solid var(--lightning);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 25px var(--lightning), inset 0 0 18px var(--lightning);
+  z-index: 4;
   pointer-events: none;
-  opacity: .82;
-  background:
-    radial-gradient(ellipse at 45% 82%, rgba(72, 188, 198, .23) 0 9%, transparent 42%),
-    repeating-radial-gradient(ellipse at 50% 100%, transparent 0 22px, rgba(122, 222, 226, .12) 23px 25px, transparent 26px 54px);
-  filter: blur(.2px);
-  transform: rotate(-3deg);
 }
 
-::selection { background: rgba(95, 212, 220, .35); color: #fff; }
 
-:focus-visible {
-  outline: 3px solid var(--brass-light);
-  outline-offset: 4px;
-}
+/* =====================================================
+   2. ÉCLAIR PLEIN ÉCRAN (TOUTES LES 5 SECONDES)
+   ===================================================== */
 
-a, button, input, select { font: inherit; }
-
-button, select, input { min-height: 44px; }
-
-/* -------------------------
-   DÉCOR OCÉAN / BATEAU
-   Aucun nouveau HTML nécessaire : le .dragon existant devient une
-   silhouette de navire décorative, sans supprimer son DOM.
-   ------------------------- */
-
-.dragon-zone,
-.oni-zone {
+.sakura-container::before {
+  content: "";
   position: fixed;
-  left: 0;
-  bottom: 0;
-  width: min(47vw, 700px);
-  height: min(48vh, 500px);
+  inset: 0;
   pointer-events: none;
-  overflow: visible;
-  z-index: 1;
-  opacity: .96;
+  z-index: 99;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #ffffff 0%,
+    rgba(0, 240, 255, 0.95) 25%,
+    rgba(255, 0, 119, 0.8) 60%,
+    rgba(13, 5, 20, 0.95) 100%
+  );
+  clip-path: circle(0% at 50% 50%);
+  opacity: 0;
+  animation: flash-center-fullscreen 5s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
 }
 
-.dragon {
-  position: absolute;
-  left: clamp(35px, 8vw, 130px);
-  bottom: clamp(70px, 10vh, 120px);
-  width: clamp(250px, 29vw, 430px);
-  height: clamp(170px, 22vw, 290px);
-  transform: rotate(-2deg);
-  animation: navire-flottement 9s ease-in-out infinite;
-  filter: drop-shadow(0 20px 24px rgba(0, 8, 12, .65));
+@keyframes flash-center-fullscreen {
+  0%, 80% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+  }
+  82% {
+    clip-path: circle(10% at 50% 50%);
+    opacity: 1;
+    filter: drop-shadow(0 0 40px #ffffff);
+  }
+  88% {
+    clip-path: circle(140% at 50% 50%);
+    opacity: 0.95;
+    filter: drop-shadow(0 0 80px var(--neon-cyan));
+  }
+  93% {
+    clip-path: circle(150% at 50% 50%);
+    opacity: 0;
+  }
+  100% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+  }
 }
 
-/* Coque */
-.dragon::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 12px;
-  width: 82%;
-  height: 35%;
-  background:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 5px, transparent 6px 12px),
-    linear-gradient(165deg, #8b5c36 0%, #4d2d1a 52%, #21140e 100%);
-  border: 3px solid rgba(201, 154, 69, .75);
-  border-top-left-radius: 22% 55%;
-  border-bottom-left-radius: 10% 35%;
-  border-bottom-right-radius: 45% 80%;
-  clip-path: polygon(0 0, 100% 18%, 91% 72%, 76% 100%, 18% 94%, 5% 55%);
-  box-shadow: inset 0 9px 0 rgba(240, 198, 106, .10), inset 0 -14px 18px rgba(0,0,0,.35), 0 5px 0 rgba(17, 10, 7, .8);
-}
 
-/* Mât + voile + petit pavillon. */
-.dragon::after {
-  content: "";
-  position: absolute;
-  left: 48%;
-  bottom: 38%;
-  width: 7px;
-  height: 145%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #2b190f, #a06a3d, #24140d);
-  box-shadow: 0 0 0 1px rgba(240,198,106,.28), 0 0 18px rgba(0,0,0,.4);
-  clip-path: polygon(0 0, 100% 0, 100% 86%, 75% 86%, 75% 100%, 25% 100%, 25% 86%, 0 86%);
-}
+/* =====================================================
+   3. PÉTALES EN CHUTE 3D CONTINUÉE
+   ===================================================== */
 
-.dragon-head,
-.dragon-body,
-.dragon-mane,
-.dragon-spikes,
-.dragon-tail,
-.dragon-horn { opacity: 0 !important; visibility: hidden; }
-
-.dragon-zone::before {
-  content: "";
-  position: absolute;
-  left: 38%;
-  bottom: 52%;
-  width: 30%;
-  height: 37%;
-  background: linear-gradient(135deg, rgba(244, 234, 199, .94), rgba(195, 169, 112, .82));
-  clip-path: polygon(0 0, 100% 12%, 100% 92%, 4% 64%);
-  transform: skewY(-6deg);
-  filter: drop-shadow(4px 7px 8px rgba(0,0,0,.28));
-}
-
-.dragon-zone::after {
-  content: "✦";
-  position: absolute;
-  left: 52%;
-  bottom: 82%;
-  color: var(--brass-light);
-  font-size: 18px;
-  text-shadow: 0 0 12px rgba(240,198,106,.7);
-  animation: pavillon 5s ease-in-out infinite;
-}
-
-@keyframes navire-flottement {
-  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
-  50% { transform: translate3d(10px, -7px, 0) rotate(-1deg); }
-}
-
-@keyframes pavillon {
-  0%, 100% { transform: rotate(-4deg) translateY(0); }
-  50% { transform: rotate(4deg) translateY(-4px); }
-}
-
-/* Vagues superposées, avec vitesses différentes. */
 .sakura-container {
   position: fixed;
-  inset: auto auto 0 0;
-  width: min(56vw, 820px);
-  height: 220px;
-  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   overflow: hidden;
-  opacity: .72;
-}
-
-.sakura-container::before,
-.sakura-container::after {
-  content: "";
-  position: absolute;
-  left: -8%;
-  bottom: -35px;
-  width: 116%;
-  height: 130px;
-  border-radius: 50% 50% 0 0;
-  background:
-    repeating-radial-gradient(ellipse at 50% 100%, transparent 0 19px, rgba(160, 235, 232, .17) 20px 23px, transparent 24px 43px);
-  border-top: 1px solid rgba(195, 242, 235, .22);
-  filter: blur(.2px);
-  animation: vagues-lentes 13s ease-in-out infinite;
-}
-
-.sakura-container::after {
-  bottom: -57px;
-  opacity: .58;
-  transform: scaleX(1.14);
-  animation-duration: 20s;
-  animation-direction: reverse;
+  z-index: 7;
 }
 
 .sakura-petal,
@@ -271,116 +187,277 @@ button, select, input { min-height: 44px; }
   content: "";
   position: absolute;
   top: -40px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #eef8ed 0 25%, #9dd4d3 70%, transparent 72%);
-  opacity: .5;
-  box-shadow: 0 0 9px rgba(169, 235, 229, .55);
+  width: 14px;
+  height: 9px;
+  background: linear-gradient(135deg, var(--sakura-light), var(--sakura), var(--neon-cyan));
+  border-radius: 100% 0 100% 0;
+  opacity: 0.9;
+  box-shadow: 0 0 12px rgba(255, 0, 119, 0.8);
   animation: sakura-fall-3d linear infinite;
 }
 
-.sakura-petal::before,
-.sakura-petal::after { width: 5px; height: 5px; }
-.sakura-petal:nth-child(1) { left: 8%; animation-duration: 13s; animation-delay: 0s; }
-.sakura-petal:nth-child(2) { left: 24%; animation-duration: 17s; animation-delay: 2s; }
-.sakura-petal:nth-child(3) { left: 41%; animation-duration: 14s; animation-delay: 4s; }
-.sakura-petal:nth-child(4) { left: 58%; animation-duration: 19s; animation-delay: 1s; }
-.sakura-petal:nth-child(5) { left: 73%; animation-duration: 15s; animation-delay: 5s; }
-.sakura-petal:nth-child(6) { left: 87%; animation-duration: 18s; animation-delay: 3s; }
-.sakura-petal:nth-child(7) { left: 34%; animation-duration: 21s; animation-delay: 7s; }
-.sakura-petal:nth-child(8) { left: 67%; animation-duration: 16s; animation-delay: 8s; }
-
-@keyframes vagues-lentes {
-  0%, 100% { transform: translate3d(-2%, 0, 0) rotate(-1deg); }
-  50% { transform: translate3d(3%, -5px, 0) rotate(1deg); }
+.sakura-petal::before {
+  left: -35px;
+  top: -50px;
+  animation-duration: 1.2em;
+  transform: scale(0.75) rotate(40deg);
 }
+
+.sakura-petal::after {
+  left: 45px;
+  top: -25px;
+  animation-duration: 0.8em;
+  transform: scale(1.1) rotate(-25deg);
+}
+
+.sakura-petal:nth-child(1)  { left: 6%;  animation-duration: 5.8s; animation-delay: 0s;   }
+.sakura-petal:nth-child(2)  { left: 19%; animation-duration: 8.2s; animation-delay: 1.1s; }
+.sakura-petal:nth-child(3)  { left: 34%; animation-duration: 5.2s; animation-delay: 2.3s; }
+.sakura-petal:nth-child(4)  { left: 49%; animation-duration: 9.1s; animation-delay: 0.3s; }
+.sakura-petal:nth-child(5)  { left: 64%; animation-duration: 6.8s; animation-delay: 1.6s; }
+.sakura-petal:nth-child(6)  { left: 78%; animation-duration: 8.7s; animation-delay: 2.9s; }
+.sakura-petal:nth-child(7)  { left: 89%; animation-duration: 6.2s; animation-delay: 0.7s; }
+.sakura-petal:nth-child(8)  { left: 96%; animation-duration: 7.8s; animation-delay: 2.0s; }
 
 @keyframes sakura-fall-3d {
-  0% { transform: translate3d(0, -20px, 0) rotate(0); opacity: 0; }
-  15% { opacity: .65; }
-  85% { opacity: .45; }
-  100% { transform: translate3d(100px, 55vh, 0) rotate(300deg); opacity: 0; }
+  0% {
+    top: -10vh;
+    transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    top: 110vh;
+    transform: translateX(180px) rotateX(720deg) rotateY(360deg) rotateZ(540deg);
+    opacity: 0;
+  }
 }
 
-/* -------------------------
-   TRANSITION DE PAGE
-   ------------------------- */
 
-#veil {
+/* =====================================================
+   4. MASQUE DE ONI EN ROTATION / ORBITE
+   ===================================================== */
+
+.oni-zone,
+.dragon-zone {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(238, 217, 164, .16), transparent 20%),
-    linear-gradient(145deg, #061b24 0%, #082f39 55%, #021018 100%);
-  transform: scaleY(1);
-  transform-origin: bottom;
-  transition: transform .55s cubic-bezier(.76,0,.24,1);
+  overflow: visible;
+  z-index: auto;
 }
 
-#veil.veil-open { transform: scaleY(0); transform-origin: bottom; }
-#veil.veil-close { transform: scaleY(1); transform-origin: top; pointer-events: auto; }
+.oni-mask,
+.dragon {
+  position: absolute;
+  width: 170px;
+  height: 190px;
+  left: 50%;
+  top: 35%;
+  transform-origin: center;
+  animation: oni-rotate-orbit 15s linear infinite;
+}
 
-#veil::after {
+/* Visage du Masque Oni */
+.oni-head,
+.dragon-head {
+  position: relative;
+  width: 150px;
+  height: 170px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #990026 0%, #3d000f 100%);
+  border: 2px solid var(--red-oni);
+  border-radius: 45% 45% 38% 38% / 30% 30% 70% 70%;
+  box-shadow: inset 0 0 22px #ff0044, 0 0 30px rgba(255, 0, 85, 0.8);
+}
+
+/* Yeux Néon */
+.oni-head::before,
+.oni-head::after,
+.dragon-head::before,
+.dragon-head::after {
   content: "";
   position: absolute;
-  inset: 0;
-  opacity: .45;
-  background-image:
-    radial-gradient(1px 1px at 18% 22%, #e9d8aa, transparent),
-    radial-gradient(1px 1px at 62% 32%, #bce6e4, transparent),
-    radial-gradient(1px 1px at 84% 71%, #e9d8aa, transparent),
-    radial-gradient(1px 1px at 35% 78%, #bce6e4, transparent);
+  top: 48px;
+  width: 32px;
+  height: 14px;
+  background: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan), 0 0 25px #ffffff;
+  border-radius: 100% 0 100% 0;
 }
 
-/* -------------------------
-   HEADER / NAVIGATION
-   ------------------------- */
+.oni-head::before,
+.dragon-head::before {
+  left: 22px;
+  transform: rotate(20deg);
+}
+
+.oni-head::after,
+.dragon-head::after {
+  right: 22px;
+  transform: rotate(-20deg) scaleX(-1);
+}
+
+/* Cornes Dorées */
+.oni-horn,
+.dragon-horn {
+  position: absolute;
+  width: 20px;
+  height: 75px;
+  background: linear-gradient(180deg, var(--oni-gold-glow), var(--oni-gold), #8a5300);
+  border-radius: 100% 0 0 0;
+  box-shadow: 0 0 20px var(--oni-gold-glow);
+}
+
+.horn-left,
+.horn-one {
+  left: 8px;
+  top: -55px;
+  transform: rotate(-30deg);
+}
+
+.horn-right,
+.horn-two {
+  right: 8px;
+  top: -55px;
+  transform: rotate(30deg) scaleX(-1);
+}
+
+/* Sourire Diabolique & Dents */
+.oni-mouth,
+.dragon-body {
+  position: absolute;
+  width: 106px;
+  height: 48px;
+  left: 22px;
+  top: 105px;
+  background: #080003;
+  border-bottom: 4px solid var(--sakura);
+  border-radius: 0 0 50px 50px;
+  box-shadow: 0 0 16px var(--sakura), inset 0 -4px 12px var(--neon-magenta);
+  overflow: hidden;
+}
+
+/* Dents du Haut */
+.oni-mouth::before,
+.dragon-body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 6px;
+  width: 94px;
+  height: 16px;
+  background: repeating-linear-gradient(
+    90deg,
+    #ffffff 0px,
+    #ffffff 8px,
+    transparent 8px,
+    transparent 14px
+  );
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* Dents du Bas */
+.oni-mouth::after,
+.dragon-body::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 11px;
+  width: 84px;
+  height: 13px;
+  background: repeating-linear-gradient(
+    90deg,
+    #ffffff 0px,
+    #ffffff 8px,
+    transparent 8px,
+    transparent 14px
+  );
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
+/* Aura Néon Circulaire */
+.oni-aura,
+.dragon-tail {
+  position: absolute;
+  inset: -15px;
+  border-radius: 50%;
+  border: 2px dashed var(--sakura);
+  filter: blur(3px);
+  animation: aura-spin 5s linear infinite;
+}
+
+@keyframes aura-spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Animation de Rotation et Orbite 3D autour de la zone centrale */
+@keyframes oni-rotate-orbit {
+  0% {
+    transform: translate(-140%, -80%) rotate(0deg) scale(0.65);
+    z-index: 2;
+    filter: brightness(0.55) blur(2px) drop-shadow(0 0 15px var(--red-oni));
+  }
+  25% {
+    transform: translate(70%, -50%) rotate(90deg) scale(0.85);
+    z-index: 2;
+    filter: brightness(0.75) blur(1px) drop-shadow(0 0 20px var(--neon-magenta));
+  }
+  50% {
+    transform: translate(20%, 35%) rotate(180deg) scale(1.25);
+    z-index: 10;
+    filter: brightness(1.25) blur(0px) drop-shadow(0 0 35px var(--lightning)) drop-shadow(0 0 20px var(--oni-gold-glow));
+  }
+  75% {
+    transform: translate(-120%, 15%) rotate(270deg) scale(0.95);
+    z-index: 10;
+    filter: brightness(1.0) blur(0px) drop-shadow(0 0 25px var(--neon-cyan));
+  }
+  100% {
+    transform: translate(-140%, -80%) rotate(360deg) scale(0.65);
+    z-index: 2;
+    filter: brightness(0.55) blur(2px) drop-shadow(0 0 15px var(--red-oni));
+  }
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
 
 header {
   position: relative;
-  z-index: 10;
-  padding: clamp(2rem, 4vw, 3.5rem) 1.25rem 1.35rem;
+  z-index: 5;
+  padding: 3rem 2rem 2.2rem;
   text-align: center;
-  background:
-    linear-gradient(180deg, rgba(3, 17, 23, .97), rgba(6, 29, 37, .88)),
-    repeating-linear-gradient(90deg, transparent 0 44px, rgba(240,198,106,.018) 45px 46px);
-  border-bottom: 1px solid rgba(240,198,106,.38);
-  box-shadow: 0 18px 50px rgba(0, 6, 9, .55);
+  background: linear-gradient(180deg, rgba(12, 4, 18, 0.98), rgba(16, 7, 24, 0.9));
+  border-bottom: 2px solid var(--neon-magenta);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--neon-magenta);
 }
-
-header::before,
-header::after {
-  content: "";
-  position: absolute;
-  bottom: -7px;
-  width: 34px;
-  height: 13px;
-  border: 2px solid var(--brass);
-  border-radius: 50%;
-  background: var(--ocean-950);
-}
-header::before { left: 7%; transform: rotate(-9deg); }
-header::after { right: 7%; transform: rotate(9deg); }
 
 header h1 {
-  margin: 0;
-  font-family: "Cinzel", Georgia, serif;
+  font-family: "Shippori Mincho", serif;
   font-weight: 700;
-  color: var(--parchment-light);
-  font-size: clamp(1.65rem, 4vw, 3.15rem);
-  letter-spacing: clamp(2px, .65vw, 7px);
-  text-shadow: 0 2px 0 #1d120a, 0 0 22px rgba(95,212,220,.16);
+  color: #ffffff;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  letter-spacing: 9px;
+  text-shadow: 0 0 10px #ffffff, 0 0 20px var(--lightning), 0 0 40px var(--neon-magenta), 0 0 60px var(--neon-cyan);
 }
 
+
+/* =====================================================
+   NAVIGATION
+   ===================================================== */
+
 nav {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: .35rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 
@@ -388,563 +465,448 @@ nav a {
   position: relative;
   color: var(--text-soft);
   text-decoration: none;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: .83rem;
-  letter-spacing: 1.4px;
-  padding: .65rem .9rem;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  transition: transform .22s ease, color .22s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease;
+  font-family: "Shippori Mincho", serif;
+  font-size: 0.92rem;
+  letter-spacing: 2px;
+  padding: 0.6rem 1.2rem;
+  transition: all 0.3s ease;
 }
 
-nav a::before {
+nav a::after {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 4px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--brass-light), transparent);
-  transform: scaleX(0);
-  transition: transform .22s ease;
+  left: 50%;
+  bottom: 2px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--lightning), var(--oni-gold));
+  transform: translateX(-50%);
+  transition: width 0.3s ease, box-shadow 0.3s ease;
 }
 
-nav a:hover,
-nav a:focus-visible {
-  color: #fff8df;
-  background: rgba(201,154,69,.08);
-  border-color: rgba(201,154,69,.28);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.2);
+nav a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 12px var(--neon-cyan);
 }
-nav a:hover::before,
-nav a:focus-visible::before { transform: scaleX(1); }
 
-/* -------------------------
+nav a:hover::after {
+  width: 85%;
+  box-shadow: 0 0 12px var(--neon-cyan);
+}
+
+
+/* =====================================================
    CONTENU PRINCIPAL
-   ------------------------- */
+   ===================================================== */
 
 main {
   position: relative;
   z-index: 5;
-  width: min(calc(100% - 2rem), 1080px);
-  margin: clamp(2rem, 5vw, 4.5rem) auto;
-  padding: clamp(1.4rem, 4vw, 3.5rem);
-  overflow: hidden;
-  background:
-    linear-gradient(145deg, rgba(12, 46, 55, .91), rgba(4, 24, 31, .94)),
-    radial-gradient(circle at 12% 0%, rgba(240,198,106,.08), transparent 30%);
+  width: min(100% - 2rem, 980px);
+  margin: 4rem auto;
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 30px 80px var(--shadow), inset 0 1px 0 rgba(255,255,255,.045), inset 0 0 70px rgba(95,212,220,.035);
-  backdrop-filter: blur(16px);
+  border-radius: 8px;
+  box-shadow: 0 30px 80px var(--shadow), 
+              0 0 35px rgba(255, 0, 119, 0.25),
+              inset 0 0 15px rgba(0, 240, 255, 0.15);
+  backdrop-filter: blur(18px);
   text-align: center;
-  perspective: 1100px;
 }
 
 main::before {
   content: "";
   display: block;
-  width: clamp(100px, 18vw, 190px);
+  width: 80px;
   height: 3px;
-  margin: 0 auto 1.8rem;
-  background: linear-gradient(90deg, transparent, var(--brass-light), var(--sea-glow), transparent);
-  box-shadow: 0 0 18px rgba(95,212,220,.24);
-}
-
-main::after {
-  content: "✦   N  ·  E  ·  S  ·  O   ✦";
-  position: absolute;
-  top: 13px;
-  right: 20px;
-  color: rgba(240,198,106,.32);
-  font: 600 .62rem/1 "Cinzel", serif;
-  letter-spacing: 2px;
-  pointer-events: none;
-}
-
-main h2,
-.premier-plan h2,
-#prestation h2,
-.a-propos h2,
-.carte h3,
-.carte-accueil h3,
-.sous-titre {
-  font-family: "Cinzel", Georgia, serif;
+  margin: 0 auto 2rem;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--lightning), var(--oni-gold));
+  box-shadow: 0 0 15px var(--lightning);
 }
 
 main h2 {
-  margin: 0 0 .75rem;
-  color: var(--parchment-light);
+  font-family: "Shippori Mincho", serif;
   font-weight: 600;
-  font-size: clamp(1.45rem, 3.2vw, 2.35rem);
-  letter-spacing: clamp(1px, .35vw, 4px);
-  text-shadow: 0 2px 12px rgba(0,0,0,.4);
+  color: #ffffff;
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  letter-spacing: 4px;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 15px var(--sakura-light), 0 0 25px var(--lightning);
 }
 
-main p { color: var(--text-soft); font-size: .93rem; }
-
-.intro { color: var(--text-soft); }
-
-.sous-titre {
-  margin: 2.5rem 0 .9rem;
-  color: var(--accent-soft);
-  font-size: 1.15rem;
-  letter-spacing: 1px;
+main p {
+  color: var(--text-soft);
+  font-size: 0.98rem;
 }
 
-/* -------------------------
-   FORMULAIRES / BOUTONS
-   ------------------------- */
+
+/* =====================================================
+   BOUTONS
+   ===================================================== */
+
+.document-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.85rem 2rem;
+  color: #000000;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--sakura-light), var(--oni-gold-glow));
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: "Shippori Mincho", serif;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--lightning), 0 0 35px var(--neon-cyan);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.document-link:hover {
+  transform: translateY(-4px) scale(1.03);
+  filter: brightness(1.2);
+  box-shadow: 0 0 30px var(--lightning), 0 0 50px var(--neon-cyan);
+}
+
+
+/* =====================================================
+   FORMULAIRE
+   ===================================================== */
 
 .formulaire {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: .75rem;
+  gap: 0.8rem;
   justify-content: center;
   align-items: center;
-  margin: 1.6rem 0;
-  padding: 1rem;
-  background: linear-gradient(145deg, rgba(8,31,38,.78), rgba(3,19,25,.84));
-  border: 1px solid rgba(201,154,69,.23);
-  border-radius: 9px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 10px 25px rgba(0,0,0,.15);
-}
-
-.formulaire::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: .28;
-  background: linear-gradient(90deg, transparent, rgba(240,198,106,.08), transparent);
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(8, 3, 14, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: inset 0 0 15px rgba(255, 0, 119, 0.15);
 }
 
 .formulaire input[type="text"],
-.formulaire input[type="password"],
 .formulaire input[type="file"],
 .formulaire select {
-  width: min(100%, 320px);
-  min-width: 0;
+  background: rgba(14, 6, 24, 0.95);
+  border: 1px solid rgba(0, 240, 255, 0.3);
   color: var(--text);
-  background: rgba(2, 17, 23, .92);
-  border: 1px solid rgba(114,220,226,.25);
-  padding: .72rem .9rem;
-  border-radius: 6px;
-  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-family: "Noto Serif JP", serif;
+  font-size: 0.88rem;
+  transition: all 0.25s ease;
 }
 
-.formulaire input[type="file"] { padding: .48rem .7rem; }
-.formulaire input::placeholder { color: #78928f; }
-
-.formulaire input:focus,
+.formulaire input[type="text"]:focus,
 .formulaire select:focus {
   outline: none;
-  border-color: var(--sea-glow);
-  box-shadow: 0 0 0 3px rgba(95,212,220,.09), 0 8px 20px rgba(0,0,0,.2);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px var(--neon-cyan);
 }
 
-.document-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  margin-top: .2rem;
-  padding: .72rem 1.25rem;
-  color: #172019;
-  background: linear-gradient(145deg, #f0cf83, #b77e32);
-  border: 1px solid rgba(255,241,190,.6);
-  border-radius: 6px;
-  text-decoration: none;
-  font-family: "Cinzel", Georgia, serif;
-  font-weight: 700;
-  letter-spacing: 1px;
-  font-size: .82rem;
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 7px 16px rgba(0,0,0,.3), 0 0 18px rgba(201,154,69,.12);
-  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
-}
 
-.document-link:hover,
-.document-link:focus-visible {
-  transform: translateY(-3px) translateZ(10px);
-  filter: brightness(1.06);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 12px 24px rgba(0,0,0,.34), 0 0 22px rgba(240,198,106,.22);
-}
-
-.document-link:active { transform: translateY(0); }
-
-.bouton-supprimer {
-  min-width: 42px;
-  width: 42px;
-  padding: .35rem;
-  margin: 0 0 0 .35rem;
-  color: #fff2e7;
-  background: linear-gradient(145deg, #7b4731, #4a281d);
-  border-color: rgba(210,129,91,.45);
-  vertical-align: middle;
-}
-
-/* -------------------------
-   CARTES / DOSSIERS
-   ------------------------- */
+/* =====================================================
+   CARTES
+   ===================================================== */
 
 .grille-cartes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr));
-  gap: 1.2rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.4rem;
+  margin-top: 2.5rem;
   text-align: left;
 }
 
-.carte,
-.carte-accueil {
+.carte {
   position: relative;
+  background: linear-gradient(145deg, rgba(28, 12, 38, 0.9), rgba(10, 4, 16, 0.95));
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.6rem;
   overflow: hidden;
-  background:
-    linear-gradient(145deg, rgba(35, 54, 49, .9), rgba(8, 29, 35, .96)),
-    linear-gradient(90deg, rgba(121,80,43,.08), transparent 40%);
-  border: 1px solid rgba(201,154,69,.3);
-  border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 15px 35px rgba(0,0,0,.34);
-  transform-style: preserve-3d;
-  transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease, box-shadow .3s ease;
+  transition: all 0.3s ease;
 }
 
-.carte { padding: 1.35rem; }
-
-.carte::before,
-.carte-accueil::before {
+.carte::before {
   content: "";
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(240,198,106,.08), transparent 14%, transparent 86%, rgba(240,198,106,.05)),
-    radial-gradient(circle at 10% 0%, rgba(240,198,106,.08), transparent 28%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--lightning), var(--oni-gold-glow));
 }
 
-.carte::after,
-.carte-accueil::after {
-  content: "";
-  position: absolute;
-  top: 8px;
-  right: 9px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid rgba(240,198,106,.48);
-  border-radius: 50%;
-  box-shadow: -1px 0 0 rgba(0,0,0,.55);
+.carte:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-hover);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 240, 255, 0.4);
 }
 
-.carte:hover,
-.carte-accueil:hover {
-  transform: translateY(-6px) rotateX(1.5deg) rotateY(-1.5deg);
-  border-color: rgba(114,220,226,.46);
-  box-shadow: 0 23px 45px rgba(0,0,0,.42), 0 0 25px rgba(95,212,220,.08);
+.carte h3 {
+  font-family: "Shippori Mincho", serif;
+  color: var(--sakura-light);
+  letter-spacing: 1px;
+  font-size: 1.12rem;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 0 10px var(--lightning);
 }
 
-.carte h3,
-.carte-accueil h3 {
-  position: relative;
-  z-index: 1;
-  margin: 0 0 .65rem;
-  color: var(--accent-soft);
-  font-size: 1.05rem;
-  letter-spacing: .7px;
-}
-
-.carte p,
-.carte-accueil p {
-  position: relative;
-  z-index: 1;
+.carte p {
   color: var(--text-soft);
-  font-size: .86rem;
+  font-size: 0.88rem;
+  margin-bottom: 1rem;
 }
 
-.liste-fichiers { position: relative; z-index: 1; list-style: none; padding: 0; margin: .8rem 0 0; }
-.liste-fichiers li { margin-bottom: .5rem; }
+.liste-fichiers {
+  list-style: none;
+}
 
-.liste-fichiers li::before {
-  content: "↳";
-  color: rgba(240,198,106,.72);
-  margin-right: .45rem;
+.liste-fichiers li {
+  margin-bottom: 0.5rem;
 }
 
 .liste-fichiers a {
-  color: #bdd3cf;
+  color: var(--text-soft);
   text-decoration: none;
-  font-size: .82rem;
-  transition: color .2s ease, padding-left .2s ease;
+  font-size: 0.86rem;
+  transition: all 0.2s ease;
 }
 
-.liste-fichiers a:hover,
-.liste-fichiers a:focus-visible {
-  color: var(--foam);
-  padding-left: 4px;
-  text-decoration: underline;
-  text-decoration-color: rgba(240,198,106,.55);
+.liste-fichiers a:hover {
+  color: var(--neon-cyan);
+  padding-left: 6px;
+  text-shadow: 0 0 10px var(--neon-cyan);
 }
 
-.etiquette {
-  display: inline-block;
-  margin-right: .25rem;
-  padding: .15rem .42rem;
-  color: #172019;
-  background: linear-gradient(135deg, #e7c67d, #a87335);
-  border-radius: 3px;
-  font: 700 .62rem/1.4 "Cinzel", serif;
-  letter-spacing: .7px;
-  vertical-align: middle;
+
+/* =====================================================
+   MOBILE & ACCESSIBILITÉ
+   ===================================================== */
+
+@media (max-width: 600px) {
+  header { padding: 2rem 1rem 1.4rem; }
+  header h1 { letter-spacing: 4px; }
+  main { width: calc(100% - 1rem); margin: 2rem auto; padding: 2rem 1.2rem; }
+  .grille-cartes { grid-template-columns: 1fr; }
+  .oni-mask, .dragon { width: 130px; height: 150px; }
+  body::before, body::after { width: 180px; height: 360px; }
 }
 
-/* -------------------------
-   MESSAGES / CONNEXION
-   ------------------------- */
-
-.barre-connexion { position: relative; z-index: 2; }
-
-.msg-succes,
-.msg-erreur {
-  width: fit-content;
-  max-width: 100%;
-  margin: .8rem auto;
-  padding: .65rem .85rem;
-  border-radius: 6px;
-  font-size: .83rem;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-.msg-succes {
-  color: var(--success);
-  background: rgba(57, 121, 91, .13);
-  border: 1px solid rgba(126,220,177,.2);
+
+/* =====================================================
+   AJOUTS (repris du premier site, aux couleurs sakura)
+   ===================================================== */
+:root {
+  --border-strong: #ff2a8d;
+  --accent: #ff5fa8;
+  --accent-soft: #ffb5db;
+  --text-muted: #d8c2d3;
+  --glow: rgba(255, 42, 141, 0.4);
+  --nebula: #1a0a24;
+  --error: #ff8a8a;
 }
 
-.msg-erreur {
-  color: var(--error);
-  background: rgba(130, 50, 42, .14);
-  border: 1px solid rgba(255,170,160,.22);
+/* ===== Rideau de transition entre les pages ===== */
+#veil {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #07040b 0%, #2a0a2a 55%, #07040b 100%);
+    transform: scaleY(1);
+    transform-origin: bottom;
+    transition: transform .55s cubic-bezier(.76,0,.24,1);
+    pointer-events: none;
+}
+#veil.veil-open {
+    transform: scaleY(0);
+    transform-origin: bottom;
+}
+#veil.veil-close {
+    transform: scaleY(1);
+    transform-origin: top;
+    pointer-events: auto;
+}
+#veil::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(1.5px 1.5px at 15% 20%, #ffb5db, transparent),
+        radial-gradient(1.5px 1.5px at 35% 65%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 60% 30%, #ff9fd0, transparent),
+        radial-gradient(1.5px 1.5px at 80% 75%, #ffffff, transparent),
+        radial-gradient(1.5px 1.5px at 90% 15%, #ffb5db, transparent);
+    opacity: .8;
 }
 
-/* -------------------------
-   HERO ACCUEIL — canvas lightning conservé mais intégré à l'océan.
-   ------------------------- */
-
+/* ===== Hero avec éclairs animés (canvas) ===== */
 .premier-plan {
-  position: relative;
-  z-index: 5;
-  min-height: 500px;
-  height: clamp(430px, 62vh, 650px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse at 50% 72%, rgba(89, 187, 194, .13), transparent 35%),
-    linear-gradient(180deg, rgba(4,24,32,.24), rgba(3,19,25,.72));
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg);
 }
 
-.lightning-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; opacity: .24; }
-
-.premier-plan::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 20%, rgba(230,242,228,.09), transparent 32%),
-    linear-gradient(180deg, transparent 55%, rgba(3,19,25,.95) 100%);
-  z-index: 1;
+.lightning-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }
 
 .premier-plan::after {
-  content: "";
-  position: absolute;
-  left: -5%;
-  right: -5%;
-  bottom: -65px;
-  height: 150px;
-  border-radius: 50% 50% 0 0;
-  background: repeating-radial-gradient(ellipse at 50% 100%, transparent 0 18px, rgba(138,224,223,.12) 19px 22px, transparent 23px 48px);
-  z-index: 1;
-  animation: vagues-lentes 18s ease-in-out infinite;
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 160px;
+    background: linear-gradient(to bottom, transparent, var(--bg));
+    pointer-events: none;
+    z-index: 1;
 }
 
 .premier-plan h2 {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  color: #f7edcf;
-  font-size: clamp(2.2rem, 7vw, 5rem);
-  letter-spacing: clamp(2px, .8vw, 9px);
-  text-shadow: 0 3px 0 #23170c, 0 10px 35px rgba(0,0,0,.65), 0 0 28px rgba(95,212,220,.16);
+    font-family: 'Shippori Mincho', serif;
+    font-size: 55px;
+    color: #fff5f8;
+    text-shadow: 0 0 22px var(--glow), 0 0 60px rgba(255, 0, 119, .45);
+    position: relative;
+    z-index: 2;
 }
 
 .premier-plan p {
-  position: relative;
-  z-index: 2;
-  margin-top: 1rem;
-  color: #cbd9d2;
-  font-size: clamp(.9rem, 2vw, 1.2rem);
-  letter-spacing: 2px;
-  text-shadow: 0 2px 12px #000;
-  opacity: 0;
-  animation: montee .8s ease .3s forwards;
+    margin-top: 15px;
+    font-size: 20px;
+    color: var(--text-muted);
+    text-shadow: 0 2px 10px rgba(7, 4, 11, .8);
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: montee .8s ease .3s forwards;
 }
 
-@keyframes montee {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes montee { to { opacity: 1; transform: translateY(0); } from { transform: translateY(12px); } }
+/* ===== Section STI2D ===== */
+#prestation { padding: 60px 20px; }
+
+#prestation h2 {
+    text-align: center;
+    font-family: 'Shippori Mincho', serif;
+    color: var(--accent);
+    font-size: 38px;
+    margin-bottom: 50px;
+    text-shadow: 0 0 12px var(--glow);
 }
 
-/* -------------------------
-   ÉVENTUELLES SECTIONS EXISTANTES DE L'ACCUEIL
-   ------------------------- */
-
-#prestation { position: relative; z-index: 5; padding: clamp(3rem, 7vw, 5rem) 20px; }
-#prestation h2 { text-align: center; color: var(--accent-soft); font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 2.5rem; }
-.cartes { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem; }
+.cartes { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
 
 .carte-accueil {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  width: min(100%, 285px);
-  padding: 1.6rem;
-  text-align: center;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    width: 280px;
+    padding: 30px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: center;
+    transition: transform 0.35s, box-shadow 0.35s, border-color 0.35s;
 }
 
-.carte-accueil:active { transform: translateY(-2px) scale(.99); }
-
-.a-propos {
-  position: relative;
-  z-index: 5;
-  text-align: center;
-  padding: clamp(3rem, 7vw, 5rem) 20px;
-  background: linear-gradient(180deg, transparent, rgba(7,39,48,.5), transparent);
+.carte-accueil:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--border-strong);
+    box-shadow: 0 0 28px var(--glow);
 }
-.a-propos h2 { color: var(--accent-soft); font-size: clamp(1.8rem, 4vw, 2.5rem); margin-bottom: 1rem; }
-.a-propos p { max-width: 700px; margin: 0 auto; color: var(--text-soft); }
 
-.bas-de-page {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 2.2rem 5%;
-  margin-top: 2rem;
-  background: rgba(2, 14, 19, .94);
-  border-top: 1px solid var(--border);
+.carte-accueil:active { transform: translateY(-4px) scale(0.98); }
+
+.carte-accueil h3 {
+    font-family: 'Shippori Mincho', serif;
+    color: var(--accent-soft);
+    font-size: 22px;
+    margin-bottom: 12px;
 }
-.bas-de-page a { color: var(--text-muted); text-decoration: none; margin: 0 10px; transition: color .2s ease; }
-.bas-de-page a:hover { color: var(--accent-soft); }
 
-.reveal { opacity: 0; transform: translateY(24px); animation: apparait .7s ease forwards; }
-@keyframes apparait { to { opacity: 1; transform: translateY(0); } }
+.carte-accueil p { color: var(--text-muted); }
+
+/* Apparition en cascade des cartes */
 .cartes .reveal:nth-child(1) { animation-delay: .05s; }
-.cartes .reveal:nth-child(2) { animation-delay: .14s; }
-.cartes .reveal:nth-child(3) { animation-delay: .23s; }
-.cartes .reveal:nth-child(4) { animation-delay: .32s; }
-.cartes .reveal:nth-child(5) { animation-delay: .41s; }
-.cartes .reveal:nth-child(6) { animation-delay: .50s; }
-
-/* -------------------------
-   BOUTON SECRET EXISTANT
-   Son style inline reste fonctionnel ; on l'harmonise sans changer son lien.
-   ------------------------- */
-
-#bouton-secret {
-  border-color: rgba(240,198,106,.75) !important;
-  color: #f0d58f !important;
-  background: rgba(5, 24, 30, .86) !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,.4), 0 0 18px rgba(95,212,220,.12) !important;
-  backdrop-filter: blur(8px);
+.cartes .reveal:nth-child(2) { animation-delay: .2s; }
+.cartes .reveal:nth-child(3) { animation-delay: .35s; }
+.cartes .reveal:nth-child(4) { animation-delay: .5s; }
+.cartes .reveal:nth-child(5) { animation-delay: .65s; }
+.cartes .reveal:nth-child(6) { animation-delay: .8s; }
+/* ===== À propos ===== */
+.a-propos {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(180deg, var(--bg), var(--nebula), var(--bg));
 }
 
-#bouton-secret:hover,
-#bouton-secret:focus-visible {
-  transform: translateY(-3px) !important;
-  box-shadow: 0 12px 25px rgba(0,0,0,.5), 0 0 24px rgba(240,198,106,.24) !important;
+.a-propos h2 {
+    font-family: 'Shippori Mincho', serif;
+    color: var(--accent);
+    font-size: 38px;
+    margin-bottom: 20px;
 }
 
-/* -------------------------
-   RESPONSIVE
-   ------------------------- */
+.a-propos p { max-width: 700px; margin: 0 auto; color: var(--text-muted); }
 
-@media (max-width: 900px) {
-  .dragon-zone { width: 42vw; height: 360px; opacity: .72; }
-  .dragon { left: 20px; }
-  main { width: min(calc(100% - 1.5rem), 920px); }
+/* ===== Footer ===== */
+.bas-de-page {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+    background: #07040b;
+    border-top: 1px solid var(--border);
 }
 
+.bas-de-page a {
+    color: var(--text-muted);
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s;
+}
+
+.bas-de-page a:hover { color: var(--accent); }
+
+/* ===== Animation d'apparition ===== */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: apparait 0.8s ease forwards;
+}
+@keyframes apparait { to { opacity: 1; transform: translateY(0); } }
+
+.premier-plan { z-index: 5; }
+#prestation, .a-propos, .bas-de-page { position: relative; z-index: 5; }
+.bas-de-page { margin-top: 2rem; }
 @media (max-width: 700px) {
-  header { padding: 1.7rem 1rem 1.1rem; }
-  header h1 { letter-spacing: 2.5px; }
-  nav { gap: .15rem; margin-top: 1rem; }
-  nav a { font-size: .74rem; padding: .55rem .62rem; letter-spacing: .7px; }
-
-  main { width: calc(100% - 1rem); margin: 1.5rem auto; padding: 1.45rem 1rem; border-radius: 9px; }
-  main::after { display: none; }
-  .grille-cartes { grid-template-columns: 1fr; }
-
-  .dragon-zone { width: 100%; height: 180px; opacity: .38; bottom: 0; }
-  .dragon { left: 8px; bottom: 12px; width: 250px; height: 160px; }
-  .dragon-zone::before { left: 28%; }
-  .dragon-zone::after { left: 47%; }
-
-  .sakura-container { width: 100%; height: 105px; opacity: .34; }
-  .premier-plan { min-height: 390px; height: 52vh; }
-  .premier-plan h2 { font-size: clamp(2rem, 12vw, 3.2rem); }
-  .premier-plan p { font-size: .82rem; letter-spacing: 1px; }
-
-  .formulaire { align-items: stretch; }
-  .formulaire input[type="text"],
-  .formulaire input[type="password"],
-  .formulaire input[type="file"],
-  .formulaire select,
-  .formulaire .document-link { width: 100%; max-width: none; }
-
-  .bas-de-page { flex-direction: column; align-items: center; text-align: center; padding: 2rem 1rem; }
+  .premier-plan h2 { font-size: 34px; }
+  .bas-de-page { flex-direction: column; gap: 12px; align-items: center; }
 }
-
-@media (max-width: 420px) {
-  nav a { padding-inline: .45rem; font-size: .69rem; }
-  main { width: calc(100% - .7rem); padding: 1.2rem .75rem; }
-  main h2 { letter-spacing: 1px; }
-  .carte { padding: 1.1rem; }
-  .document-link { width: 100%; }
-  #bouton-secret { bottom: 12px !important; left: 12px !important; }
-  .dragon { transform: scale(.78); transform-origin: left bottom; }
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .carte:hover,
-  .carte-accueil:hover { transform: none; }
-  nav a:hover { transform: none; }
-  .document-link:hover { transform: none; }
-}
-
-/* -------------------------
-   ACCESSIBILITÉ / MOTION
-   ------------------------- */
-
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .dragon,
-  .dragon-zone::after,
-  .sakura-container::before,
-  .sakura-container::after { animation: none !important; }
-  .reveal,
-  .premier-plan p { animation: none !important; opacity: 1; transform: none; }
   #veil { display: none; }
+  .reveal, .premier-plan p { animation: none; opacity: 1; transform: none; }
 }

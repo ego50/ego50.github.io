@@ -1,0 +1,197 @@
+/* =====================================================
+   SAKURA-FLEUR.CSS — thème « hanami » : cerisier en fleurs
+   À charger APRÈS style.css. Pour l'enlever : retire la
+   ligne <link ... sakura-fleur.css> de tes pages.
+   Motif récurrent : le coin arrondi « pétale » (deux coins
+   opposés arrondis, deux presque droits).
+   ===================================================== */
+
+/* 1. PALETTE */
+:root {
+  --bg: #fdf4f6;
+  --panel: rgba(255, 251, 252, 0.88);
+  --shadow: rgba(120, 60, 80, 0.2);
+  --text: #3b2230;
+  --text-soft: #6b4a5a;
+  --text-muted: #6b4a5a;
+  --sakura: #e58fa7;
+  --sakura-light: #f9d3dd;
+  --lightning: #e58fa7;
+  --neon-magenta: #d9708f;
+  --neon-cyan: #7a9a6b;
+  --red-oni: #c94f72;
+  --oni-gold: #b98a4a;
+  --oni-gold-glow: #d9b26a;
+  --border: rgba(217, 112, 143, 0.35);
+  --border-hover: rgba(122, 154, 107, 0.85);
+  --border-gold: rgba(185, 138, 74, 0.6);
+  --border-strong: #d9708f;
+  --accent: #b8456a;
+  --accent-soft: #8f3a58;
+  --glow: rgba(229, 143, 167, 0.45);
+  --nebula: #f8e2e9;
+  --error: #b3261e;
+  --petale: 16px 3px 16px 3px;
+}
+
+/* 2. FOND : papier washi, brume rose et vert tendre */
+body {
+  color: var(--text);
+  background:
+    radial-gradient(760px 520px at 8% 0%, rgba(249, 211, 221, 0.75), transparent 65%),
+    radial-gradient(900px 620px at 100% 100%, rgba(196, 217, 184, 0.45), transparent 62%),
+    linear-gradient(180deg, #fffafb 0%, #fdf4f6 55%, #fae9ee 100%);
+  background-attachment: fixed;
+}
+body::before {
+  top: auto; bottom: -14vw; left: -10vw; right: auto;
+  width: 42vw; height: 42vw; max-width: 560px; max-height: 560px;
+  border: 0; border-radius: 50%; transform: none; box-shadow: none;
+  background: radial-gradient(circle, rgba(249, 211, 221, 0.7), transparent 68%);
+  z-index: 1;
+}
+body::after { display: none; }
+.sakura-container::before { display: none !important; }
+
+/* 3. PÉTALES : roses, doux, sans halo néon */
+.sakura-petal, .sakura-petal::before, .sakura-petal::after {
+  background: linear-gradient(135deg, #fde6ec, #f3a4ba);
+  box-shadow: 0 1px 3px rgba(150, 60, 90, 0.25);
+}
+
+/* 4. LA BRANCHE : le « dragon » devient une branche de cerisier en fleurs */
+.dragon-zone { z-index: 1; overflow: hidden; }
+.dragon > * { display: none; }
+.dragon {
+  all: unset; display: block; position: absolute; box-sizing: border-box;
+  top: 0; right: 0;
+  width: clamp(240px, 36vw, 540px); aspect-ratio: 420 / 320;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 320'%3E%3Cdefs%3E%3Cg id='f'%3E%3Cg fill='%23f9d3dd' stroke='%23e58fa7' stroke-width='1.2'%3E%3Cellipse cy='-11' rx='7' ry='11'/%3E%3Cellipse cy='-11' rx='7' ry='11' transform='rotate(72)'/%3E%3Cellipse cy='-11' rx='7' ry='11' transform='rotate(144)'/%3E%3Cellipse cy='-11' rx='7' ry='11' transform='rotate(216)'/%3E%3Cellipse cy='-11' rx='7' ry='11' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='3' fill='%23c94f72'/%3E%3C/g%3E%3C/defs%3E%3Cg fill='none' stroke='%234e332f' stroke-linecap='round'%3E%3Cpath d='M425 26 C335 40 262 92 202 152 S92 250 18 264' stroke-width='7'/%3E%3Cpath d='M305 66 C290 42 272 26 240 12' stroke-width='4'/%3E%3Cpath d='M232 126 C218 172 194 204 166 234' stroke-width='4'/%3E%3Cpath d='M150 206 C124 198 96 206 62 198' stroke-width='3'/%3E%3Cpath d='M262 92 C280 120 282 142 276 170' stroke-width='3'/%3E%3C/g%3E%3Cuse href='%23f' transform='translate(352 38) scale(1.1)'/%3E%3Cuse href='%23f' transform='translate(304 64) rotate(20)'/%3E%3Cuse href='%23f' transform='translate(268 30) scale(.9) rotate(40)'/%3E%3Cuse href='%23f' transform='translate(240 13) scale(1.05) rotate(10)'/%3E%3Cuse href='%23f' transform='translate(262 94) scale(.85) rotate(60)'/%3E%3Cuse href='%23f' transform='translate(278 168) scale(1.1) rotate(30)'/%3E%3Cuse href='%23f' transform='translate(216 130) scale(1.15) rotate(15)'/%3E%3Cuse href='%23f' transform='translate(186 156) scale(.8) rotate(50)'/%3E%3Cuse href='%23f' transform='translate(166 234) scale(1.05) rotate(25)'/%3E%3Cuse href='%23f' transform='translate(122 202) scale(.9)'/%3E%3Cuse href='%23f' transform='translate(64 198) scale(1.1) rotate(35)'/%3E%3Cuse href='%23f' transform='translate(100 246) scale(.8) rotate(12)'/%3E%3Cuse href='%23f' transform='translate(24 262) scale(.85) rotate(48)'/%3E%3Cg fill='%23f3a4ba'%3E%3Ccircle cx='328' cy='52' r='4'/%3E%3Ccircle cx='214' cy='100' r='4'/%3E%3Ccircle cx='148' cy='196' r='3.5'/%3E%3Ccircle cx='42' cy='236' r='3.5'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  filter: drop-shadow(0 8px 10px rgba(120, 60, 80, 0.18));
+  transform-origin: 100% 0; animation: balancement 11s ease-in-out infinite;
+}
+@keyframes balancement {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(1.6deg); }
+}
+
+/* 5. EN-TÊTE : papier clair, filet rose */
+header {
+  background: linear-gradient(180deg, rgba(255, 250, 251, 0.96), rgba(250, 226, 233, 0.88));
+  border-bottom: 2px solid var(--sakura);
+  box-shadow: 0 10px 30px rgba(150, 60, 90, 0.16);
+}
+header h1 {
+  color: var(--text); letter-spacing: 0.35em; font-weight: 600;
+  text-shadow: 0 1px 0 #fff, 0 0 18px rgba(249, 211, 221, 0.9);
+}
+header h1::before, header h1::after {
+  content: "❀"; color: var(--sakura); font-size: 0.55em; margin: 0 0.8em; vertical-align: middle;
+}
+nav a { color: var(--accent-soft); border-radius: 999px; padding: 0.55rem 1.2rem; min-height: 44px; display: inline-flex; align-items: center; }
+nav a::after { display: none; }
+nav a:hover, nav a:focus-visible { color: var(--text); background: var(--sakura-light); text-shadow: none; }
+
+/* 6. PANNEAU PRINCIPAL */
+main {
+  border: 1px solid var(--border); border-radius: 6px 34px 6px 34px;
+  background: var(--panel);
+  box-shadow: 0 24px 60px var(--shadow), inset 0 0 0 5px rgba(255, 255, 255, 0.6);
+}
+main::before {
+  content: "❀"; width: auto; height: auto; background: none; box-shadow: none;
+  color: var(--sakura); font-size: 1.7rem; line-height: 1; margin: 0 auto 1.2rem;
+}
+main h2 { color: var(--text); text-shadow: none; }
+main p, .intro { color: var(--text-soft); }
+
+/* 7. BOUTONS */
+.document-link {
+  color: #fff; border-radius: var(--petale);
+  background: linear-gradient(135deg, #c9577a, #b8456a);
+  box-shadow: 0 6px 16px rgba(184, 69, 106, 0.35);
+}
+.document-link:hover { filter: none; background: linear-gradient(135deg, #d0648a, #bf4c72); box-shadow: 0 10px 22px rgba(184, 69, 106, 0.4); }
+
+/* 8. FORMULAIRES */
+.formulaire { background: rgba(253, 236, 241, 0.75); border-radius: 4px 20px 4px 20px; box-shadow: none; }
+.formulaire input[type="text"], .formulaire input[type="password"], .formulaire input[type="file"], .formulaire select,
+input[type="text"], input[type="password"], select {
+  background: #fff; color: var(--text); border: 1px solid rgba(217, 112, 143, 0.5); border-radius: 8px 2px 8px 2px;
+}
+.formulaire input[type="text"]:focus, .formulaire select:focus, input:focus, select:focus {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(229, 143, 167, 0.4);
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.msg-succes, .msg-erreur { padding: 0.7rem 1rem; border-radius: 4px 14px 4px 14px; margin: 1rem 0; }
+.msg-succes { color: #24562e; background: #e8f4e3; border: 1px solid #b9d8b0; }
+.msg-erreur { color: #9c1f18; background: #fdecea; border: 1px solid #f0b9b3; }
+.sous-titre { color: var(--accent-soft); margin: 2rem 0 0.5rem; }
+
+/* 9. CARTES DE DOSSIERS */
+.carte {
+  background: linear-gradient(150deg, #ffffff, #fdeef2);
+  border: 1px solid var(--border); border-radius: 4px 22px 4px 22px;
+  box-shadow: 0 8px 22px rgba(150, 60, 90, 0.12);
+}
+.carte::before { height: 4px; background: linear-gradient(90deg, #f3a4ba, #d9708f 55%, #a9c49a); }
+.carte h3 { color: var(--accent-soft); text-shadow: none; }
+.carte p { color: var(--text-soft); }
+.carte .etiquette { background: var(--sakura-light); color: var(--accent-soft); border-radius: 999px; padding: 0 0.6em; font-size: 0.72em; }
+.liste-fichiers a { color: var(--accent-soft); }
+.liste-fichiers a:hover { color: var(--accent); text-shadow: none; text-decoration: underline; }
+.carte input, .carte select { background: #fff; color: var(--text); }
+@media (hover: hover) and (pointer: fine) {
+  .carte:hover { transform: translateY(-5px); border-color: var(--border-hover); box-shadow: 0 16px 34px rgba(150, 60, 90, 0.2); }
+}
+@media (hover: none) { .carte:hover, .carte-accueil:hover { transform: none; } }
+
+/* 10. ACCUEIL : un grand soleil rose et le kanji 桜 */
+.premier-plan { background: transparent; }
+.lightning-canvas { display: none; }
+.premier-plan::before {
+  content: "桜"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(74vw, 420px); aspect-ratio: 1; border-radius: 50%; z-index: 0;
+  display: grid; place-items: center;
+  font-family: "Shippori Mincho", serif; font-size: min(38vw, 230px); line-height: 1;
+  color: rgba(255, 255, 255, 0.75);
+  background: radial-gradient(circle at 35% 30%, #ffe6ec, #f6b3c5 72%);
+  box-shadow: 0 0 80px rgba(229, 143, 167, 0.45);
+}
+.premier-plan h2 { color: var(--text); text-shadow: 0 2px 0 #fff, 0 0 26px rgba(255, 255, 255, 0.9); letter-spacing: 0.2em; }
+.premier-plan p { color: var(--accent-soft); text-shadow: 0 1px 0 #fff; }
+
+#prestation h2, .a-propos h2 { color: var(--accent); text-shadow: none; }
+.carte-accueil { background: var(--panel); border-radius: 6px 26px 6px 26px; box-shadow: 0 10px 26px rgba(150, 60, 90, 0.12); }
+.carte-accueil:hover { border-color: var(--border-strong); box-shadow: 0 16px 34px rgba(150, 60, 90, 0.22); }
+.carte-accueil h3 { color: var(--accent-soft); }
+.a-propos { background: linear-gradient(180deg, var(--bg), var(--nebula), var(--bg)); }
+.bas-de-page { background: #fbe3ea; border-top: 1px solid var(--border); }
+.bas-de-page a { color: var(--accent-soft); }
+.bas-de-page a:hover { color: var(--accent); }
+
+/* 11. TRANSITION ENTRE PAGES : rideau rose */
+#veil { background: linear-gradient(135deg, #fdeff3 0%, #f6c3d1 55%, #fdeff3 100%); }
+#veil::after { opacity: 0.5; }
+
+/* 12. BOUTON SECRET (styles en ligne : !important nécessaire) */
+#bouton-secret {
+  background: #fff !important; color: var(--accent) !important;
+  border: 1px solid var(--sakura) !important; box-shadow: 0 4px 14px rgba(184, 69, 106, 0.3) !important;
+}
+
+/* 13. MOBILE */
+@media (max-width: 860px) { .dragon { opacity: 0.55; } }
+@media (max-width: 600px) {
+  header h1 { letter-spacing: 0.12em; }
+  header h1::before, header h1::after { display: none; }
+  .dragon { width: 62vw; opacity: 0.4; }
+  .document-link { width: 100%; text-align: center; }
+}
+
+/* 14. MOUVEMENT RÉDUIT */
+@media (prefers-reduced-motion: reduce) {
+  .dragon { animation: none !important; }
+  .sakura-container { display: none !important; }
+}

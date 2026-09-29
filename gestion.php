@@ -4,16 +4,28 @@
 // Utilisé par cours.php, tp.php, projets.php et documents.php
 // ==========================================================
 
+session_set_cookie_params([
+    'httponly' => true,
+    'samesite' => 'Lax',
+    'secure'   => !empty($_SERVER['HTTPS']),
+]);
 session_start();
+if (empty($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
 
-// ⚠️ CHANGE CES MOTS DE PASSE avant de mettre le site en ligne !
-// - Mot de passe ADMIN (le tien) : accès complet — créer des dossiers,
-//   ajouter des fichiers, ET les supprimer.
-// - Mot de passe MODÉRATEUR (le prof) : peut seulement ajouter des fichiers
-//   dans des dossiers que tu as déjà créés. Il ne peut ni créer de dossier,
-//   ni supprimer quoi que ce soit.
-define('MOT_DE_PASSE_ADMIN', 'lex4');
-define('MOT_DE_PASSE_MODERATEUR', 'Profsin2026');
+// Les mots de passe ne sont PLUS dans le code : ils sont dans config.php
+// (fichier ignoré par git, à créer sur le serveur à partir de config.example.php).
+$fichierConfig = __DIR__ . '/config.php';
+if (!is_file($fichierConfig)) {
+    http_response_code(500);
+    exit('Configuration manquante : copie config.example.php en config.php et définis tes mots de passe.');
+}
+require $fichierConfig;
+define('MOT_DE_PASSE_ADMIN', $motDePasseAdmin);
+define('MOT_DE_PASSE_MODERATEUR', $motDePasseProf);
+// Mot de passe du Sanctuaire (jeux.php). Vide ou absent de config.php = réservé à l'admin.
+define('MOT_DE_PASSE_JEU', (string) ($motDePasseJeu ?? ''));
 
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];
@@ -23,7 +35,17 @@ if (!is_dir($RACINE_FICHIERS)) {
     mkdir($RACINE_FICHIERS, 0755, true);
 }
 
-$EXTENSIONS_INTERDITES = ['php', 'php3', 'php4', 'php5', 'phtml', 'exe', 'sh', 'bat'];
+define('TAILLE_MAX_FICHIER', 10 * 1024 * 1024); // 10 Mo, PDF uniquement
+
+// Le dossier fichiers/ ne doit servir que des PDF (jamais de PHP) : on écrit son .htaccess si besoin.
+if (!is_file($RACINE_FICHIERS . '.htaccess')) {
+    @file_put_contents($RACINE_FICHIERS . '.htaccess',
+        "Options -Indexes -ExecCGI\n"
+      . "RemoveHandler .php .phtml .php3 .php4 .php5 .phar\n"
+      . "<IfModule mod_php.c>\nphp_flag engine off\n</IfModule>\n"
+      . "Require all denied\n"
+      . "<FilesMatch \"\\.(?i:pdf)$\">\nRequire all granted\n</FilesMatch>\n");
+}
 
 function nettoyerNom($nom) {
     $nom = trim($nom);
@@ -68,41 +90,121 @@ function secondesAvantDeblocage() {
     return max(0, BLOCAGE_SECONDES - (time() - $depuis));
 }
 
-// Traite le formulaire de connexion / déconnexion (à appeler en tout début de page).
-// Retourne un message d'erreur éventuel, sinon une chaîne vide.
-function traiterConnexion() {
-    $erreur = '';
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'connexion') {
-
-        if (estBloque()) {
-            $minutes = ceil(secondesAvantDeblocage() / 60);
-            return "Trop de tentatives ratées. Réessaie dans environ $minutes minute(s).";
-        }
-
-        $motDePasseSaisi = $_POST['mot_de_passe'] ?? '';
-
-        if (hash_equals(MOT_DE_PASSE_ADMIN, $motDePasseSaisi)) {
-            $_SESSION['role'] = 'admin';
-            $_SESSION['tentatives_ratees'] = 0;
-        } elseif (hash_equals(MOT_DE_PASSE_MODERATEUR, $motDePasseSaisi)) {
-            $_SESSION['role'] = 'moderateur';
-            $_SESSION['tentatives_ratees'] = 0;
-        } else {
-            $_SESSION['tentatives_ratees'] = ($_SESSION['tentatives_ratees'] ?? 0) + 1;
-            $_SESSION['derniere_tentative'] = time();
-            $erreur = "Mot de passe incorrect.";
-        }
-    }
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'deconnexion') {
-        unset($_SESSION['role']);
-    }
-
-    return $erreur;
+function champCsrf() {
+    return '<input type="hidden" name="csrf" value="' . htmlspecialchars($_SESSION['csrf']) . '">';
 }
 
-// Affiche la barre de connexion : mot de passe, statut connecté, ou message de blocage
+function verifierCsrf() {
+    return hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '');
+}
+
+// --- Code de vérification par email (connexion du prof) ---
+function effacerCode() {
+    unset($_SESSION['code_verif'], $_SESSION['code_expire'], $_SESSION['code_essais'], $_SESSION['code_envoye_a']);
+}
+
+function codeEnAttente() {
+    return !empty($_SESSION['code_verif']) && ($_SESSION['code_expire'] ?? 0) > time();
+}
+
+// Génère un code à 6 chiffres, le garde en session et l'envoie au propriétaire du site.
+function envoyerCodeVerification() {
+    global $emailProprietaire;
+    $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    $_SESSION['code_verif'] = $code;
+    $_SESSION['code_expire'] = time() + 120;
+    $_SESSION['code_essais'] = 0;
+    $_SESSION['code_envoye_a'] = time();
+
+    $sujet = 'Code de vérification - connexion prof';
+    $message = "Une connexion a été demandée avec le mot de passe prof.\n\n"
+             . "Code à communiquer pour valider : $code\n"
+             . "Valable 2 minutes.\n\n"
+             . "Si tu ne veux pas valider cette connexion, ne donne pas le code : il expirera tout seul.";
+    $domaine = preg_replace('/[^A-Za-z0-9.\-]/', '', $_SERVER['SERVER_NAME'] ?? 'localhost');
+    $entetes = "Content-Type: text/plain; charset=UTF-8\r\nFrom: Mon classeur numérique <no-reply@" . $domaine . ">";
+    @mail($emailProprietaire, '=?UTF-8?B?' . base64_encode($sujet) . '?=', $message, $entetes);
+}
+
+// Traite connexion / code / déconnexion (à appeler en tout début de page).
+// Retourne un message d'erreur éventuel, sinon une chaîne vide.
+function traiterConnexion() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        return '';
+    }
+    $action = $_POST['action'] ?? '';
+    if (!in_array($action, ['connexion', 'verifier_code', 'renvoyer_code', 'annuler_code', 'deconnexion'], true)) {
+        return '';
+    }
+    if (!verifierCsrf()) {
+        return "Session expirée : recharge la page et réessaie.";
+    }
+
+    if ($action === 'deconnexion') {
+        unset($_SESSION['role']);
+        effacerCode();
+        session_regenerate_id(true);
+        return '';
+    }
+    if ($action === 'annuler_code') {
+        effacerCode();
+        return '';
+    }
+    if (estBloque()) {
+        $minutes = ceil(secondesAvantDeblocage() / 60);
+        return "Trop de tentatives ratées. Réessaie dans environ $minutes minute(s).";
+    }
+
+    if ($action === 'connexion') {
+        $mdp = $_POST['mot_de_passe'] ?? '';
+        if (hash_equals(MOT_DE_PASSE_ADMIN, $mdp)) {
+            session_regenerate_id(true);
+            $_SESSION['role'] = 'admin';
+            $_SESSION['tentatives_ratees'] = 0;
+            effacerCode();
+            return '';
+        }
+        if (hash_equals(MOT_DE_PASSE_MODERATEUR, $mdp)) {
+            // Le prof doit être validé par un code envoyé par email au propriétaire.
+            $_SESSION['tentatives_ratees'] = 0;
+            envoyerCodeVerification();
+            return '';
+        }
+        $_SESSION['tentatives_ratees'] = ($_SESSION['tentatives_ratees'] ?? 0) + 1;
+        $_SESSION['derniere_tentative'] = time();
+        return "Mot de passe incorrect.";
+    }
+
+    if ($action === 'renvoyer_code') {
+        if (time() - ($_SESSION['code_envoye_a'] ?? 0) < 30) {
+            return "Attends quelques secondes avant de redemander un code.";
+        }
+        envoyerCodeVerification();
+        return '';
+    }
+
+    if ($action === 'verifier_code') {
+        if (!codeEnAttente()) {
+            effacerCode();
+            return "Code expiré : reconnecte-toi.";
+        }
+        if (($_SESSION['code_essais'] ?? 0) >= 5) {
+            effacerCode();
+            return "Trop d'essais : reconnecte-toi.";
+        }
+        if (hash_equals($_SESSION['code_verif'], trim($_POST['code'] ?? ''))) {
+            session_regenerate_id(true);
+            $_SESSION['role'] = 'moderateur';
+            effacerCode();
+            return '';
+        }
+        $_SESSION['code_essais'] = ($_SESSION['code_essais'] ?? 0) + 1;
+        return "Code incorrect.";
+    }
+    return '';
+}
+
+// Affiche la barre de connexion : connecté, code à saisir, blocage, ou mot de passe.
 function afficherBarreConnexion($erreurConnexion = '') {
     $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
 
@@ -111,10 +213,29 @@ function afficherBarreConnexion($erreurConnexion = '') {
     if (estConnecte()) {
         $libelleRole = estAdmin() ? 'Admin' : 'Modérateur';
         echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
-        echo '<input type="hidden" name="action" value="deconnexion">';
+        echo '<input type="hidden" name="action" value="deconnexion">' . champCsrf();
         echo '<span class="msg-succes">🔓 Connecté (' . htmlspecialchars($libelleRole) . ')</span> ';
         echo '<button type="submit" class="document-link">Se déconnecter</button>';
         echo '</form>';
+
+    } elseif (codeEnAttente()) {
+        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
+        echo '<input type="hidden" name="action" value="verifier_code">' . champCsrf();
+        echo '<input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Code à 6 chiffres" required>';
+        echo '<button type="submit" class="document-link">Valider</button>';
+        echo '</form>';
+        echo '<p class="intro">Un code a été envoyé au propriétaire du site (valable 2 minutes).</p>';
+        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
+        echo '<input type="hidden" name="action" value="renvoyer_code">' . champCsrf();
+        echo '<button type="submit" class="document-link">Renvoyer le code</button>';
+        echo '</form>';
+        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
+        echo '<input type="hidden" name="action" value="annuler_code">' . champCsrf();
+        echo '<button type="submit" class="document-link">Annuler</button>';
+        echo '</form>';
+        if ($erreurConnexion) {
+            echo '<p class="msg-erreur">' . htmlspecialchars($erreurConnexion) . '</p>';
+        }
 
     } elseif (estBloque()) {
         $minutes = ceil(secondesAvantDeblocage() / 60);
@@ -122,7 +243,7 @@ function afficherBarreConnexion($erreurConnexion = '') {
 
     } else {
         echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
-        echo '<input type="hidden" name="action" value="connexion">';
+        echo '<input type="hidden" name="action" value="connexion">' . champCsrf();
         echo '<input type="password" name="mot_de_passe" placeholder="Code d\'accès" required>';
         echo '<button type="submit" class="document-link">Se connecter</button>';
         echo '</form>';
@@ -141,7 +262,7 @@ function afficherBarreConnexion($erreurConnexion = '') {
 // Traite les formulaires POST (création de dossier + upload + suppression) pour UNE catégorie.
 // Retourne [message_succes, message_erreur]
 function traiterFormulaires($categorie) {
-    global $RACINE_FICHIERS, $EXTENSIONS_INTERDITES, $CATEGORIES_AUTORISEES;
+    global $RACINE_FICHIERS, $CATEGORIES_AUTORISEES;
 
     if (!in_array($categorie, $CATEGORIES_AUTORISEES)) {
         return ['', "Catégorie invalide."];
@@ -161,6 +282,9 @@ function traiterFormulaires($categorie) {
         // même si quelqu'un envoie directement une requête POST sans passer par le formulaire.
         if (!estConnecte()) {
             return ['', "Tu dois être connecté pour faire ça."];
+        }
+        if (!verifierCsrf()) {
+            return ['', "Session expirée : recharge la page et réessaie."];
         }
 
         // Création d'un dossier (ADMIN UNIQUEMENT)
@@ -192,10 +316,15 @@ function traiterFormulaires($categorie) {
             } elseif (!isset($_FILES['fichier']) || $_FILES['fichier']['error'] !== UPLOAD_ERR_OK) {
                 $erreur = "Aucun fichier valide n'a été envoyé.";
             } else {
-                $nomFichier = basename($_FILES['fichier']['name']);
+                $nomFichier = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($_FILES['fichier']['name']));
                 $extension = strtolower(pathinfo($nomFichier, PATHINFO_EXTENSION));
-                if (in_array($extension, $EXTENSIONS_INTERDITES)) {
-                    $erreur = "Ce type de fichier n'est pas autorisé.";
+                $mime = function_exists('finfo_open')
+                    ? finfo_file(finfo_open(FILEINFO_MIME_TYPE), $_FILES['fichier']['tmp_name'])
+                    : 'application/pdf';
+                if ($extension !== 'pdf' || $mime !== 'application/pdf') {
+                    $erreur = "Seuls les fichiers PDF sont autorisés.";
+                } elseif ($_FILES['fichier']['size'] > TAILLE_MAX_FICHIER) {
+                    $erreur = "Fichier trop lourd (10 Mo maximum).";
                 } else {
                     $destination = $cheminDossier . '/' . $nomFichier;
                     if (move_uploaded_file($_FILES['fichier']['tmp_name'], $destination)) {
@@ -263,6 +392,7 @@ function afficherFormulaires($categorie, $dossiers) {
     <form class="formulaire" method="post" action="<?= $cible ?>">
       <input type="hidden" name="categorie" value="<?= htmlspecialchars($categorie) ?>">
       <input type="hidden" name="action" value="creer_dossier">
+      <?= champCsrf() ?>
       <input type="text" name="nom_dossier" placeholder="Nom du nouveau dossier" required>
       <button type="submit" class="document-link">Créer le dossier</button>
     </form>
@@ -272,13 +402,14 @@ function afficherFormulaires($categorie, $dossiers) {
     <form class="formulaire" method="post" action="<?= $cible ?>" enctype="multipart/form-data">
       <input type="hidden" name="categorie" value="<?= htmlspecialchars($categorie) ?>">
       <input type="hidden" name="action" value="uploader_fichier">
+      <?= champCsrf() ?>
       <select name="dossier_cible" required>
         <option value="" disabled selected>Choisir un dossier</option>
         <?php foreach ($dossiers as $nom => $fichiers): ?>
           <option value="<?= htmlspecialchars($nom) ?>"><?= htmlspecialchars($nom) ?></option>
         <?php endforeach; ?>
       </select>
-      <input type="file" name="fichier" required>
+      <input type="file" name="fichier" accept=".pdf,application/pdf" required>
       <button type="submit" class="document-link">Ajouter le fichier</button>
     </form>
     <?php elseif (estAdmin()): ?>
@@ -323,12 +454,12 @@ function afficherLigneFichier($categorie, $nomDossier, $fichier, $cible = null) 
     }
     $lien = 'fichiers/' . rawurlencode($categorie) . '/' . rawurlencode($nomDossier) . '/' . rawurlencode($fichier);
 
-    $html = '<li><a href="' . $lien . '" target="_blank">' . htmlspecialchars($fichier) . '</a>';
+    $html = '<li><a href="' . $lien . '" target="_blank" rel="noopener">' . htmlspecialchars($fichier) . '</a>';
 
     if (estAdmin()) {
         $html .= ' <form class="formulaire-suppression" method="post" action="' . $cible . '" style="display:inline" onsubmit="return confirm(\'Supprimer ce fichier ?\');">';
         $html .= '<input type="hidden" name="categorie" value="' . htmlspecialchars($categorie) . '">';
-        $html .= '<input type="hidden" name="action" value="supprimer_fichier">';
+        $html .= '<input type="hidden" name="action" value="supprimer_fichier">' . champCsrf();
         $html .= '<input type="hidden" name="dossier_cible" value="' . htmlspecialchars($nomDossier) . '">';
         $html .= '<input type="hidden" name="nom_fichier" value="' . htmlspecialchars($fichier) . '">';
         $html .= '<button type="submit" class="document-link bouton-supprimer">🗑</button>';

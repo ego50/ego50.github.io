@@ -2,7 +2,10 @@
 require 'gestion.php';
 $erreurConnexion = traiterConnexion();
 
-list($message, $erreur) = traiterFormulaires('documents');$dossiersDocuments = listerDossiers('documents');
+// Un fichier/dossier de Cours, TP ou Projets peut être supprimé depuis cette page :
+// on traite le formulaire dans la catégorie envoyée (sinon « documents »).
+$categoriePostee = in_array($_POST['categorie'] ?? '', ['cours', 'tp', 'projets'], true) ? $_POST['categorie'] : 'documents';
+list($message, $erreur) = traiterFormulaires($categoriePostee);$dossiersDocuments = listerDossiers('documents');
 
 $dossiersCours    = listerDossiers('cours');
 $dossiersTp       = listerDossiers('tp');$dossiersProjets  = listerDossiers('projets');
@@ -74,7 +77,7 @@ $dossiersTp       = listerDossiers('tp');$dossiersProjets  = listerDossiers('pro
       <div class="grille-cartes">
         <?php foreach ($tousLesDossiers as$d): ?>
           <div class="carte">
-            <h3><span class="etiquette"><?= htmlspecialchars($d['etiquette']) ?></span> 📁 <?= htmlspecialchars($d['nom']) ?></h3>
+            <h3><span class="etiquette"><?= htmlspecialchars($d['etiquette']) ?></span> 📁 <?= htmlspecialchars($d['nom']) ?><?= boutonSupprimerDossier($d['categorie'], $d['nom'], count($d['fichiers'])) ?></h3>
             <?php if (count($d['fichiers']) === 0): ?>
               <p>Dossier vide.</p>
             <?php else: ?>

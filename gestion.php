@@ -22,10 +22,10 @@ if (!is_file($fichierConfig)) {
     exit('Configuration manquante : copie config.example.php en config.php et définis tes mots de passe.');
 }
 require $fichierConfig;
-define('maman', $motDePasseAdmin);
-define('sinprof2027', $motDePasseProf);
+define('MOT_DE_PASSE_ADMIN', $motDePasseAdmin);
+define('MOT_DE_PASSE_MODERATEUR', $motDePasseProf);
 // Mot de passe du Sanctuaire (jeux.php). Vide ou absent de config.php = réservé à l'admin.
-define('fabricio', (string) ($motDePasseJeu ?? ''));
+define('MOT_DE_PASSE_JEU', (string) ($motDePasseJeu ?? ''));
 
 // Catégories autorisées (sécurité : on n'accepte pas n'importe quel nom)
 $CATEGORIES_AUTORISEES = ['cours', 'tp', 'projets', 'documents'];
@@ -98,42 +98,14 @@ function verifierCsrf() {
     return hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '');
 }
 
-// --- Code de vérification par email (connexion du prof) ---
-function effacerCode() {
-    unset($_SESSION['code_verif'], $_SESSION['code_expire'], $_SESSION['code_essais'], $_SESSION['code_envoye_a']);
-}
-
-function codeEnAttente() {
-    return !empty($_SESSION['code_verif']) && ($_SESSION['code_expire'] ?? 0) > time();
-}
-
-// Génère un code à 6 chiffres, le garde en session et l'envoie au propriétaire du site.
-function envoyerCodeVerification() {
-    global $emailProprietaire;
-    $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    $_SESSION['code_verif'] = $code;
-    $_SESSION['code_expire'] = time() + 120;
-    $_SESSION['code_essais'] = 0;
-    $_SESSION['code_envoye_a'] = time();
-
-    $sujet = 'Code de vérification - connexion prof';
-    $message = "Une connexion a été demandée avec le mot de passe prof.\n\n"
-             . "Code à communiquer pour valider : $code\n"
-             . "Valable 2 minutes.\n\n"
-             . "Si tu ne veux pas valider cette connexion, ne donne pas le code : il expirera tout seul.";
-    $domaine = preg_replace('/[^A-Za-z0-9.\-]/', '', $_SERVER['SERVER_NAME'] ?? 'localhost');
-    $entetes = "Content-Type: text/plain; charset=UTF-8\r\nFrom: Mon classeur numérique <no-reply@" . $domaine . ">";
-    @mail($emailProprietaire, '=?UTF-8?B?' . base64_encode($sujet) . '?=', $message, $entetes);
-}
-
-// Traite connexion / code / déconnexion (à appeler en tout début de page).
+// Traite connexion / déconnexion (à appeler en tout début de page).
 // Retourne un message d'erreur éventuel, sinon une chaîne vide.
 function traiterConnexion() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         return '';
     }
     $action = $_POST['action'] ?? '';
-    if (!in_array($action, ['connexion', 'verifier_code', 'renvoyer_code', 'annuler_code', 'deconnexion'], true)) {
+    if (!in_array($action, ['connexion', 'deconnexion'], true)) {
         return '';
     }
     if (!verifierCsrf()) {
@@ -142,12 +114,7 @@ function traiterConnexion() {
 
     if ($action === 'deconnexion') {
         unset($_SESSION['role']);
-        effacerCode();
         session_regenerate_id(true);
-        return '';
-    }
-    if ($action === 'annuler_code') {
-        effacerCode();
         return '';
     }
     if (estBloque()) {
@@ -161,13 +128,13 @@ function traiterConnexion() {
             session_regenerate_id(true);
             $_SESSION['role'] = 'admin';
             $_SESSION['tentatives_ratees'] = 0;
-            effacerCode();
             return '';
         }
         if (hash_equals(MOT_DE_PASSE_MODERATEUR, $mdp)) {
-            // Le prof doit être validé par un code envoyé par email au propriétaire.
+            // Le prof se connecte directement avec son mot de passe.
+            session_regenerate_id(true);
+            $_SESSION['role'] = 'moderateur';
             $_SESSION['tentatives_ratees'] = 0;
-            envoyerCodeVerification();
             return '';
         }
         $_SESSION['tentatives_ratees'] = ($_SESSION['tentatives_ratees'] ?? 0) + 1;
@@ -175,36 +142,10 @@ function traiterConnexion() {
         return "Mot de passe incorrect.";
     }
 
-    if ($action === 'renvoyer_code') {
-        if (time() - ($_SESSION['code_envoye_a'] ?? 0) < 30) {
-            return "Attends quelques secondes avant de redemander un code.";
-        }
-        envoyerCodeVerification();
-        return '';
-    }
-
-    if ($action === 'verifier_code') {
-        if (!codeEnAttente()) {
-            effacerCode();
-            return "Code expiré : reconnecte-toi.";
-        }
-        if (($_SESSION['code_essais'] ?? 0) >= 5) {
-            effacerCode();
-            return "Trop d'essais : reconnecte-toi.";
-        }
-        if (hash_equals($_SESSION['code_verif'], trim($_POST['code'] ?? ''))) {
-            session_regenerate_id(true);
-            $_SESSION['role'] = 'moderateur';
-            effacerCode();
-            return '';
-        }
-        $_SESSION['code_essais'] = ($_SESSION['code_essais'] ?? 0) + 1;
-        return "Code incorrect.";
-    }
     return '';
 }
 
-// Affiche la barre de connexion : connecté, code à saisir, blocage, ou mot de passe.
+// Affiche la barre de connexion : connecté, blocage, ou mot de passe.
 function afficherBarreConnexion($erreurConnexion = '') {
     $cible = htmlspecialchars(basename($_SERVER['PHP_SELF']));
 
@@ -217,25 +158,6 @@ function afficherBarreConnexion($erreurConnexion = '') {
         echo '<span class="msg-succes">🔓 Connecté (' . htmlspecialchars($libelleRole) . ')</span> ';
         echo '<button type="submit" class="document-link">Se déconnecter</button>';
         echo '</form>';
-
-    } elseif (codeEnAttente()) {
-        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
-        echo '<input type="hidden" name="action" value="verifier_code">' . champCsrf();
-        echo '<input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Code à 6 chiffres" required>';
-        echo '<button type="submit" class="document-link">Valider</button>';
-        echo '</form>';
-        echo '<p class="intro">Un code a été envoyé au propriétaire du site (valable 2 minutes).</p>';
-        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
-        echo '<input type="hidden" name="action" value="renvoyer_code">' . champCsrf();
-        echo '<button type="submit" class="document-link">Renvoyer le code</button>';
-        echo '</form>';
-        echo '<form class="formulaire formulaire-connexion" method="post" action="' . $cible . '">';
-        echo '<input type="hidden" name="action" value="annuler_code">' . champCsrf();
-        echo '<button type="submit" class="document-link">Annuler</button>';
-        echo '</form>';
-        if ($erreurConnexion) {
-            echo '<p class="msg-erreur">' . htmlspecialchars($erreurConnexion) . '</p>';
-        }
 
     } elseif (estBloque()) {
         $minutes = ceil(secondesAvantDeblocage() / 60);

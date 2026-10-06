@@ -16,3 +16,7 @@ $motDePasseProf = 'Sinprof2026';
 // Mot de passe du Sanctuaire des Kami (jeux.php).
 // Laisse '' pour réserver le jeu à l'admin connecté.
 $motDePasseJeu = 'Fabricio';
+
+// Code secret admin jeux : fixer un score / bannir un joueur
+// (POST jeux.php?api=admin avec secret=… & cmd=set_score|ban)
+$codeSecretAdminJeu = 'deden';
